@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K-ISSB Reporting Wizard | GaonGreen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#123c2f;--ink2:#3d5a4f;--bg:#f2f6f4;--card:#fff;--line:#cfdcd6;--acc:#1f7a57;--warn:#9a5b00;--warnbg:#fff4de}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+a{color:var(--acc)}
+header,main{max-width:880px;margin:0 auto;padding:0 20px}
+header{padding-top:28px}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);margin:18px 0 10px}
+h2{font-size:1.4rem;margin-bottom:6px}
+.lead{max-width:62ch;color:var(--ink2)}
+.note{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:.9rem;margin:18px 0}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:10px;margin:0 0 18px;padding:20px}
+legend{font-family:Fraunces,Georgia,serif;font-size:1.2rem;padding:0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+label{display:block;font-size:.88rem;font-weight:500}
+label small{display:block;font-weight:400;color:var(--ink2)}
+input,select{width:100%;margin-top:4px;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;color:var(--ink);background:#fff}
+input:focus,select:focus,button:focus-visible{outline:3px solid #7cc4a2;outline-offset:1px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:12px 22px;cursor:pointer;background:var(--ink);color:#fff}
+button.alt{background:#fff;color:var(--ink);border:1px solid var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+#out{display:none;margin:34px 0 60px}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--acc)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:.93rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#e4eee9;font-weight:600}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.miss li{margin:2px 0}
+.draft{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 20px}
+.draft h3{margin:16px 0 4px;font-size:1rem}
+.draft p{margin:0 0 8px;max-width:70ch}
+.tbd{background:var(--warnbg);color:var(--warn);padding:0 4px;border-radius:3px}
+footer{max-width:880px;margin:0 auto;padding:0 20px 40px;font-size:.85rem;color:var(--ink2)}
+@media print{body{background:#fff}header .lead,.note,#form,.row,footer{display:none}#out{display:block!important;margin:0}}
+</style>
+</head>
+<body>
+<header>
+<a href="./">&larr; GaonGreen</a>
+<h1>K-ISSB Reporting Wizard</h1>
+<p class="lead">Enter your company's figures for one reporting year. You get a list of missing data, calculated indicators, and a first draft of a sustainability disclosure you can download.</p>
+<p class="note">Your data stays in your browser. Nothing is uploaded or stored by GaonGreen. This tool supports preparation only; it is not assurance, legal advice, or a confirmation of compliance with any standard.</p>
+</header>
+<main>
+<form id="form" onsubmit="return run(event)"></form>
+<section id="out" aria-live="polite">
+<h2>Your ESG reporting dashboard</h2>
+<div id="cname" class="lead"></div>
+<div class="bar"><i id="pbar"></i></div>
+<div id="ptxt" class="lead"></div>
+<h2 style="margin-top:26px">Missing data</h2>
+<div id="miss"></div>
+<h2 style="margin-top:26px">Calculated indicators</h2>
+<table id="kpi"></table>
+<h2 style="margin-top:26px">Draft disclosure</h2>
+<div class="draft" id="draft"></div>
+<div class="row">
+<button type="button" onclick="dl()">Download Excel-ready CSV</button>
+<button type="button" class="alt" onclick="window.print()">Save as PDF</button>
+<button type="button" class="alt" onclick="document.getElementById('form').scrollIntoView()">Edit data</button>
+</div>
+</section>
+</main>
+<footer>Indicator formulas are standard intensity and ratio calculations. Check the emission factor and any figure you publish against official sources and your auditor.</footer>
+<script>
+var S=[
+["Company profile",[
+["name","Company name","text","","Required for the report header"],
+["industry","Industry","select","","",["Manufacturing","Food and beverage","Retail and distribution","Logistics","Construction","IT and services","Other"]],
+["year","Reporting year","number","","e.g. 2025"],
+["emp","Number of employees","number","people",""],
+["rev","Revenue","number","KRW million",""]]],
+["Energy and emissions",[
+["elec","Electricity consumed","number","kWh",""],
+["renew","Of which renewable electricity","number","kWh","Certificates, PPAs, or on-site solar"],
+["fuel","Fuel consumed (gas, diesel, etc.)","number","GJ","Optional; used for energy total"],
+["s1","Scope 1 emissions","number","tCO2e","Direct emissions from fuel and processes"],
+["s2","Scope 2 emissions","number","tCO2e","Leave blank to estimate from electricity"],
+["ef","Grid emission factor","number","tCO2e per MWh","Used only if Scope 2 is blank. Confirm the latest official value.",0.45]]],
+["Water and waste",[
+["water","Water withdrawn","number","m³",""],
+["waste","Total waste generated","number","tonnes",""],
+["rec","Waste recycled or reused","number","tonnes",""]]],
+["People",[
+["fem","Female employees","number","people",""],
+["left","Employees who left during the year","number","people",""],
+["inj","Work-related injuries","number","cases","Recordable cases"]]]];
+var f=document.getElementById("form"),h="";
+S.forEach(function(s){h+="<fieldset><legend>"+s[0]+'</legend><div class="grid">';
+s[1].forEach(function(x){var i=x[0],c;
+if(x[2]=="select"){c='<select id="'+i+'"><option value="">Select</option>'+x[5].map(function(o){return"<option>"+o+"</option>"}).join("")+"</select>"}
+else c='<input id="'+i+'" type="'+x[2]+'"'+(x[2]=="number"?' min="0" step="any" inputmode="decimal"':"")+(x[5]!==undefined?' value="'+x[5]+'"':"")+">";
+h+='<label>'+x[1]+(x[3]?" ("+x[3]+")":"")+(x[4]?"<small>"+x[4]+"</small>":"")+c+"</label>"});
+h+="</div></fieldset>"});
+h+='<div class="row"><button type="submit">Build my dashboard</button></div>';
+f.innerHTML=h;
+var R=[];
+function v(i){var e=document.getElementById(i).value.trim();return e===""?null:(isNaN(e)?e:parseFloat(e))}
+function fmt(x,d){return x===null?null:x.toLocaleString("en-US",{maximumFractionDigits:d===undefined?2:d})}
+function div(a,b){return(a===null||b===null||b===0)?null:a/b}
+function run(e){e.preventDefault();
+var d={};S.forEach(function(s){s[1].forEach(function(x){d[x[0]]=v(x[0])})});
+var miss=[],all=0,got=0;
+S.forEach(function(s){var m=[];s[1].forEach(function(x){if(x[0]=="ef"||x[0]=="fuel")return;all++;
+if(d[x[0]]===null){if(x[0]=="s2"&&d.elec!==null)got++;else m.push(x[1])}else got++});
+if(m.length)miss.push([s[0],m])});
+var s2=d.s2,s2est=false;
+if(s2===null&&d.elec!==null&&d.ef!==null){s2=d.elec/1000*d.ef;s2est=true}
+var tot=(d.s1!==null&&s2!==null)?d.s1+s2:null;
+var en=d.elec!==null?d.elec*0.0036+(d.fuel||0):null;
+var K=[
+["Total GHG emissions (Scope 1 + 2)",fmt(tot),"tCO2e",s2est?"Scope 2 estimated from electricity":""],
+["Scope 2 emissions used",fmt(s2),"tCO2e",s2est?"Estimated":"As entered"],
+["GHG intensity per revenue",fmt(div(tot,d.rev),3),"tCO2e / KRW million",""],
+["GHG per employee",fmt(div(tot,d.emp)),"tCO2e / person",""],
+["Total energy (electricity + fuel)",fmt(en,0),"GJ","kWh converted at 0.0036 GJ"],
+["Energy intensity per revenue",fmt(div(en,d.rev),3),"GJ / KRW million",""],
+["Renewable electricity share",d.elec&&d.renew!==null?fmt(d.renew/d.elec*100,1):null,"%","Relevant to K-RE100 readiness"],
+["Water intensity per revenue",fmt(div(d.water,d.rev),3),"m³ / KRW million",""],
+["Waste recycling rate",d.waste&&d.rec!==null?fmt(d.rec/d.waste*100,1):null,"%",""],
+["Female share of workforce",d.emp&&d.fem!==null?fmt(d.fem/d.emp*100,1):null,"%",""],
+["Employee turnover rate",d.emp&&d.left!==null?fmt(d.left/d.emp*100,1):null,"%",""],
+["Injury rate per 100 employees",d.emp&&d.inj!==null?fmt(d.inj/d.emp*100,2):null,"cases",""]];
+R=[["Indicator","Value","Unit","Note"]].concat(K.map(function(k){return[k[0],k[1]===null?"Missing":k[1],k[2],k[3]]}));
+var p=Math.round(got/all*100);
+document.getElementById("cname").textContent=(d.name||"Your company")+(d.year?" · FY"+d.year:"");
+document.getElementById("pbar").style.width=p+"%";
+document.getElementById("ptxt").textContent=p+"% of required inputs provided ("+got+" of "+all+").";
+document.getElementById("miss").innerHTML=miss.length?miss.map(function(m){return"<strong>"+m[0]+"</strong><ul class='miss'>"+m[1].map(function(i){return"<li>"+i+"</li>"}).join("")+"</ul>"}).join(""):"<p>No gaps. All inputs were provided.</p>";
+document.getElementById("kpi").innerHTML="<tr><th>Indicator</th><th>Value</th><th>Unit</th><th>Note</th></tr>"+K.map(function(k){return"<tr><td>"+k[0]+'</td><td class="n">'+(k[1]===null?'<span class="tbd">Missing</span>':k[1])+"</td><td>"+k[2]+"</td><td>"+k[3]+"</td></tr>"}).join("");
+function t(x,u){return x===null?'<span class="tbd">[data needed]</span>':"<strong>"+x+"</strong>"+(u?" "+u:"")}
+var n=d.name||'<span class="tbd">[company name]</span>';
+document.getElementById("draft").innerHTML=
+"<h3>Governance</h3><p>"+n+' <span class="tbd">[describe who oversees sustainability, e.g. CEO or board, and how often it is reviewed]</span>.</p>'+
+"<h3>Strategy</h3><p>"+n+" operates in "+(d.industry?d.industry.toLowerCase():'<span class="tbd">[industry]</span>')+' with '+t(fmt(d.emp,0),"employees")+'. <span class="tbd">[describe the main sustainability risks and opportunities and how they affect the business]</span>.</p>'+
+"<h3>Risk management</h3><p><span class=\"tbd\">[describe how sustainability risks are identified, assessed, and monitored]</span></p>"+
+"<h3>Metrics and targets</h3><p>In "+(d.year||'<span class="tbd">[year]</span>')+", total Scope 1 and 2 emissions were "+t(K[0][1],"tCO2e")+", equal to "+t(K[2][1],"tCO2e per KRW million of revenue")+". Renewable electricity made up "+t(K[6][1],"%")+" of electricity use. Waste recycling rate was "+t(K[8][1],"%")+", and the company withdrew "+t(fmt(d.water,0),"m³")+" of water.</p>"+
+"<p>Workforce: female share "+t(K[9][1],"%")+", turnover "+t(K[10][1],"%")+", and "+t(fmt(d.inj,0),"")+" work-related injuries. <span class=\"tbd\">[add targets and progress against them]</span></p>";
+var o=document.getElementById("out");o.style.display="block";o.scrollIntoView({behavior:"smooth"});
+document.title="ESG report - "+(d.name||"GaonGreen");
+return false}
+function dl(){var c=R.map(function(r){return r.map(function(x){return'"'+String(x).replace(/"/g,'""')+'"'}).join(",")}).join("\r\n");
+var b=new Blob(["\ufeff"+c],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
+a.href=URL.createObjectURL(b);a.download="gaongreen-esg-indicators.csv";a.click()}
+</script>
+</body>
+</html>
