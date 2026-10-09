@@ -240,3 +240,4 @@ document.getElementById('language').addEventListener('change',()=>{collect();per
 try{const stored=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(stored)&&stored.length===items.length&&stored.every(x=>Number.isInteger(x.status)&&x.status>=0&&x.status<=4&&typeof x.reference==='string'))data=stored}catch{}
 draw();
 })();</script></body></html>
+
