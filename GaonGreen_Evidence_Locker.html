@@ -30,3 +30,4 @@ function exportData(type){if(!records.length){notify('noData');return}let blob,n
 $('exportManifest').addEventListener('click',()=>exportData('json'));$('exportCsv').addEventListener('click',()=>exportData('csv'));$('search').addEventListener('input',render);$('filterCategory').addEventListener('change',render);$('filterStatus').addEventListener('change',render);$('lang').addEventListener('change',e=>applyLanguage(e.target.value));
 (async()=>{try{db=await openDB();try{lang=localStorage.getItem('gg-locker-lang')||'en'}catch{}applyLanguage(lang);$('year').value=new Date().getFullYear();await refresh()}catch(err){console.error(err);applyLanguage('en');notify('error');$('addButton').disabled=true}})();
 </script></body></html>
+
