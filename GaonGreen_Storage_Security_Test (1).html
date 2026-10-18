@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GaonGreen | Storage Isolation Test</title><style>body{font:16px system-ui,sans-serif;max-width:760px;margin:45px auto;padding:0 20px;color:#143b2e;background:#f7faf8}main{background:white;border:1px solid #cbded4;border-radius:16px;padding:26px}button{background:#14543f;color:white;border:0;border-radius:9px;padding:13px 20px;cursor:pointer}button:disabled{opacity:.5}#result{white-space:pre-wrap;background:#f0f5f2;border-radius:9px;padding:15px;min-height:45px}code{overflow-wrap:anywhere}small{color:#506b5c}</style></head><body><main><h1>GaonGreen Storage Isolation Test</h1><p>This read-only test checks whether your <strong>currently signed-in test account</strong> can access the fictional PDF stored under Account 1. It does not upload, change, delete, or display the PDF or your access token.</p><p><strong>Run only while signed in to Account 2 in an Incognito window.</strong> This page must be hosted at <code>gaongreen.github.io/gaongreen-website/</code> so it can read the same browser session as your other GaonGreen pages.</p><button id="run">Test file access</button><p id="result" role="status">Not tested yet.</p><small>Only HTTP status and error details are displayed. No PDF content or access token is displayed. A denied response is one useful check, not a complete security audit.</small></main><script>
+'use strict';
+const base='https://uyhmbecltrswiljbyass.supabase.co';
+const key='sb_publishable_iNcId4rsFBAYbnIudemYVg_FSEFdPa-';
+const path='14aa94b5-93a6-4952-bd86-cd96af49c02e/8d228dff-3402-48df-bf90-2bd2946cfdd8/report__1_.pdf';
+const out=document.getElementById('result');
+document.getElementById('run').addEventListener('click',async()=>{
+ const button=document.getElementById('run');button.disabled=true;out.textContent='Checking session and file access…';
+ try{
+  const sessionKey=Object.keys(localStorage).find(k=>/^sb-[a-z0-9]+-auth-token$/.test(k));
+  if(!sessionKey){out.textContent='No Supabase login session found on this site. Sign in to Account 2 and retry.';return;}
+  const session=JSON.parse(localStorage.getItem(sessionKey)||'null');
+  if(!session?.access_token){out.textContent='No access token found. Sign in to Account 2 again.';return;}
+  const userResp=await fetch(base+'/auth/v1/user',{headers:{apikey:key,Authorization:'Bearer '+session.access_token},cache:'no-store'});
+  if(!userResp.ok){out.textContent='Session verification failed (HTTP '+userResp.status+'). Sign in to Account 2 again.';return;}
+  const user=await userResp.json();
+  // Avoid inadvertently testing the owner's own account.
+  if(user.id==='14aa94b5-93a6-4952-bd86-cd96af49c02e') {out.textContent='STOP: You are signed in as Account 1, the file owner. Sign in to Account 2 in Incognito before testing.';return;}
+  if(!window.confirm('Confirm: Is this your SECOND test account?\n\nSigned-in email: '+(user.email||'(unknown)')+'\n\nContinue with read-only access check?')){out.textContent='Cancelled.';return;}
+  const response=await fetch(base+'/storage/v1/object/authenticated/evidence-locker/'+path,{method:'GET',headers:{apikey:key,Authorization:'Bearer '+session.access_token,Range:'bytes=0-0'},cache:'no-store'});
+  const status=response.status;
+   if(response.ok){
+     if(response.body) await response.body.cancel();
+     out.textContent='Direct file access HTTP status: '+status+'\nWARNING: Account 2 may have accessed Account 1’s PDF.';
+     return;
+   }
+   const contentType=response.headers.get('content-type')||'';
+   let code='(not provided)',message='(not provided)';
+   if(contentType.includes('application/json')){
+     const error=await response.json();
+     code=String(error.code||error.error||error.statusCode||'(not provided)').slice(0,160);
+     message=String(error.message||error.error_description||'(not provided)').slice(0,400);
+   }else{
+     if(response.body) await response.body.cancel();
+     message='Non-JSON error response ('+contentType.slice(0,100)+')';
+   }
+   out.textContent='Direct file access HTTP status: '+status+'\nSupabase error code: '+code+'\nSupabase message: '+message+'\n\nA rejected request does not by itself prove account isolation.';
+  }}catch(err){out.textContent='Test could not complete: '+(err instanceof Error?err.message:String(err));}
+ finally{button.disabled=false;}
+});
+</script></body></html>
