@@ -12,7 +12,19 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const client=createClient('https://uyhmbecltrswiljbyass.supabase.co','sb_publishable_iNcId4rsFBAYbnIudemYVg_FSEFdPa-',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const cloudStatus=document.getElementById('cloudStatus');
 const say=(s)=>cloudStatus.textContent=s;
-async function user(){const {data,error}=await client.auth.getUser();if(error||!data.user){say('Please sign in first using the Login page.');return null;}return data.user;}
+async function user(){
+ say('Checking login session…');
+ let result=await client.auth.getUser();
+ if(result.error||!result.data?.user){
+  const current=await client.auth.getSession();
+  if(current.data?.session?.refresh_token){
+   const refreshed=await client.auth.refreshSession();
+   if(!refreshed.error)result=await client.auth.getUser();
+  }
+ }
+ if(result.error||!result.data?.user){say('Session expired or unavailable. Sign in using the Login page in this same window. '+(result.error?.message||''));return null;}
+ return result.data.user;
+}
 async function saveCloud(){const u=await user();if(!u)return;const draft=getData();const records=safeRead(KEY,{});if(!validate(draft)){say('Invalid draft.');return;}
  say('Saving supplier assessments to cloud…');const payload={version:1,draft,records,activeId,updatedAt:new Date().toISOString()};
  const {error}=await client.from('supplier_esg_drafts').upsert({owner_id:u.id,draft_data:payload,updated_at:new Date().toISOString()},{onConflict:'owner_id'});
@@ -27,5 +39,5 @@ async function loadCloud(){const u=await user();if(!u)return;say('Loading suppli
  apply(p.draft);refreshSaved();say('Cloud supplier draft and saved supplier list restored successfully.');}
 document.getElementById('cloudSave').addEventListener('click',()=>saveCloud().catch(e=>say('Cloud error: '+e.message)));
 document.getElementById('cloudLoad').addEventListener('click',()=>loadCloud().catch(e=>say('Cloud error: '+e.message)));
-client.auth.getUser().then(({data})=>say(data?.user?'Signed in: '+data.user.email:'Please sign in to use cloud backups.')).catch(()=>say('Sign in to use cloud backups.'));
+user().then(u=>{if(u)say('Signed in: '+u.email);}).catch(e=>say('Login check failed: '+e.message));
 </script></body></html>
