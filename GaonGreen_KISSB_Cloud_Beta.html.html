@@ -264,7 +264,7 @@ async function action(kind){if(busy||!client)return;busy=true;translate();status
 q('ggCloudSave').addEventListener('click',()=>action('save'));q('ggCloudLoad').addEventListener('click',()=>action('load'));q('language').addEventListener('change',translate);translate();
 if(!window.supabase?.createClient){status(t().missing);return}
 client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-client.auth.onAuthStateChange((_event,session)=>{account=session?.user||null;translate()});
+client.auth.onAuthStateChange((_event,session)=>{account=session?.user||null;translate();if(account)window.setTimeout(()=>loadCompanyProfile(true),0)});
 current().catch(e=>{account=null;translate();status(t().failed+e.message)});
 
 // Company profile sync: reads only the authenticated user's profile.
@@ -307,13 +307,23 @@ async function loadCompanyProfile(silent=false){
     if(input.tagName==='SELECT'&&![...input.options].some(o=>o.value===value))continue;
     input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));changed++;
   }
-  if(!silent)status(changed?w.loaded:w.unchanged);
+  if(changed)status(w.loaded);else if(!silent)status(w.unchanged);
  }catch(e){if(!silent)status(w.error+(e.message||String(e)))}
  finally{profileButton.disabled=false;profileTranslate()}
 }
 profileButton.addEventListener('click',()=>loadCompanyProfile());
-// Wait for auth to resolve before pre-filling empty company fields.
-current().then(user=>{if(user&&lastProfileUser!==user.id){lastProfileUser=user.id;loadCompanyProfile(true)}}).catch(()=>{});
+// Prefill after authentication initializes. A silent load can run more than once:
+// it only fills empty fields and never overwrites entered answers.
+// The auth event also triggers this when a persisted session becomes available later.
+async function initialCompanyPrefill(){
+ try{
+  const user=await current();
+  if(user)await loadCompanyProfile(true);
+ }catch(e){console.warn('GaonGreen company prefill:',e)}
+}
+window.setTimeout(initialCompanyPrefill,0);
+// Browsers may restore the auth session after initial rendering.
+window.addEventListener('pageshow',()=>window.setTimeout(initialCompanyPrefill,0));
 
 })();
 </script></body></html>
