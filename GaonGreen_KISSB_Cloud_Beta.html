@@ -64,12 +64,12 @@ const copy={
 const el=id=>document.getElementById(id),L=()=>copy[el('language').value]||copy.en;
 function labels(){const t=L();['ggSaveTitle','ggSaveHint','ggSave','ggLoad','ggExport','ggImport','ggClear'].forEach((id,i)=>el(id).textContent=t[i]);}
 function collect(){const data={};ids.forEach(id=>data[id]=el(id)?.value??'');return {version:1,language:el('language').value,data};}
-function restore(o){if(!o||o.version!==1||!o.data||typeof o.data!=='object'||Array.isArray(o.data))throw Error('invalid');const data=o.data;for(const id of ids){if(Object.prototype.hasOwnProperty.call(data,id)&&typeof data[id]!=='string')throw Error('invalid');}if(['en','ko','ar'].includes(o.language)){el('language').value=o.language;el('language').dispatchEvent(new Event('change'));}ids.forEach(id=>{if(typeof data[id]==='string')el(id).value=data[id]});el('out').style.display='none';el('ggSaveStatus').textContent=L()[8];}
+function restore(o){if(!o||o.version!==1||!o.data||typeof o.data!=='object'||Array.isArray(o.data))throw Error('invalid');const data=o.data;for(const id of ids){if(Object.prototype.hasOwnProperty.call(data,id)&&typeof data[id]!=='string')throw Error('invalid');}if(['en','ko','ar'].includes(o.language)){el('language').value=o.language;el('language').dispatchEvent(new Event('change'));}ids.forEach(id=>{if(typeof data[id]==='string')el(id).value=data[id]});el('out').style.display='none';el('ggSaveStatus').textContent=L()[8];document.dispatchEvent(new Event('gaongreen:answers-restored'));}
 function status(n){el('ggSaveStatus').textContent=L()[n];}
 function download(name,content){const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
 el('ggSave').onclick=()=>{try{localStorage.setItem(KEY,JSON.stringify(collect()));status(7)}catch(e){status(14)}};
 el('ggLoad').onclick=()=>{try{const raw=localStorage.getItem(KEY);if(!raw){status(9);return}restore(JSON.parse(raw))}catch(e){status(14)}};
-el('ggClear').onclick=()=>{if(!confirm(L()[10]))return;try{localStorage.removeItem(KEY);status(11)}catch(e){status(14)}};
+el('ggClear').onclick=()=>{if(!confirm(L()[10]))return;try{localStorage.removeItem(KEY);status(11);document.dispatchEvent(new Event('gaongreen:local-cleared'))}catch(e){status(14)}};
 el('ggExport').onclick=()=>{download('GaonGreen_ESG_Backup.json',JSON.stringify(collect(),null,2));status(12)};
 el('ggImport').onclick=()=>el('ggFile').click();
 el('ggFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{if(f.size>1000000)throw Error('too large');restore(JSON.parse(await f.text()));status(13)}catch(err){status(15)}finally{e.target.value=''}};
@@ -241,30 +241,173 @@ try{const stored=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(stored)&
 draw();
 })();</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script id="gg-cloud-beta-script">
+/* Company-profile sync for the existing K-ISSB wizard. No schema or policy changes. */
 (()=>{
 'use strict';
-const URL='https://uyhmbecltrswiljbyass.supabase.co';
-const KEY='sb_publishable_iNcId4rsFBAYbnIudemYVg_FSEFdPa-';
+const q=id=>document.getElementById(id);
 const copy={
- en:{title:'Cloud draft (beta)',desc:'Save questionnaire answers to your account. Local backups and the evidence checklist remain separate. Use test data until access controls are verified.',save:'Save draft to cloud',load:'Load draft from cloud',login:'Open login',idle:'Checking account…',signed:'Signed in as ',out:'Sign in to use cloud drafts.',saving:'Saving…',saved:'Cloud draft saved.',loading:'Loading…',empty:'No cloud draft found for this account.',confirm:'Replace the current questionnaire answers with your cloud draft? Download a JSON backup first if needed.',loaded:'Cloud draft loaded into the questionnaire.',failed:'Cloud operation failed: ',missing:'Supabase client could not load. Check your internet connection.',invalid:'Saved cloud draft has an unexpected format.',year:'Cloud beta stores one current draft per account (including its reporting year).'},
- ko:{title:'클라우드 초안 (베타)',desc:'설문 답변을 계정에 저장합니다. 로컬 백업과 증빙 체크리스트는 별도로 유지됩니다. 권한 검증 전에는 테스트 데이터만 사용하세요.',save:'클라우드에 저장',load:'클라우드에서 불러오기',login:'로그인 열기',idle:'계정 확인 중…',signed:'로그인: ',out:'클라우드 초안을 사용하려면 로그인하세요.',saving:'저장 중…',saved:'클라우드 초안을 저장했습니다.',loading:'불러오는 중…',empty:'이 계정의 클라우드 초안이 없습니다.',confirm:'현재 설문 답변을 클라우드 초안으로 교체할까요? 필요하면 먼저 JSON 백업을 다운로드하세요.',loaded:'클라우드 초안을 불러왔습니다.',failed:'클라우드 작업 실패: ',missing:'Supabase 연결을 불러오지 못했습니다. 인터넷을 확인하세요.',invalid:'저장된 초안 형식이 올바르지 않습니다.',year:'계정당 최신 초안 하나(보고 연도 포함)를 저장합니다.'},
- ar:{title:'مسودة سحابية (تجريبية)',desc:'احفظ إجابات الاستبيان في حسابك. النسخ المحلية وقائمة الأدلة منفصلة. استخدم بيانات تجريبية حتى التحقق من صلاحيات الوصول.',save:'حفظ المسودة سحابياً',load:'تحميل المسودة السحابية',login:'فتح تسجيل الدخول',idle:'جارٍ التحقق من الحساب…',signed:'تم تسجيل الدخول: ',out:'سجّل الدخول لاستخدام المسودات السحابية.',saving:'جارٍ الحفظ…',saved:'تم حفظ المسودة سحابياً.',loading:'جارٍ التحميل…',empty:'لا توجد مسودة سحابية لهذا الحساب.',confirm:'هل تريد استبدال إجابات الاستبيان الحالية بالمسودة السحابية؟ نزّل نسخة JSON احتياطية أولاً عند الحاجة.',loaded:'تم تحميل المسودة إلى الاستبيان.',failed:'فشلت العملية السحابية: ',missing:'تعذر تحميل اتصال Supabase. تحقق من الإنترنت.',invalid:'صيغة المسودة السحابية غير صالحة.',year:'تحتفظ النسخة التجريبية بمسودة حالية واحدة لكل حساب، بما فيها سنة التقرير.'}
+ en:{title:'Cloud draft (beta)',desc:'Your company profile loads automatically after sign-in. Save questionnaire answers to your account with Save draft to cloud. This browser remembers your working answers after refresh; local backups and evidence remain separate.',save:'Save draft to cloud',load:'Load draft from cloud',login:'Open login',settings:'Company settings',profile:'Load company profile',checking:'Checking account…',signed:'Signed in as ',out:'Sign in to load your saved company profile.',saving:'Saving…',saved:'Cloud draft saved.',loading:'Loading…',empty:'No cloud draft found for this account.',confirm:'Replace the current questionnaire answers with your cloud draft? Download a JSON backup first if needed.',loaded:'Cloud draft loaded. Your answers will be restored after refresh.',failed:'Cloud operation failed: ',missing:'Cloud connection could not load. Check your internet connection and refresh.',invalid:'Saved cloud draft has an unexpected format.',year:'One cloud draft per account, including its reporting year. Use test data while this service is in beta.',profileLoading:'Loading your cloud company profile…',profileLoaded:'Company profile loaded from cloud. Your answers are remembered after refresh.',profileKept:'Cloud profile checked. Your existing answers were kept.',profileEmpty:'No cloud company profile found. Save one in Company settings.',profileFailed:'Could not load company profile: ',cached:'Working answers restored on this device. Checking your cloud profile…',storage:'Browser storage is unavailable. Cloud operations still work; download a backup before refreshing.',privacy:'Cloud profile and draft buttons connect to your signed-in Supabase account. Working answers are also remembered on this device. The evidence checklist stays local. This preparation tool does not establish K-ISSB compliance.'},
+ ko:{title:'클라우드 초안 (베타)',desc:'로그인하면 회사 정보를 자동으로 불러옵니다. 설문 답변은 클라우드 저장 버튼으로 계정에 저장하세요. 새로고침 후 이 브라우저의 작업 내용을 복원합니다. 로컬 백업과 증빙은 별도입니다.',save:'클라우드에 저장',load:'클라우드에서 불러오기',login:'로그인 열기',settings:'회사 설정',profile:'회사 정보 불러오기',checking:'계정 확인 중…',signed:'로그인: ',out:'저장된 회사 정보를 불러오려면 로그인하세요.',saving:'저장 중…',saved:'클라우드 초안을 저장했습니다.',loading:'불러오는 중…',empty:'저장된 클라우드 초안이 없습니다.',confirm:'현재 설문 답변을 클라우드 초안으로 교체할까요? 필요하면 먼저 JSON 백업을 다운로드하세요.',loaded:'클라우드 초안을 불러왔습니다. 새로고침 후에도 답변을 복원합니다.',failed:'클라우드 작업 실패: ',missing:'클라우드 연결을 불러오지 못했습니다. 인터넷을 확인하고 새로고침하세요.',invalid:'저장된 초안 형식이 올바르지 않습니다.',year:'계정당 보고 연도를 포함한 최신 초안 하나를 저장합니다. 베타에서는 테스트 데이터를 사용하세요.',profileLoading:'클라우드 회사 정보를 불러오는 중…',profileLoaded:'회사 정보를 클라우드에서 불러왔습니다. 새로고침 후에도 답변을 복원합니다.',profileKept:'클라우드 회사 정보를 확인했습니다. 기존 답변은 유지했습니다.',profileEmpty:'저장된 회사 정보가 없습니다. 회사 설정에서 먼저 저장하세요.',profileFailed:'회사 정보 불러오기 실패: ',cached:'이 기기의 작업 내용을 복원했습니다. 클라우드 회사 정보를 확인하는 중…',storage:'브라우저 저장소를 사용할 수 없습니다. 클라우드는 사용 가능하며 새로고침 전에 백업을 다운로드하세요.',privacy:'회사 정보와 초안은 로그인한 Supabase 계정에 연결됩니다. 작업 답변은 이 기기에도 저장됩니다. 증빙 체크리스트는 로컬에만 저장됩니다. K-ISSB 준수를 인증하지 않습니다.'},
+ ar:{title:'مسودة سحابية (تجريبية)',desc:'يُحمّل ملف شركتك تلقائياً بعد تسجيل الدخول. احفظ إجابات الاستبيان في حسابك بزر الحفظ السحابي. يتذكر هذا المتصفح إجاباتك بعد تحديث الصفحة، وتبقى النسخ المحلية والأدلة منفصلة.',save:'حفظ المسودة سحابياً',load:'تحميل المسودة السحابية',login:'فتح تسجيل الدخول',settings:'إعدادات الشركة',profile:'تحميل ملف الشركة',checking:'جارٍ التحقق من الحساب…',signed:'تم تسجيل الدخول: ',out:'سجّل الدخول لتحميل ملف شركتك المحفوظ.',saving:'جارٍ الحفظ…',saved:'تم حفظ المسودة سحابياً.',loading:'جارٍ التحميل…',empty:'لا توجد مسودة سحابية لهذا الحساب.',confirm:'هل تريد استبدال إجابات الاستبيان بالمسودة السحابية؟ نزّل نسخة JSON احتياطية أولاً عند الحاجة.',loaded:'تم تحميل المسودة. ستُستعاد الإجابات بعد تحديث الصفحة.',failed:'فشلت العملية السحابية: ',missing:'تعذر تحميل الاتصال السحابي. تحقق من الإنترنت وحدّث الصفحة.',invalid:'صيغة المسودة السحابية غير صالحة.',year:'مسودة حالية واحدة لكل حساب مع سنة التقرير. استخدم بيانات اختبار خلال النسخة التجريبية.',profileLoading:'جارٍ تحميل ملف شركتك من السحابة…',profileLoaded:'تم تحميل ملف الشركة من السحابة. ستبقى إجاباتك بعد تحديث الصفحة.',profileKept:'تم التحقق من الملف السحابي مع الاحتفاظ بإجاباتك الحالية.',profileEmpty:'لا يوجد ملف شركة سحابي. احفظه أولاً في إعدادات الشركة.',profileFailed:'تعذر تحميل ملف الشركة: ',cached:'تمت استعادة إجابات هذا الجهاز. جارٍ التحقق من ملف الشركة السحابي…',storage:'تخزين المتصفح غير متاح. الحفظ السحابي يعمل؛ نزّل نسخة احتياطية قبل التحديث.',privacy:'يتصل ملف الشركة والمسودة بحسابك في Supabase. تُحفظ إجابات العمل أيضاً على هذا الجهاز. تبقى قائمة الأدلة محلية. هذه الأداة لا تثبت الامتثال لمعايير K-ISSB.'}
 };
-const q=id=>document.getElementById(id),t=()=>copy[q('language').value]||copy.en;
-const root=document.createElement('section');root.className='gg-cloud-beta';root.id='ggCloudBeta';root.innerHTML='<div class="gg-cloud-card"><h2 id="ggCloudTitle"></h2><p id="ggCloudDesc"></p><p id="ggCloudAccount" role="status"></p><div class="gg-cloud-buttons"><button type="button" id="ggCloudSave"></button><button type="button" class="alt" id="ggCloudLoad"></button><a href="GaonGreen_Login.html" id="ggCloudLogin"></a></div><p class="gg-cloud-status" id="ggCloudStatus" role="status"></p><small id="ggCloudYear"></small></div>';
+const t=()=>copy[q('language').value]||copy.en;
+const root=document.createElement('section');
+root.className='gg-cloud-beta';root.id='ggCloudBeta';
+root.innerHTML='<div class="gg-cloud-card"><h2 id="ggCloudTitle"></h2><p id="ggCloudDesc"></p><p id="ggCloudAccount" role="status"></p><div class="gg-cloud-buttons"><button type="button" id="ggCloudSave"></button><button type="button" class="alt" id="ggCloudLoad"></button><button type="button" class="alt" id="ggLoadCompanyProfile"></button><a href="./GaonGreen_Company_Settings_Cloud_Beta.html" id="ggCompanySettingsLink"></a><a href="./GaonGreen_Login.html" id="ggCloudLogin"></a></div><p class="gg-cloud-status" id="ggCloudStatus" role="status" aria-live="polite"></p><p class="gg-cloud-status" id="ggCompanyStatus" role="status" aria-live="polite"></p><p class="gg-cloud-status" id="ggStorageStatus" role="status"></p><small id="ggCloudYear"></small></div>';
 q('ggSavePanel').after(root);
-let client=null, busy=false, account=null;
-function status(x){q('ggCloudStatus').textContent=x}
-function translate(){const v=t();q('ggCloudTitle').textContent=v.title;q('ggCloudDesc').textContent=v.desc;q('ggCloudSave').textContent=v.save;q('ggCloudLoad').textContent=v.load;q('ggCloudLogin').textContent=v.login;q('ggCloudYear').textContent=v.year;q('ggCloudAccount').textContent=account?v.signed+account.email:v.out;q('ggCloudSave').disabled=busy||!account;q('ggCloudLoad').disabled=busy||!account;}
-function valid(payload){return payload&&payload.version===1&&payload.data&&typeof payload.data==='object'&&!Array.isArray(payload.data)&&ids.every(id=>payload.data[id]===undefined||typeof payload.data[id]==='string')&&['en','ko','ar'].includes(payload.language)}
+const PREFIX='gaongreen-kissb-cloud-resume-v1:';
+let client,account=null,checking=true,busy=false,profileBusy=false,generation=0,syncPromise=null;
+let dirty=new Set(),cloudMessage='',profileMessage='',storageFailed=false,restoring=false;
+const cacheKey=id=>PREFIX+id;
+function translate(){
+ const v=t();
+ for(const [id,key] of Object.entries({ggCloudTitle:'title',ggCloudDesc:'desc',ggCloudSave:'save',ggCloudLoad:'load',ggLoadCompanyProfile:'profile',ggCompanySettingsLink:'settings',ggCloudLogin:'login',ggCloudYear:'year',privacy:'privacy'}))q(id).textContent=v[key];
+ q('ggCloudAccount').textContent=checking?v.checking:account?v.signed+(account.email||''):v.out;
+ q('ggCloudSave').disabled=q('ggCloudLoad').disabled=checking||busy||!account;
+ q('ggLoadCompanyProfile').disabled=checking||profileBusy||!account;
+ q('ggCloudStatus').textContent=cloudMessage;
+ q('ggCompanyStatus').textContent=profileMessage;
+ q('ggStorageStatus').textContent=storageFailed?v.storage:'';
+}
+function valid(p){return p&&p.version===1&&p.data&&typeof p.data==='object'&&!Array.isArray(p.data)&&ids.every(id=>p.data[id]===undefined||typeof p.data[id]==='string')&&['en','ko','ar'].includes(p.language)}
 function collect(){const data={};ids.forEach(id=>data[id]=q(id)?.value??'');return {version:1,language:q('language').value,data}}
-function restore(payload){if(!valid(payload))throw Error(t().invalid);q('language').value=payload.language;q('language').dispatchEvent(new Event('change'));ids.forEach(id=>{q(id).value=payload.data[id]??''});q('out').style.display='none';}
-async function current(){if(!client)return null;const {data,error}=await client.auth.getUser();if(error)throw error;account=data.user;translate();return account}
-async function action(kind){if(busy||!client)return;busy=true;translate();status(kind==='save'?t().saving:t().loading);try{const user=await current();if(!user){status(t().out);return}if(kind==='save'){const payload=collect();const {error}=await client.from('kissb_drafts').upsert({user_id:user.id,payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;status(t().saved)}else{const {data,error}=await client.from('kissb_drafts').select('payload').eq('user_id',user.id).maybeSingle();if(error)throw error;if(!data){status(t().empty);return}if(!valid(data.payload))throw Error(t().invalid);if(!confirm(t().confirm)){status('');return}restore(data.payload);status(t().loaded)}}catch(err){status(t().failed+(err.message||String(err)))}finally{busy=false;translate()}}
-q('ggCloudSave').addEventListener('click',()=>action('save'));q('ggCloudLoad').addEventListener('click',()=>action('load'));q('language').addEventListener('change',translate);translate();
-if(!window.supabase?.createClient){status(t().missing);return}
-client=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-client.auth.onAuthStateChange((_event,session)=>{account=session?.user||null;translate()});
-current().catch(e=>{account=null;translate();status(t().failed+e.message)});
+function persist(){if(!account||restoring)return;try{localStorage.setItem(cacheKey(account.id),JSON.stringify({payload:collect(),dirty:[...dirty]}));storageFailed=false}catch{storageFailed=true}translate()}
+function restore(p,onlyUntouched=false){
+ if(!valid(p))throw Error(t().invalid);
+ restoring=true;
+ if(!onlyUntouched||dirty.size===0){q('language').value=p.language;q('language').dispatchEvent(new Event('change'))}
+ for(const id of ids){if(!onlyUntouched||(!dirty.has(id)&&q(id).value===''))q(id).value=p.data[id]??''}
+ q('out').style.display='none';restoring=false;
+}
+function clearAnswers(){ids.forEach(id=>q(id).value='');last=null;q('out').style.display='none';dirty.clear()}
+function selectAccount(user){
+ const old=account?.id;
+ if(old===user?.id){account=user;checking=false;translate();return false}
+ generation++;
+ if(old){try{localStorage.removeItem(cacheKey(old))}catch{}clearAnswers()}
+ account=user;checking=false;cloudMessage='';profileMessage='';
+ if(user){
+  try{
+   const cached=JSON.parse(localStorage.getItem(cacheKey(user.id))||'null');
+   if(cached&&valid(cached.payload)){
+    const touched=new Set(dirty);restore(cached.payload,true);
+    for(const id of Array.isArray(cached.dirty)?cached.dirty:[])if(ids.includes(id)&&!touched.has(id))dirty.add(id);
+    profileMessage=t().cached;
+   }
+  }catch{storageFailed=true}
+ }
+ translate();return true;
+}
+async function current(){
+ const before=generation;
+ const {data,error}=await client.auth.getUser();
+ if(before!==generation)return null;
+ if(error)throw error;
+ selectAccount(data?.user||null);
+ return account;
+}
+function schemaColumnError(e){return e&&['42703','PGRST204'].includes(e.code)}
+async function fetchProfile(user){
+ // Company Settings and Cloud Dashboard both use owner_id. Support the older
+ // user_id schema only when that column is absent or has no matching record.
+ let result=await client.from('company_profiles').select('*').eq('owner_id',user.id).maybeSingle();
+ if(result.error&&!schemaColumnError(result.error))throw result.error;
+ if(!result.error&&result.data)return result.data;
+ const legacy=await client.from('company_profiles').select('*').eq('user_id',user.id).maybeSingle();
+ if(legacy.error){if(!result.error&&schemaColumnError(legacy.error))return null;throw legacy.error}
+ return legacy.data;
+}
+function profileValues(row){
+ const object=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+ const fields={...object(row.data),...object(row.profile),...row};
+ const first=(...keys)=>{for(const key of keys){const val=fields[key];if(val!==undefined&&val!==null&&String(val).trim()!=='')return String(val).trim()}return ''};
+ const values={name:first('company_name','name','legal_name','companyName','business_name'),industry:first('industry','industry_type','sector'),emp:first('employee_count','employees','number_of_employees','employeeCount'),rev:first('revenue_krw_million')};
+ if(values.industry&&!/^[0-6]$/.test(values.industry)){
+  const normalized=values.industry.toLowerCase();
+  // Match all three languages regardless of the wizard's current language.
+  const index=Object.values(translations).map(x=>x.industries.findIndex(label=>label.toLowerCase()===normalized)).find(x=>x>=0);
+  values.industry=index===undefined?'':String(index);
+ }
+ return values;
+}
+async function loadProfile(user=null){
+ if(profileBusy||!client)return;
+ profileBusy=true;const epoch=generation;profileMessage=t().profileLoading;translate();
+ try{
+  user=user||await current();if(!user)return;
+  const requestEpoch=generation;
+  const before=collect().data;
+  const row=await fetchProfile(user);
+  if(requestEpoch!==generation||account?.id!==user.id)return;
+  if(!row){profileMessage=t().profileEmpty;return}
+  let changed=0;
+  for(const [id,value] of Object.entries(profileValues(row))){
+   const input=q(id);
+   if(!value||dirty.has(id)||input.value!==before[id]||input.value.trim())continue;
+   if(input.type==='number'&&(!Number.isFinite(Number(value))||Number(value)<0||(id==='emp'&&!Number.isInteger(Number(value)))))continue;
+   if(input.tagName==='SELECT'&&![...input.options].some(o=>o.value===value))continue;
+   input.value=value;changed++;
+  }
+  profileMessage=changed?t().profileLoaded:t().profileKept;
+  persist();
+ }catch(error){if(epoch===generation)profileMessage=t().profileFailed+(error.message||String(error))}
+ finally{profileBusy=false;translate();if(epoch!==generation&&account)window.setTimeout(()=>loadProfile(),0)}
+}
+function syncSession(){
+ if(syncPromise)return syncPromise;
+ syncPromise=(async()=>{
+  const before=generation;
+  try{
+   const {data,error}=await client.auth.getSession();if(error)throw error;
+   if(before!==generation)return;
+   const changed=selectAccount(data?.session?.user||null);
+   if(account&&(changed||!profileMessage))await loadProfile(account);
+  }catch(error){checking=false;profileMessage=t().profileFailed+(error.message||String(error));translate()}
+ })().finally(()=>{syncPromise=null});
+ return syncPromise;
+}
+async function action(kind){
+ if(busy||!client)return;
+ busy=true;cloudMessage=kind==='save'?t().saving:t().loading;translate();
+ let epoch=generation;
+ try{
+  const user=await current();epoch=generation;
+  if(!user){cloudMessage=t().out;return}
+  if(kind==='save'){
+   const payload=collect();
+   const {error}=await client.from('kissb_drafts').upsert({user_id:user.id,payload,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   if(epoch!==generation)return;
+   if(error)throw error;
+   persist();cloudMessage=t().saved;
+  }else{
+   const {data,error}=await client.from('kissb_drafts').select('payload').eq('user_id',user.id).maybeSingle();
+   if(epoch!==generation)return;
+   if(error)throw error;
+   if(!data){cloudMessage=t().empty;return}
+   if(!valid(data.payload))throw Error(t().invalid);
+   if(!confirm(t().confirm)){cloudMessage='';return}
+   restore(data.payload);dirty=new Set(ids);persist();cloudMessage=t().loaded;
+  }
+ }catch(error){if(epoch===generation)cloudMessage=t().failed+(error.message||String(error))}
+ finally{busy=false;translate()}
+}
+q('ggCloudSave').addEventListener('click',()=>action('save'));
+q('ggCloudLoad').addEventListener('click',()=>action('load'));
+q('ggLoadCompanyProfile').addEventListener('click',()=>loadProfile());
+q('form').addEventListener('input',e=>{if(ids.includes(e.target.id)){dirty.add(e.target.id);persist()}});
+q('form').addEventListener('change',e=>{if(ids.includes(e.target.id)){dirty.add(e.target.id);persist()}});
+q('language').addEventListener('change',()=>{translate();persist()});
+document.addEventListener('gaongreen:answers-restored',()=>{dirty=new Set(ids);persist()});
+document.addEventListener('gaongreen:local-cleared',()=>{if(account)try{localStorage.removeItem(cacheKey(account.id))}catch{storageFailed=true}translate()});
+translate();
+if(!window.supabase?.createClient){checking=false;cloudMessage=t().missing;translate();return}
+client=window.supabase.createClient('https://uyhmbecltrswiljbyass.supabase.co','sb_publishable_iNcId4rsFBAYbnIudemYVg_FSEFdPa-',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+// Do not call Supabase from inside its auth callback (the auth lock may be held).
+client.auth.onAuthStateChange((_event,session)=>{
+ selectAccount(session?.user||null);
+ window.setTimeout(()=>{if(account)loadProfile();else syncSession()},0);
+});
+syncSession();
+window.addEventListener('pageshow',()=>{if(client)syncSession()});
 })();
 </script></body></html>
