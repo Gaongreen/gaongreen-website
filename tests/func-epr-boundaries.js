@@ -1,0 +1,41 @@
+// EPR Packaging Scorecard boundary tests (offline demo build; pure page logic, no backend involved).
+// Rules read from the page code: weight>=0, quantity>=0 AND whole number, recycled 0..100, reduction 0..100, quantity change -100..1000.
+// Base row: 50 g x 1000 units = 50 kg. Expected values are hand computed.
+const S=require('./lib/serve.js'),T=require('./lib/t.js'),fs=require('fs');
+(async()=>{const s=await S.start('demo'),t=T.make();
+ const pg=await s.page();pg.on('dialog',d=>d.accept());await pg.goto(s.base+'GaonGreen_EPR_Cloud_Beta.html');await pg.waitForTimeout(600);
+ const row=(i,k)=>pg.locator('#rows tr').nth(i).locator('input').nth(k),g=id=>pg.locator('#'+id).innerText();
+ const setRow=async(w,q,r,i=0)=>{await row(i,1).fill(String(w));await row(i,2).fill(String(q));await row(i,3).fill(String(r));await pg.waitForTimeout(80)};
+ const setScn=async(red,chg)=>{await pg.fill('#reduction',String(red));await pg.fill('#newQuantity',String(chg));await pg.waitForTimeout(80)};
+ await setRow(50,1000,20);await setScn(10,0);const READY=await g('validation');
+ await setRow(50,1000,150);const INVALID=await g('validation');await setRow(50,1000,20);
+ await t.check('B0','Validation text differs between a valid and an invalid state (guards the boundary tests below)',async()=>({ok:READY!==INVALID&&READY.length>0&&INVALID.length>0,expected:'two distinct messages',actual:JSON.stringify({READY,INVALID})}));
+ const state=async()=>(await g('validation'))===INVALID?'invalid':(await g('validation'))===READY?'valid':'other:'+await g('validation');
+ const rowCase=async(id,name,w,q,r,exp,extra)=>t.check(id,name,async()=>{await setRow(w,q,r);const st=await state();const res=(await pg.locator('#rows tr').first().locator('.row-result').innerText()).trim();const ok=st===exp&&(!extra||await extra(res));return{ok,expected:exp,actual:`${st} rowResult=${res} total=${await g('totalKg')} recycledKg=${await g('recycledKg')}`}});
+ await rowCase('B1','recycled 0% is valid (recycled mass 0)',50,1000,0,'valid',async()=>(await g('recycledKg'))==='0');
+ await rowCase('B2','recycled exactly 100% is valid (recycled mass 50 kg)',50,1000,100,'valid',async()=>(await g('recycledKg'))==='50');
+ await rowCase('B3','recycled 100.01% is invalid, row shows em dash, row mass not counted',50,1000,100.01,'invalid',async(res)=>res==='—'&&(await g('totalKg'))==='0');
+ await rowCase('B4','recycled -0.01% is invalid',50,1000,-0.01,'invalid');
+ await rowCase('B5','quantity 0 is valid (mass 0)',50,0,20,'valid',async()=>(await g('totalKg'))==='0');
+ await rowCase('B6','quantity 1.5 (not a whole number) is invalid',50,1.5,20,'invalid');
+ await rowCase('B7','quantity -1 is invalid',50,-1,20,'invalid');
+ await rowCase('B8','weight 0 is valid',0,1000,20,'valid',async()=>(await g('totalKg'))==='0');
+ await rowCase('B9','weight -0.001 is invalid',-0.001,1000,20,'invalid');
+ await rowCase('B10','weight 0.001 g x 1 unit is valid; mass 0.000001 kg displays as 0 at 3 decimals',0.001,1,0,'valid',async()=>(await g('totalKg'))==='0');
+ await rowCase('B11','very large inputs (1e9 g x 1e9 units) stay finite and display a number, not an em dash',1e9,1e9,0,'valid',async(res)=>res!=='—'&&/\d/.test(await g('totalKg')));
+ await setRow(50,1000,20);
+ const scn=async(id,name,red,chg,exp,vals)=>t.check(id,name,async()=>{await setScn(red,chg);const st=await state();const got=[await g('scenarioKg'),await g('savingsKg'),await g('changePct')].join('|');return{ok:st===exp&&(!vals||got===vals),expected:exp+(vals?' '+vals:''),actual:st+' '+got}});
+ await scn('B12','reduction 100% is valid: scenario 0 kg, saving 50 kg, change -100%',100,0,'valid','0|50|-100%');
+ await scn('B13','reduction 100.01% is invalid: scenario shows em dash',100.01,0,'invalid','—|—|—');
+ await scn('B14','reduction -0.01% is invalid',-0.01,0,'invalid');
+ await scn('B15','quantity change -100% is valid: scenario 0 kg',10,-100,'valid','0|50|-100%');
+ await scn('B16','quantity change -100.01% is invalid',10,-100.01,'invalid');
+ await scn('B17','quantity change +1000% is valid: 50*0.9*11 = 495 kg, saving -445 kg, +890%',10,1000,'valid','495|-445|890%');
+ await scn('B18','quantity change +1000.01% is invalid',10,1000.01,'invalid');
+ await scn('B19','reduction 100% with quantity +1000% is valid and gives 0 kg',100,1000,'valid','0|50|-100%');
+ await setScn(10,0);await setRow(50,1000,20);await pg.click('#addRow');await setRow(10,100,200,1);
+ await t.check('B20','One invalid row does not hide the valid row: total stays 50 kg and the page flags invalid',async()=>({ok:(await g('totalKg'))==='50'&&await state()==='invalid',expected:'50 + invalid',actual:`${await g('totalKg')} ${await state()}`}));
+ await t.check('B21','No uncaught JavaScript error occurred during any boundary case',async()=>({ok:pg.errors.length===0,expected:0,actual:pg.errors.join('|').slice(0,160)}));
+ await pg.context().close();await s.close();
+ fs.writeFileSync(process.argv[2]||'func-epr-boundaries.json',JSON.stringify({run:new Date().toISOString(),build:'demo (page logic)',results:t.res},null,1));
+ process.exit(t.res.some(r=>r.status!=='PASS')?1:0)})();

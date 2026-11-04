@@ -55,3 +55,35 @@ Real Supabase behaviour, RLS/account isolation, real sign-in/refresh/sign-out, p
 ### Findings
 - Public Cloud Beta pages still load an unpinned SDK from CDNs with persisted sessions (unchanged, production decision pending). The demo removes this only for demo pages.
 - QR page: unsafe website/evidence URLs are dropped at render and hostile shared payloads render as inert text (verified).
+
+## Milestone 3 (incremental on cd09197)
+
+Legend: **STAND-IN** = offline in-browser Supabase stand-in; **FIXTURE** = test double for the SDK file; **LOCAL MOCK** = local HTTP mock of the REST API; **REAL** = real Supabase. **No test in this milestone ran against REAL Supabase.**
+
+### Implemented vs verified
+| Item | Implemented | Verified by | Result |
+|---|---|---|---|
+| Login / Register / Company Settings | yes | func-auth-settings (STAND-IN) | 17/17 |
+| K-ISSB evidence checklist, CSV/backup, report buttons | yes | func-kissb-reports (STAND-IN; `window.print` stubbed, no PDF produced) | 14/14 |
+| JSON/CSV export/import round trips (6 tools) | yes | func-roundtrips (STAND-IN) | 20/20 |
+| EPR recycled-% and other boundaries | yes | func-epr-boundaries (STAND-IN) | 22/22 |
+| Pinned SDK build pipeline | mechanics | pinned-build (FIXTURE) | 14/14 |
+| Real SDK vendored | NO | - | needs npm access |
+| RLS isolation suite | draft | rls-harness (LOCAL MOCK, tests suite logic only) | 7/7 |
+| RLS on real Supabase | NO | - | **not verified** |
+
+Full suite run12: 145 PASS, 0 FAIL (51 prior + 94 new). Evidence: `evidence/runs/20261104-run12-milestone3`.
+
+### Findings
+- **Fixed: CSV formula injection** in EPR, Supplier, Evidence Locker, K-RE100, K-ISSB exports (cells starting `= + - @ TAB CR` now prefixed with `'`; plain numerics exempt). Failed run kept: run10.
+- **Fixed:** K-RE100 CSV exported unrounded share/gap/projected values.
+- **Fixed (tooling):** build-pinned gave dynamic-import pages no SDK tag (found by P3). Failed run kept: run11.
+- Test defects corrected and preserved: run06 (auth expectations), run08 (K-R5).
+- Uncertain: `company_profiles` owner column (`owner_id` vs `user_id`).
+- Pending decision PA-001: session persistence policy.
+
+### NOT verified (do not claim)
+Real Supabase auth, RLS, storage policies, password reset; the real SDK pin; K-ISSB PDF file output; Baselines B and C, G1-D, the contracts and the failed-unlock vault (not located, not touched). Public Cloud Beta pages still use an unpinned CDN SDK.
+
+### Supporting docs
+`docs/PINNED_SDK.md`, `docs/RLS_STAGING_RUNBOOK.md`, `supabase/staging_rls_inspection.sql`.

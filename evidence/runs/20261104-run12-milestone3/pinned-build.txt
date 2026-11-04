@@ -1,0 +1,14 @@
+PASS P1 Build succeeds for all 12 pages from a manifest-verified fixture
+PASS P2 No page references external script/import code, no CDN host, no floating @2 SDK
+PASS P3 Every page that uses the SDK loads it with an SRI attribute equal to the sha384 of the vendored file
+PASS P4 CSP: script-src has no unsafe-inline/unsafe-eval, only self + sha256 hashes; connect-src is self + the one Supabase host
+PASS P5 All 12 pages load under their own hash-based CSP: 0 CSP violations, 0 JS errors, 0 external requests
+PASS P5b Every page whose code uses window.supabase (including the dynamic-import page) has the library loaded: createClient is a function
+PASS P6 Scripts really execute under the CSP: K-RE100 sum 500 and EPR total 50 kg computed
+PASS P7 CSP is actually enforced: an injected inline <script> and an inline onerror handler do NOT run and are reported
+PASS P8 connect-src blocks a fetch to a non-Supabase host
+PASS P9 Tampered vendor file (1 appended byte) makes the build REFUSE (non-zero exit, no output dir)
+PASS P10 Missing vendor SDK file makes the build REFUSE with instructions
+PASS P11 vendor-copy refuses a range pin (^2.118.0), an installed/pinned version mismatch, and a non-sha512 lockfile entry
+PASS P12 vendor-copy succeeds on a consistent tree and records version, sha256, sha384 and the lockfile tarball integrity
+PASS P13 Honesty check: with no real vendor/ in the repo, the default build REFUSES (no pseudo-release can be produced by accident)
