@@ -1,0 +1,1 @@
+self.GAONGREEN_DEMO_FIXTURES={"company_profiles":[{"owner_id":"00000000-0000-4000-8000-000000000001","company_name":"Example Exporter Co. (fictional)","country":"KR","industry":"Packaging (fictional)","currency":"KRW","expenses":[]}]};
