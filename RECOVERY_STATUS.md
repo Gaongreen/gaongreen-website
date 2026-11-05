@@ -87,3 +87,15 @@ Real Supabase auth, RLS, storage policies, password reset; the real SDK pin; K-I
 
 ### Supporting docs
 `docs/PINNED_SDK.md`, `docs/RLS_STAGING_RUNBOOK.md`, `supabase/staging_rls_inspection.sql`.
+
+## Milestone 3 follow-up: RLS harness diagnostics (2026-11-05)
+
+**Root cause of H1-H6 `exit 1 []`:** `tests/rls-harness.js` wrote each suite run's result file under a hard-coded sandbox path (`/tmp/claude-0/`). Where that directory does not exist or is not writable, `rls-isolation.mjs` ran every check against the local loopback mock, then crashed on its final `writeFileSync` (uncaught ENOENT, exit 1). The harness swallowed its own read error (`catch{}`), never looked at stderr, `error` or `signal`, so it saw "exit 1, no failed ids". H7 was unaffected because the guards exit 2 before any file is written. The harness used the local mock (127.0.0.1), not a staging endpoint; no real network target was involved. Reproduced exactly: `evidence/runs/20261105-run13-rls-harness-diagnostics-initial` (kept as a historical failure).
+
+**Fix (assertions and refusal conditions unchanged):** result files go to `os.tmpdir()`; `tests/lib/proc.js` reports status, signal, spawn error, timeout and redacted stdout/stderr; a run counts only if the suite really executed and its result file was readable; the suite exits **3** (`RESULT-FILE-ERROR`) when it cannot write results, so that is never confused with an isolation failure (exit 1); children get a minimal environment; the harness refuses a non-loopback mock URL. Guards moved to `tests/rls-guards.js` (H7, H7b) with diagnostics self-tests D1-D5.
+
+**Separation:** offline = `tests/rls-harness.js`, `tests/rls-guards.js` (in `run-all.sh`, loopback only). Real staging = `tests/rls/rls-isolation.mjs`, manual only (`npm run test:rls-staging`), refuses without `ALLOW_STAGING=yes`.
+
+**Results (offline, local mock only):** run14: 13 PASS / 0 FAIL; full suite run15: 151 PASS / 0 FAIL. **Real Supabase RLS remains NOT verified.**
+
+**Remaining blockers:** no authorized staging project or fictional accounts; owner column of `company_profiles` and live request shapes unconfirmed; real SDK not vendored (no npm access here).

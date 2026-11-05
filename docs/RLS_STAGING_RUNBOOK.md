@@ -20,3 +20,9 @@ Exit 0 = all checks passed, 1 = a check failed (isolation gap), 2 = refused by a
 - Owner column per table (`company_profiles.owner_id` vs `user_id` – the K-ISSB page falls back to `user_id`).
 - Request shapes are unconfirmed against the live API; a failure may be a suite defect, not a policy defect. Investigate before concluding either way.
 - Also run `supabase/staging_rls_inspection.sql` (read-only) and compare policies with the results.
+
+## Exit codes
+0 all checks passed - 1 an isolation check FAILED - 2 refused by a guard - 3 result file could not be written (the run is unrecorded; fix OUT and rerun, this is not an isolation result).
+
+## Offline vs staging
+`npm run test:rls-offline` (loopback mock + guards) never contacts a real host. `npm run test:rls-staging` is the only command that can, and only with ALLOW_STAGING=yes and a non-production https URL.

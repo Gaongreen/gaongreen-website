@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-05T06:33:14.237Z",
+ "build": "RLS suite vs LOCAL MOCK ONLY - not a real Supabase project",
+ "results": [
+  {
+   "id": "H1",
+   "name": "Correctly isolated mock: every check passes (exit 0), with >= 60 checks executed",
+   "status": "FAIL",
+   "expected": "0 failed, >=60 checks",
+   "actual": "exit 1 checks=0 failed=[]"
+  },
+  {
+   "id": "H2",
+   "name": "Mock where SELECT ignores ownership: suite exits 1 and flags the read checks (T3/T4 or T1)",
+   "status": "FAIL",
+   "expected": "exit 1 with read failures",
+   "actual": "exit 1 []"
+  },
+  {
+   "id": "H3",
+   "name": "Mock where UPDATE/DELETE ignore ownership: suite exits 1 and flags T5 and T6",
+   "status": "FAIL",
+   "expected": "T5+T6 failed",
+   "actual": "exit 1 []"
+  },
+  {
+   "id": "H4",
+   "name": "Mock where INSERT accepts foreign owner: suite exits 1 and flags T7/T8",
+   "status": "FAIL",
+   "expected": "T7/T8 failed",
+   "actual": "exit 1 []"
+  },
+  {
+   "id": "H5",
+   "name": "Mock where storage ignores ownership: suite exits 1 and flags storage T1, T3, T4 and T5",
+   "status": "FAIL",
+   "expected": "storage T1,T3,T4,T5 failed",
+   "actual": "exit 1 []"
+  },
+  {
+   "id": "H6",
+   "name": "Mock that does not verify JWT signatures: suite exits 1 and flags auth.T1",
+   "status": "FAIL",
+   "expected": "auth.T1 failed",
+   "actual": "exit 1 []"
+  },
+  {
+   "id": "H7",
+   "name": "Guards: suite REFUSES (exit 2) for 8 unsafe configurations (no flag, production host x2, secret key, service_role JWT, real email, same account, plain http)",
+   "status": "PASS",
+   "expected": "8/8 refused",
+   "actual": "[]"
+  }
+ ]
+}

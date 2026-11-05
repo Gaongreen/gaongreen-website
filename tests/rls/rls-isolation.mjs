@@ -84,5 +84,8 @@ await call('DELETE',`/storage/v1/object/${BUCKET}`,{tok:A.tok,body:{prefixes:[pa
  const r=await call('GET',rest('company_profiles')+'?select=*',{tok:forged});rec('auth.T1','a JWT with a tampered subject (A\'s signature, B\'s id) is rejected',r.status===401||r.status===403||(r.json&&r.json.code==='PGRST301')||/jwt|signature/i.test(r.text),`HTTP ${r.status} ${r.text.slice(0,100)}`)}
 const fails=results.filter(r=>r.status==='FAIL').length;
 const report={ranAt:new Date().toISOString(),target:base.host,note:'DRAFT suite; checks only what is listed; not a proof of security',total:results.length,failed:fails,results};
-if(env.OUT)fs.writeFileSync(env.OUT,JSON.stringify(report,null,1));
-console.log(`\n${results.length-fails}/${results.length} passed against ${base.host}`);process.exit(fails?1:0);
+let outErr=null;if(env.OUT){try{fs.writeFileSync(env.OUT,JSON.stringify(report,null,1))}catch(e){outErr=e}}
+console.log(`\n${results.length-fails}/${results.length} passed against ${base.host}`);
+// exit codes: 0 all passed, 1 a check failed (isolation gap), 2 refused by a guard, 3 results could not be written (NOT an isolation result)
+if(outErr){console.error('RESULT-FILE-ERROR: could not write OUT ('+(outErr.code||outErr.name)+'); check outcome was '+(fails?'FAILED':'PASSED')+' but is unrecorded');process.exit(3)}
+process.exit(fails?1:0);
