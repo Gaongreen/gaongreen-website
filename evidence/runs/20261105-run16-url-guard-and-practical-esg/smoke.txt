@@ -1,0 +1,51 @@
+PASS REGRESSION isAllowedUrl("http://127.0.0.1:35629/x.html") === true
+PASS REGRESSION isAllowedUrl("http://127.0.0.1:35629") === true
+PASS REGRESSION isAllowedUrl("data:text/plain,hi") === true
+PASS REGRESSION isAllowedUrl("blob:null/abc") === true
+PASS REGRESSION isAllowedUrl("about:blank") === true
+PASS REGRESSION isAllowedUrl("http://127.0.0.1.evil.example/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1.evil.example:35629/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1@evil.example/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1:35629@evil.example/") === false
+PASS REGRESSION isAllowedUrl("http://evil.example/http://127.0.0.1/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1:1/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1:35630/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.2/") === false
+PASS REGRESSION isAllowedUrl("http://localhost/") === false
+PASS REGRESSION isAllowedUrl("https://127.0.0.1:35629/") === false
+PASS REGRESSION isAllowedUrl("ftp://127.0.0.1/") === false
+PASS REGRESSION isAllowedUrl("http://127.0.0.1.:35629/") === true
+PASS REGRESSION isAllowedUrl("not a url") === false
+PASS REGRESSION isAllowedUrl("") === false
+PASS REGRESSION browser: deceptive URLs reach the abort handler (not passed through as local)
+ok   GaonGreen _ K-ISSB Wizard.html                       btn=7 inp=14 chars=1275 err=0/0 ext-blocked=0
+FAIL GaonGreen _ Practical ESG for SMEs.html              btn=3 inp=0 chars=2876 err=1/0 ext-blocked=0
+ok   GaonGreen_Company_Settings.html.html                 btn=5 inp=6 chars=955 err=0/0 ext-blocked=0
+ok   GaonGreen_Company_Settings_Cloud_Beta.html           btn=7 inp=6 chars=1183 err=0/0 ext-blocked=0
+ok   GaonGreen_EPR_Cloud_Beta.html                        btn=13 inp=19 chars=3594 err=0/0 ext-blocked=0
+ok   GaonGreen_EPR_Packaging_Scorecard (1).html           btn=10 inp=19 chars=3279 err=0/0 ext-blocked=0
+ok   GaonGreen_EPR_Packaging_Scorecard.html               btn=11 inp=19 chars=3332 err=0/0 ext-blocked=0
+ok   GaonGreen_EPR_Packaging_Scorecard.html (2).html      btn=10 inp=19 chars=3298 err=0/0 ext-blocked=0
+ok   GaonGreen_EPR_Packaging_Scorecard.html (3).html      btn=11 inp=19 chars=3312 err=0/0 ext-blocked=0
+ok   GaonGreen_ESG_Dashboard.html.html                    btn=1 inp=1 chars=1635 err=0/0 ext-blocked=0
+ok   GaonGreen_ESG_Dashboard_Cloud_Beta.html              btn=1 inp=1 chars=1845 err=0/0 ext-blocked=0
+ok   GaonGreen_Evidence_Locker.html                       btn=3 inp=11 chars=1906 err=0/0 ext-blocked=0
+ok   GaonGreen_Evidence_Locker_Cloud_Beta.html            btn=5 inp=18 chars=2740 err=0/0 ext-blocked=0
+ok   GaonGreen_K-RE100_Cloud_Beta.html                    btn=11 inp=29 chars=3412 err=0/0 ext-blocked=0
+ok   GaonGreen_K-RE100_Helper.html                        btn=9 inp=29 chars=3152 err=0/0 ext-blocked=0
+ok   GaonGreen_KISSB_Cloud_Beta.html                      btn=30 inp=50 chars=4810 err=0/0 ext-blocked=0
+ok   GaonGreen_KISSB_Cloud_Beta.html.html                 btn=30 inp=50 chars=4723 err=0/0 ext-blocked=0
+ok   GaonGreen_Login.html                                 btn=9 inp=4 chars=260 err=0/0 ext-blocked=0
+ok   GaonGreen_Login.html.html                            btn=9 inp=4 chars=279 err=0/0 ext-blocked=0
+ok   GaonGreen_QR_ESG_Card.html                           btn=9 inp=14 chars=1205 err=0/0 ext-blocked=0
+ok   GaonGreen_QR_ESG_Card_Cloud_Beta.html                btn=11 inp=14 chars=1489 err=0/0 ext-blocked=0
+ok   GaonGreen_Register.html                              btn=8 inp=5 chars=277 err=0/0 ext-blocked=0
+ok   GaonGreen_Supplier_ESG_Scan.html                     btn=11 inp=24 chars=4492 err=0/0 ext-blocked=0
+ok   GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html          btn=13 inp=24 chars=4892 err=0/0 ext-blocked=0
+ok   K-ISSB Reporting Wizard _ GaonGreen.html             btn=27 inp=50 chars=4296 err=0/0 ext-blocked=0
+ok   K-ISSB Reporting Wizard _ GaonGreen.html.html        btn=27 inp=50 chars=4296 err=0/0 ext-blocked=0
+ok   index (1).html                                       btn=9 inp=14 chars=3996 err=0/0 ext-blocked=0
+ok   index (14).html                                      btn=3 inp=0 chars=3451 err=0/0 ext-blocked=0
+ok   index (16).html                                      btn=3 inp=0 chars=3486 err=0/0 ext-blocked=0
+ok   index.html                                           btn=3 inp=0 chars=3451 err=0/0 ext-blocked=0
+ok   index.html.html                                      btn=3 inp=0 chars=3486 err=0/0 ext-blocked=0

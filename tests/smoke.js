@@ -12,10 +12,28 @@ const c={auth:{getSession:async()=>({data:{session:null},error:null}),getUser:as
 const umd=`window.__STUB_SUPABASE=true;${chain}window.supabase={createClient:()=>c};`;
 const esm=`${chain}export const createClient=()=>c;export default {createClient};`;
 const qr=`window.QRCode=function(el,o){el.innerHTML='<canvas data-stub-qr></canvas>';};window.QRCode.CorrectLevel={L:1,M:0,Q:3,H:2};`;
+// Strict allow-list for requests that may reach the network stack unmodified: URL-parsed, exact host 127.0.0.1 on the test server's own port
+// (no userinfo), plus data:/blob:/about:. Everything else is intercepted: SDK/QR stubbed, the rest aborted.
+const isAllowedUrl=(raw,port)=>{let u;try{u=new URL(String(raw))}catch{return false}
+ if(u.protocol==='data:'||u.protocol==='blob:'||u.protocol==='about:')return true;
+ return u.protocol==='http:'&&u.hostname==='127.0.0.1'&&u.port===String(port)&&u.username===''&&u.password==='';};
 (async()=>{await new Promise(r=>srv.listen(0,'127.0.0.1',r));const port=srv.address().port;
+ // Regression: deceptive URLs must NOT count as local (the old prefix check let the 127.0.0.1.evil.example, 127.0.0.1@evil.example and 127.0.0.1:1-style URLs through) and must be intercepted in a real browser context.
+ const regression=[];const reg=(n,ok,d)=>{regression.push({name:n,status:ok?'PASS':'FAIL',detail:d});console.log((ok?'PASS ':'FAIL ')+'REGRESSION '+n+(ok?'':' '+d))};
+ const cases=[[`http://127.0.0.1:${port}/x.html`,true],[`http://127.0.0.1:${port}`,true],['data:text/plain,hi',true],['blob:null/abc',true],['about:blank',true],
+  ['http://127.0.0.1.evil.example/',false],['http://127.0.0.1.evil.example:'+port+'/',false],['http://127.0.0.1@evil.example/',false],[`http://127.0.0.1:${port}@evil.example/`,false],['http://evil.example/http://127.0.0.1/',false],
+  ['http://127.0.0.1:1/',false],[`http://127.0.0.1:${port+1}/`,false],['http://127.0.0.2/',false],['http://localhost/',false],[`https://127.0.0.1:${port}/`,false],['ftp://127.0.0.1/',false],['http://127.0.0.1.:'+port+'/',true],['not a url',false],['',false]];
+ for(const [u,exp] of cases)reg('isAllowedUrl('+JSON.stringify(u)+') === '+exp,isAllowedUrl(u,port)===exp,'got '+isAllowedUrl(u,port));
+ {const ctx=await (await chromium.launch()).newContext();const hit=[];const pg=await ctx.newPage();
+  await ctx.route(u=>!isAllowedUrl(u,port),route=>{hit.push(route.request().url());route.abort()});await pg.goto('about:blank');
+  const bad=['http://127.0.0.1.evil.example/a','http://127.0.0.1:1/c']; // credentialed URLs (127.0.0.1@evil) are blocked by Chromium itself for subresources, so they are covered by the unit cases above
+  for(const u of bad)await pg.evaluate(u=>new Promise(r=>{const i=new Image();i.onload=i.onerror=r;i.src=u;setTimeout(r,1500)}),u); // Image, not fetch(): fetch() rejects credentialed URLs before they reach the network layer
+  reg('browser: deceptive URLs reach the abort handler (not passed through as local)',bad.every(u=>hit.includes(u)),JSON.stringify(hit));
+  await ctx.browser().close()}
+ if(regression.some(r=>r.status!=='PASS'))process.exitCode=1;
  const browser=await chromium.launch();const pages=fs.readdirSync(root).filter(f=>f.endsWith('.html')).sort();const res=[];
  for(const f of pages){const ctx=await browser.newContext();const pg=await ctx.newPage();const rec={page:f,pageErrors:[],consoleErrors:[],blockedExternal:[],stubbed:[],title:'',finalUrl:'',buttons:0,inputs:0};
-  await ctx.route(u=>!/^http:\/\/127\.0\.0\.1/.test(u.toString())&&!/^(data|blob|about):/.test(u.toString()),route=>{const u=route.request().url();
+  await ctx.route(u=>!isAllowedUrl(u,port),route=>{const u=route.request().url();
    if(/@supabase\/supabase-js[^ ]*\/\+esm/.test(u)){rec.stubbed.push('supabase(esm)');return route.fulfill({contentType:'application/javascript',body:esm})}
    if(/esm\.sh\/@supabase/.test(u)){rec.stubbed.push('supabase(esm.sh)');return route.fulfill({contentType:'application/javascript',body:esm})}
    if(/supabase\.min\.js/.test(u)){rec.stubbed.push('supabase(umd)');return route.fulfill({contentType:'application/javascript',body:umd})}
@@ -26,5 +44,5 @@ const qr=`window.QRCode=function(el,o){el.innerHTML='<canvas data-stub-qr></canv
    rec.title=await pg.title();rec.finalUrl=decodeURIComponent(pg.url().replace(`http://127.0.0.1:${port}/`,''));rec.buttons=await pg.locator('button').count();rec.inputs=await pg.locator('input,select,textarea').count();
    rec.bodyChars=(await pg.locator('body').innerText()).length;}catch(e){rec.loadError=String(e.message).slice(0,120)}
   rec.stubbed=[...new Set(rec.stubbed)];res.push(rec);await ctx.close()}
- await browser.close();srv.close();fs.writeFileSync(out,JSON.stringify({run:new Date().toISOString(),commit:process.env.GIT_SHA||'',note:'stubbed Supabase/QR; external traffic blocked; page-level only',results:res},null,1));
+ await browser.close();srv.close();fs.writeFileSync(out,JSON.stringify({run:new Date().toISOString(),commit:process.env.GIT_SHA||'',note:'stubbed Supabase/QR; external traffic blocked; page-level only',results:res,regression},null,1));
  for(const r of res)console.log((r.loadError||r.pageErrors.length?'FAIL ':'ok   ')+r.page.padEnd(52)+` btn=${r.buttons} inp=${r.inputs} chars=${r.bodyChars??'-'} err=${r.pageErrors.length}/${r.consoleErrors.length} ext-blocked=${r.blockedExternal.length}`+(r.finalUrl&&r.finalUrl!==r.page?' -> '+r.finalUrl:''));})();
