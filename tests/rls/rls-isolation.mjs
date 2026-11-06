@@ -3,7 +3,7 @@
 // confirmed on the first staging run. A PASS here means "these specific checks passed on that project at that time" - not "RLS is secure".
 //
 // Required env:  STAGING_URL  STAGING_KEY (publishable key of STAGING)  A_EMAIL A_PASSWORD B_EMAIL B_PASSWORD  ALLOW_STAGING=yes
-// Optional env:  PRODUCTION_HOSTS (comma list, extra hosts to refuse)  OUT (result json path)  BUCKET (default evidence-locker)
+// Optional env:  CHECK_MIME=yes (after the allow-list is applied)  CHECK_LIMITS=yes  PRODUCTION_HOSTS (comma list, extra hosts to refuse)  OUT (result json path)  BUCKET (default evidence-locker)
 // Exit codes: 0 all checks passed, 1 at least one check failed, 2 refused to run (guard) or setup failed.
 import fs from 'node:fs';
 const env=process.env, refuse=m=>{console.error('REFUSED: '+m);process.exit(2)};
@@ -79,6 +79,21 @@ if(upA.status<300){
  const aGetB=await dlo(A.tok,pathB);rec('storage.T7','A cannot download B\'s object (symmetry)',aGetB.status!==200&&aGetB.text!==payload,`HTTP ${aGetB.status}`);
 }
 await call('DELETE',`/storage/v1/object/${BUCKET}`,{tok:A.tok,body:{prefixes:[pathA]}});await call('DELETE',`/storage/v1/object/${BUCKET}`,{tok:B.tok,body:{prefixes:[pathB]}});
+// ---- Optional server-side upload rules (off by default). CHECK_MIME=yes only AFTER the proposed allow-list (supabase/proposed/) has been applied to staging; CHECK_LIMITS=yes any time.
+const upT=(tok,p,type,raw)=>call('POST',`/storage/v1/object/${BUCKET}/${p}`,{tok,raw,headers:{'Content-Type':type,'x-upsert':'false'}});
+if(env.CHECK_MIME==='yes'){
+ const OK=['application/pdf','image/png','image/jpeg','image/webp','text/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'];
+ const BAD=['text/html','image/svg+xml','application/javascript','application/x-msdownload','application/octet-stream'];const made=[];
+ const okBad=[];for(const ty of OK){const pth=`${B.uid}/${crypto.randomUUID()}/${MARK}-m.bin`;const r=await upT(B.tok,pth,ty,'x');if(r.status<300)made.push(pth);else okBad.push(ty+':'+r.status)}
+ rec('storage.M1','every type the app uploads ('+OK.length+') is ACCEPTED by the server allow-list',!okBad.length,okBad.join(' '));
+ const badBad=[];for(const ty of BAD){const pth=`${B.uid}/${crypto.randomUUID()}/${MARK}-m.bin`;const r=await upT(B.tok,pth,ty,'x');if(r.status<300){made.push(pth);badBad.push(ty+':accepted')}}
+ rec('storage.M2','disallowed types ('+BAD.join(', ')+') are REJECTED',!badBad.length,badBad.join(' '));
+ if(made.length)await call('DELETE',`/storage/v1/object/${BUCKET}`,{tok:B.tok,body:{prefixes:made}});
+}
+if(env.CHECK_LIMITS==='yes'){
+ const pth=`${B.uid}/${crypto.randomUUID()}/${MARK}-big.txt`;const r=await upT(B.tok,pth,'text/plain','x'.repeat(10*1024*1024+1));
+ rec('storage.L1','an object of 10 MB + 1 byte is REJECTED server-side',r.status>=400,`HTTP ${r.status}`);if(r.status<300)await call('DELETE',`/storage/v1/object/${BUCKET}`,{tok:B.tok,body:{prefixes:[pth]}});
+}
 // ---- Token tampering: swap the subject of A's JWT to B's id but keep A's signature
 {const [h,p,s]=A.tok.split('.');const pl=JSON.parse(Buffer.from(p,'base64url').toString());pl.sub=B.uid;const forged=[h,Buffer.from(JSON.stringify(pl)).toString('base64url'),s].join('.');
  const r=await call('GET',rest('company_profiles')+'?select=*',{tok:forged});rec('auth.T1','a JWT with a tampered subject (A\'s signature, B\'s id) is rejected',r.status===401||r.status===403||(r.json&&r.json.code==='PGRST301')||/jwt|signature/i.test(r.text),`HTTP ${r.status} ${r.text.slice(0,100)}`)}
