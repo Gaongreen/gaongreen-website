@@ -19,12 +19,17 @@ const tmp=process.env.TMPDIR_T||'/tmp/claude-0';
  // --- QR: payload decoded from the rendered pixels must carry the entered fictional company and website.
  pg=await open('GaonGreen_QR_ESG_Card_Cloud_Beta.html');
  for(const [id,v] of Object.entries({company:'Example Exporter Co.',website:'https://example.com/esg',year:'2026',energy:'40',emissions:'120',recycling:'65',employees:'50',initiatives:'Fictional initiative'}))await pg.fill('#'+id,v);
- await pg.click('#generate');await pg.waitForTimeout(600);
- await pg.locator('#qr').screenshot({path:tmp+'/qr-test.png'});
+ await pg.click('#generate');
+ // wait for the QR to be fully rendered (library swaps canvas->img asynchronously); a fixed sleep made this check flaky under load
+ await pg.waitForFunction(()=>{const n=document.getElementById('qr');const i=n&&n.querySelector('img');const c=n&&n.querySelector('canvas');return !!((i&&i.complete&&i.naturalWidth>0&&i.getAttribute('src'))||(c&&c.width>0&&!i))},null,{timeout:10000});await pg.waitForTimeout(300);
+ // Take the QR pixels the page itself generated (same bytes the Download button saves) instead of a screenshot: element screenshots depend on layout/subpixel position and made the decode flaky on cold starts.
+ const qrData=await pg.evaluate(()=>{const n=document.getElementById('qr');const i=n.querySelector('img');const c=n.querySelector('canvas');if(i&&i.getAttribute('src')&&i.getAttribute('src').startsWith('data:image/png'))return i.getAttribute('src');if(c)return c.toDataURL('image/png');return ''});
+ if(!qrData.startsWith('data:image/png;base64,'))await pg.locator('#qr').screenshot({path:tmp+'/qr-test.png'});else fs.writeFileSync(tmp+'/qr-test.png',Buffer.from(qrData.split(',')[1],'base64'));
  // Decoder runs with python3 -I (isolated: ignores user site-packages). PYTHON_BIN may point at a venv python that has opencv. Failures are REPORTED, never swallowed.
  const dec=spawnSync(process.env.PYTHON_BIN||'python3',['-I','tools/decode_qr.py',tmp+'/qr-test.png'],{encoding:'utf8'});const decoded=(dec.stdout||'').trim();
  const decDiag=`decoder exit=${dec.status} spawnError=${dec.error?dec.error.code:'none'} stderr="${(dec.stderr||'').trim().slice(0,160)}"`;
  await t.check('F-Q0','QR decoder (python3 -I + OpenCV) is available and ran',async()=>({ok:!dec.error&&dec.status!==3&&dec.status!==2,expected:'decoder runs (exit 0 or 1)',actual:decDiag}));
+ await t.check('F-Q-RES','QR image the page generates is high resolution (>=300 px; 150 px was only ~2 px per module for the ~420-char link and decoded unreliably)',async()=>{const b=fs.readFileSync(tmp+'/qr-test.png');const w=b.readUInt32BE(16),h=b.readUInt32BE(20);return{ok:w>=300&&h>=300,expected:'>=300x300',actual:w+'x'+h}});
  await t.check('F-Q1','QR image decodes to a GaonGreen profile link',async()=>({ok:/#profile=/.test(decoded),expected:'link with #profile=',actual:decoded.slice(0,60)||'NO DECODED OUTPUT: '+decDiag}));
  let payload={},parseErr='';try{const b=decoded.split('#profile=')[1];payload=JSON.parse(Buffer.from(decodeURIComponent(b).replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8'))}catch(e){parseErr=String(e.message).slice(0,80)}
  await t.check('F-Q2','Decoded QR payload carries company, website and numbers entered',async()=>({ok:payload.data&&payload.data.company==='Example Exporter Co.'&&payload.data.website==='https://example.com/esg'&&String(payload.data.energy)==='40',expected:'company/website/energy=40',actual:payload.data?JSON.stringify(payload.data).slice(0,120):`NO PAYLOAD (decoded ${decoded.length} chars; parse: ${parseErr||'n/a'}; ${decDiag})`}));
