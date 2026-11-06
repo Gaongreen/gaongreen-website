@@ -1,0 +1,146 @@
+{
+ "run": "2026-11-06T19:07:35.113Z",
+ "build": "demo (offline stand-in; export/import logic is browser-local)",
+ "results": [
+  {
+   "id": "R-K1",
+   "name": "K-RE100 JSON export: app, version, company, PPA 300, REC 200, evidence reference",
+   "status": "PASS",
+   "expected": "fields present",
+   "actual": "{ \"app\": \"GaonGreen K-RE100 Helper\", \"version\": 1, \"exportedAt\": \"2026-11-06T19:07:22.367Z\", "
+  },
+  {
+   "id": "R-K2",
+   "name": "K-RE100 JSON clear then import restores values and recalculates (sum 500, projected 75%)",
+   "status": "PASS",
+   "expected": "restored + sum 500 + 75%",
+   "actual": "|1200|500|75%"
+  },
+  {
+   "id": "R-K3",
+   "name": "K-RE100 CSV: BOM, Field/Value header, company, 500 MWh entered, gap 700, projected share 75",
+   "status": "PASS",
+   "expected": "values",
+   "actual": "{\"Field\":\"Value\",\"Company\":\"RT Co\",\"Reporting year\":\"2026\",\"Industry\":\"\",\"Electricity consumption (MWh)\":\"1200\",\"Target\":\"100\",\"Target year\":\"2030\",\"Renewable M"
+  },
+  {
+   "id": "R-K4",
+   "name": "K-RE100: malformed import leaves current data intact and raises no JS error",
+   "status": "PASS",
+   "expected": "unchanged",
+   "actual": "1200 err=0"
+  },
+  {
+   "id": "R-K5",
+   "name": "K-RE100 CSV shows share 41.666666666666664 unrounded (presentation observation, recorded as PASS only if rounded to <=2 dp)",
+   "status": "PASS",
+   "expected": "<=2 decimals",
+   "actual": "41.67"
+  },
+  {
+   "id": "R-E1",
+   "name": "EPR JSON export carries company, row weight/quantity/recycled and scenario reduction",
+   "status": "PASS",
+   "expected": "fields",
+   "actual": "{ \"version\": 1, \"company\": \"RT Co\", \"year\": 2026, \"activity\": \"unknown\", \"rows\":"
+  },
+  {
+   "id": "R-E2",
+   "name": "EPR JSON clear then import restores the row and total 50 kg",
+   "status": "PASS",
+   "expected": "0 then 50",
+   "actual": "0 -> 50"
+  },
+  {
+   "id": "R-E3",
+   "name": "EPR CSV: BOM, Total kg 50, Scenario kg 45, component row with annual mass 50",
+   "status": "PASS",
+   "expected": "rows present",
+   "actual": "﻿\"Company\",\"RT Co\"\r\n\"Year\",\"2026\"\r\n\"Activity\",\"unknown\"\r\n\"Total kg\",\"50\"\r\n\"Scenario kg\",\"45\"\r\n\r\n\"Component\",\"Material\",\""
+  },
+  {
+   "id": "R-E4",
+   "name": "EPR: structurally wrong import does not break the page (total stays 50) and raises no JS error",
+   "status": "PASS",
+   "expected": "50, no error",
+   "actual": "50 err="
+  },
+  {
+   "id": "R-S1",
+   "name": "Supplier JSON export: typed, supplier name, e1=yes, e2=no",
+   "status": "PASS",
+   "expected": "fields",
+   "actual": " { \"type\": \"GaonGreenSupplierESGScan\", \"version\": 1, \"data\": { \"profil"
+  },
+  {
+   "id": "R-S2",
+   "name": "Supplier JSON new then import restores answers: score 50% (1 yes, 1 no => 2/4), coverage 2/15",
+   "status": "PASS",
+   "expected": "— then 50% 2/15",
+   "actual": "— -> 50% 2/15"
+  },
+  {
+   "id": "R-S3",
+   "name": "Supplier CSV: header rows, e1 \"Yes\", e2 \"No\", supplier name",
+   "status": "PASS",
+   "expected": "rows",
+   "actual": "﻿\"Supplier\",\"RT Supplier\",\"Country\",\"\",\"Year\",\"2026\"\r\n\"Section\",\"Question ID\",\"Question\",\"Response\","
+  },
+  {
+   "id": "R-S4",
+   "name": "Supplier: wrong-type import is refused (score stays 50%)",
+   "status": "PASS",
+   "expected": "50%",
+   "actual": "50%"
+  },
+  {
+   "id": "R-Q1",
+   "name": "QR backup, clear, restore round trip returns company, year and energy",
+   "status": "PASS",
+   "expected": "RT Co/40",
+   "actual": "|RT Co|40"
+  },
+  {
+   "id": "R-L1",
+   "name": "Evidence index JSON: metadata only, one document with title, filename and size 5",
+   "status": "PASS",
+   "expected": "1 doc",
+   "actual": "{ \"product\": \"GaonGreen Evidence Locker\", \"version\": 1, \"exported\": \"2026-11-06T19:07:31.577Z\""
+  },
+  {
+   "id": "R-L2",
+   "name": "Evidence index CSV: header + 1 row with company, title, filename, size",
+   "status": "PASS",
+   "expected": "2 rows",
+   "actual": "﻿company,title,category,year,reviewStatus,notes,filename,size,created\r\n\"RT Co\",\"Doc A\",\"corporate\",\"2026\",\"pending\",\"\",\""
+  },
+  {
+   "id": "R-X1",
+   "name": "CSV injection: K-RE100 CSV does not emit a user-typed \"=...\" value as a formula-leading cell",
+   "status": "PASS",
+   "expected": "neutralised",
+   "actual": "[\"'=HYPERLINK(\\\"http://example.invalid\\\",\\\"x\\\")\"]"
+  },
+  {
+   "id": "R-X2",
+   "name": "CSV injection: EPR CSV neutralises user-typed \"=...\" in company and component name",
+   "status": "PASS",
+   "expected": "neutralised",
+   "actual": "[\"'=HYPERLINK(\\\"http://example.invalid\\\",\\\"x\\\")\",\"'=HYPERLINK(\\\"http://example.invalid\\\",\\\"x\\\")\"]"
+  },
+  {
+   "id": "R-X3",
+   "name": "CSV injection: Supplier CSV neutralises a user-typed \"=...\" supplier name",
+   "status": "PASS",
+   "expected": "neutralised",
+   "actual": "[\"'=HYPERLINK(\\\"http://example.invalid\\\",\\\"x\\\")\"]"
+  },
+  {
+   "id": "R-X4",
+   "name": "CSV injection: Evidence index CSV neutralises a user-typed \"=...\" document title",
+   "status": "PASS",
+   "expected": "neutralised",
+   "actual": "[\"'=HYPERLINK(\\\"http://example.invalid\\\",\\\"x\\\")\"]"
+  }
+ ]
+}

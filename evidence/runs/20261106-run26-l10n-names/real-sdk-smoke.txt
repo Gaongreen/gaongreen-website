@@ -1,0 +1,7 @@
+PASS R1 vendored bundle sha256 equals MANIFEST and is not the fixture
+PASS R2 real bundle exposes createClient
+PASS R3 signInWithPassword works with the real SDK (mock)
+PASS R4 real SDK upsert + select round-trips an owned row
+PASS R5 real SDK storage upload: allowed type OK (upsert:false), disallowed type rejected
+PASS R6 real SDK cannot write another user's folder
+PASS R7 signOut works
