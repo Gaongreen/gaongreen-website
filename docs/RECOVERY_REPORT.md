@@ -27,9 +27,10 @@ Not verified / open (do not claim otherwise):
 1. **Real Supabase behaviour**: RLS isolation, storage policies, auth, password reset. Your earlier staging isolation/Evidence tests were not shown to me. Needs result files (see STAGING_VALIDATION.md).
 2. **Real SDK bytes**: only the manifest hash (2.118.0) you reported; the vendored file itself was not seen here.
 3. **Netlify `_headers` behaviour** (esp. the legacy page whose file name has spaces) is unverified until `tools/check-headers.js` runs on staging.
-4. **Evidence Locker limits (10 MB, extension list) are client-side only**; enforce server-side (bucket `file_size_limit`/MIME list). Local-only evidence files are not in the JSON backup.
+4. **Evidence Locker**: on STAGING the 10 MB limit IS enforced server-side (bucket `file_size_limit` and a CHECK on `size_bytes`), but there is no server-side MIME/type allow-list (`allowed_mime_types` is NULL); the extension list is client-side only. Local-only evidence files are not in the JSON backup.
 5. **Persisted sessions (PA-001)** decision still open.
-6. **`company_profiles` owner column** (`owner_id` vs `user_id`) must be confirmed on staging.
+6. **`company_profiles` owner column**: confirmed on staging as `owner_id` only (no `user_id`); the pages already handle this. Staging policy definitions were inspected read-only: see `evidence/staging/20261106-staging-readonly-inspection.md`. Cross-account behaviour is still untested live.
+6b. Staging Auth advisor WARN: leaked-password protection is disabled (change needs approval).
 7. **Pages still hard-code the production host/key**; use the retarget build for staging. The publishable key is public by design; RLS is the real boundary.
 8. Inline `style` attributes still require `style-src 'unsafe-inline'`.
 9. Authentication integration remains **blocked** (no contract evidence/G1-D); Baselines B/C, contracts and the failed-unlock vault were not located or touched.

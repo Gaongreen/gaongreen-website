@@ -11,6 +11,9 @@ You reported an existing Supabase staging project, a Netlify staging site, and e
 Those results were not shown to the recovery work, so they are **not** counted as verified here. Please provide, per test: date, project ref (staging), commit/build hash tested, the result file (`rls-result.json`) and the exit code.
 If that evidence exists, steps 3 and 4 only need to be repeated against the build you intend to demo.
 
+## Status update 2026-11-06
+The staging project `gdmejzbycgpuabvutkdk` was inspected read-only through the Supabase connector (see `evidence/staging/20261106-staging-readonly-inspection.md`): RLS on all 7 tables with owner-scoped policies, no anon grants, private evidence bucket with server-side 10 MB limit. Live sign-in and cross-account tests remain to be run from a machine that can reach the staging API.
+
 ## 1. Build the staging artifact (local, offline, deterministic)
 ```
 node tools/vendor-copy.js <dir with real supabase.umd.js + MANIFEST.json>      # hash-verified vendor copy
