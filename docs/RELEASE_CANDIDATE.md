@@ -26,6 +26,7 @@ Runs: offline suite → real-SDK staging build → deploy guard → live RLS/sto
 4. Deploy `dist-pinned` to the production Netlify context.
 
 ## Deployment checklist
+- [ ] backup page `validate-backup-only.html` saved from the old deploy permalink and included via --keep-file in the PRODUCTION deploy (a production deploy replaces files)
 - [ ] live RLS result all PASS (incl. storage.M1/M2/L1) · [ ] 10 file types upload on draft · [ ] human form signed
 - [ ] check-headers passes on deployed URL · [ ] no fixture file / production ref in staging pack
 - [ ] production inspection compared with staging (read-only) · [ ] your explicit final authorization
