@@ -22,7 +22,13 @@ T=$(mktemp -d); trap 'rm -rf "$T"' EXIT; cp -a "$DIST/." "$T/"; [ -n "$KEEP" ] &
 N=$(find "$T" -type f | wc -l); echo "checks passed: staging-targeted real-SDK build, $N files$( [ -n "$KEEP" ] && echo ", incl. preserved $(basename "$KEEP")" ), no production ref, no secrets, _headers present"
 if [ "$DEPLOY" != 1 ]; then echo "dry run: nothing deployed. Re-run with --deploy to create a DRAFT deploy on site $SITE (the live site is not replaced)."; exit 0; fi
 NB="${NETLIFY_BIN:-netlify}"; command -v "$NB" >/dev/null 2>&1 || die "Netlify CLI not found (npm i -g netlify-cli, then netlify login)"
+# Safety: remember which deploy the live site currently serves; a draft deploy must leave it unchanged. If it cannot be read, refuse (non-replacement could not be verified).
+pub(){ "$NB" api getSite --data "{\"site_id\":\"$SITE\"}" 2>/dev/null | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s.slice(s.indexOf("{")));const id=j.published_deploy&&j.published_deploy.id;console.log(/^[0-9a-f]{24}$/.test(id||"")?id:"")}catch(e){console.log("")}})'; }
+PRE=$(pub); [ -n "$PRE" ] || die "cannot read the site's currently published deploy id (CLI not logged in or wrong site?); refusing to deploy because non-replacement cannot be verified"
+echo "live site currently serves deploy $PRE (must stay unchanged)"
 OUT=$("$NB" deploy --dir "$T" --site "$SITE" --message "staging draft $(date -u +%Y-%m-%dT%H:%MZ)" --json 2>&1); RC=$?; echo "$OUT" | sed -E 's/(token|Authorization)[^ ]*/\1=[redacted]/Ig' | tail -15
-[ $RC -eq 0 ] || { echo "Netlify CLI failed (exit $RC); nothing is known to have been published" >&2; exit 3; }
+if [ $RC -ne 0 ]; then echo "DEPLOYMENT FAILED: Netlify CLI exit $RC; the live site was not intentionally changed (checking...)" >&2; POST=$(pub); [ -n "$POST" ] && [ "$POST" != "$PRE" ] && echo "WARNING: published deploy changed $PRE -> $POST. Roll back: Netlify > Deploys > Publish deploy $PRE" >&2; exit 3; fi
 URL=$(printf '%s' "$OUT" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s.slice(s.indexOf("{")));console.log(j.deploy_url||"")}catch(e){console.log("")}})')
-case "$URL" in https://*--*.netlify.app) echo "DRAFT deploy URL: $URL (SSO-protected; the live site is unchanged)";; *) echo "WARNING: could not confirm a draft URL (got '$URL'). Check the Netlify dashboard: the live site may have changed." >&2; exit 4;; esac
+POST=$(pub)
+if [ "$POST" != "$PRE" ]; then echo "DEPLOYMENT FAILED SAFETY CHECK: the live site's published deploy changed ($PRE -> '${POST:-unreadable}'). Roll back: Netlify > Deploys > Publish deploy $PRE" >&2; exit 5; fi
+case "$URL" in https://*--*.netlify.app) echo "verified: live site still serves $PRE"; echo "DRAFT deploy URL: $URL (SSO-protected; the live site is unchanged)";; *) echo "DEPLOYMENT FAILED: could not confirm a draft URL (got '$URL'). Check the Netlify dashboard." >&2; exit 4;; esac

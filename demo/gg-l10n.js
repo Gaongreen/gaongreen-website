@@ -41,14 +41,19 @@ var D={
  qr_loaded:{en:'QR ESG Card draft loaded from cloud successfully. Generate a new public card + QR if you want to share this version.',ko:'QR ESG 카드 초안을 클라우드에서 불러왔습니다. 이 버전을 공유하려면 공개 카드와 QR을 새로 생성하세요.',ar:'تم تحميل مسودة بطاقة QR ESG من السحابة بنجاح. أنشئ بطاقة عامة ورمز QR جديدين إذا أردت مشاركة هذه النسخة.'},
  qr_cantcheck:{en:'Could not check sign-in. Please sign in and try again.',ko:'로그인 상태를 확인할 수 없습니다. 로그인한 뒤 다시 시도하세요.',ar:'تعذر التحقق من تسجيل الدخول. سجّل الدخول وحاول مجدداً.'},
  qr_signedok:{en:'Signed in. Cloud backup is available.',ko:'로그인되었습니다. 클라우드 백업을 사용할 수 있습니다.',ar:'تم تسجيل الدخول. النسخ الاحتياطي السحابي متاح.'},
+ aria_lang:{en:'Language',ko:'언어',ar:'اللغة'},
+ aria_sections:{en:'Assessment sections',ko:'평가 섹션',ar:'أقسام التقييم'},
+ aria_saved:{en:'Saved assessments',ko:'저장된 평가',ar:'التقييمات المحفوظة'},
+ aria_cloud:{en:'Cloud backup',ko:'클라우드 백업',ar:'النسخ الاحتياطي السحابي'},
  qr_company_ph:{en:'Example: Green Seoul Co.',ko:'예: 그린서울 주식회사',ar:'مثال: شركة سيول الخضراء'},
  qr_initiatives_ph:{en:"Describe your company's initiatives and targets.",ko:'기업의 지속가능성 활동과 목표를 설명하세요.',ar:'صف مبادرات شركتك وأهدافها.'}
 };
 function lang(){var l=(document.documentElement.getAttribute('lang')||'en').slice(0,2);return l==='ko'||l==='ar'?l:'en'}
 window.ggTr=function(k,fb){var e=D[k];return e?(e[lang()]||e.en):(fb===undefined?k:fb)};
-function apply(){var i,n=document.querySelectorAll('[data-l10n]'),p=document.querySelectorAll('[data-l10n-ph]');
+function apply(){var i,n=document.querySelectorAll('[data-l10n]'),p=document.querySelectorAll('[data-l10n-ph]'),a=document.querySelectorAll('[data-l10n-aria]');
  for(i=0;i<n.length;i++){var t=window.ggTr(n[i].getAttribute('data-l10n'));if(n[i].textContent!==t)n[i].textContent=t}
- for(i=0;i<p.length;i++)p[i].setAttribute('placeholder',window.ggTr(p[i].getAttribute('data-l10n-ph')))}
+ for(i=0;i<p.length;i++)p[i].setAttribute('placeholder',window.ggTr(p[i].getAttribute('data-l10n-ph')));
+ for(i=0;i<a.length;i++)a[i].setAttribute('aria-label',window.ggTr(a[i].getAttribute('data-l10n-aria')))}
 window.ggL10nApply=apply;window.ggL10nKeys=Object.keys(D);
 function start(){apply();try{new MutationObserver(apply).observe(document.documentElement,{attributes:true,attributeFilter:['lang']})}catch(e){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();

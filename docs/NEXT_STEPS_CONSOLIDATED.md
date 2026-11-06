@@ -32,3 +32,13 @@ Draft = unique URL, live site unchanged, SSO-protected; `--prod/--alias` refused
 ## Prepared, NOT applied (need your later approval of the exact change)
 - **Password policy (free plan):** proposed Auth setting min length 12 + lower+upper+digits. Compatibility: Step 2's preflight tells us whether the two fictional accounts' passwords comply; if not, they'd need a password reset first (WeakPasswordError risk). Leaked-password protection is Pro-only → not enabled.
 - **Evidence MIME allow-list:** `supabase/proposed/evidence_bucket_mime_allowlist.sql`. Applied only after Step 3 shows all file types upload from the fixed frontend AND you approve the exact SQL.
+
+## SUPERSEDES steps 1–3 above for the validation run: ONE command
+From the repo root in your Codespace (branch `recovery/lead-eng-2afe977` at the latest commit, `vendor/` present):
+```
+bash tools/staging-validate-all.sh <fictionalA@example.com> <fictionalB@example.com> --keep-file <path/to/validate-backup-only.html>
+```
+- Exit 0 only if precheck, build, deploy-guard, live RLS/storage/MIME AND the draft deploy all pass. Any failure → exit 1 and a `RESULT: FAIL (...)` line; a failed RLS/storage test always prevents deployment.
+- Working files go to a private temp dir (outside the repo, mode 700). Share ONLY the printed SUMMARY (allow-listed fields: step results, check ids/names, SDK hash, target host, draft URL). Raw logs and the raw RLS result stay private.
+- Safety: draft deploy only, never `--prod`; the script reads the live site's published deploy id before and after and fails (exit 5, with rollback target) if it changed; refuses to deploy if it cannot read it.
+- `--no-deploy` validates without deploying (result is `PASS-NO-DEPLOY`). `--with-offline` also runs the offline suite (needs playwright/opencv; already passed in the build environment).

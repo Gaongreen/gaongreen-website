@@ -7,7 +7,12 @@ fs.writeFileSync(path.join(vd,'MANIFEST.json'),JSON.stringify({name:'@supabase/s
 const build=(name,extra)=>{const o=path.join(tmp,name);const r=sh('node',['tools/build-pinned.js','--vendor',vd,'--out',o,'--allow-fixture',...extra],{cwd:root});if(r.status)throw new Error(r.stderr);return o};
 // stub netlify: records its args, prints JSON like the real CLI with --json
 const bin=path.join(tmp,'bin');fs.mkdirSync(bin);const log=path.join(tmp,'calls.log');
-const stub=(url)=>fs.writeFileSync(path.join(bin,'netlify'),`#!/usr/bin/env bash\necho "$@" >> "${log}"\necho '{"site_id":"x","deploy_id":"d","deploy_url":"${url}","logs":"l"}'\n`,{mode:0o755});
+const pubf=path.join(tmp,'pub.state');const stub=(url,opt={})=>{fs.writeFileSync(pubf,'6adf6e4d0e82082a49c6f086');fs.writeFileSync(path.join(bin,'netlify'),`#!/usr/bin/env bash
+if [ "$1" = "api" ]; then ${opt.noRead?'exit 1':`cat "${pubf}" | sed 's/.*/{"published_deploy":{"id":"&"}}/'`}; exit 0; fi
+echo "$@" >> "${log}"
+${opt.change?`echo -n 6adf6e4d0e82082a49c6f099 > "${pubf}"`:''}
+${opt.fail?'echo boom >&2; exit 7':`echo '{"site_id":"x","deploy_id":"d","deploy_url":"${url}","logs":"l"}'`}
+`,{mode:0o755})};
 const run=(dist,extra=[],env={})=>sh('bash',[path.join(root,'tools/staging-draft-deploy.sh'),'--dist',dist,...extra],{cwd:tmp,env:{...process.env,PATH:bin+':'+process.env.PATH,...env}});
 (async()=>{
  // A "real-looking" staging build = fixture build whose manifest we flip to non-fixture and retarget to the REAL staging host (simulates the user's build)
@@ -32,4 +37,10 @@ const run=(dist,extra=[],env={})=>sh('bash',[path.join(root,'tools/staging-draft
  await t.check('D5','--prod, --alias and --prod-if-unlocked are refused outright',async()=>{const x=['--prod','--alias','--prod-if-unlocked'].map(f=>run(good,['--deploy',f]).status);return{ok:x.every(s=>s===2)&&!fs.existsSync(log),expected:'[2,2,2]',actual:JSON.stringify(x)}});
  stub('https://incredible-biscotti-bcf58a.netlify.app');r=run(good,['--deploy']);
  await t.check('D6','if the CLI result does not look like a draft URL (could be the live site), the script exits 4 and warns instead of claiming success',async()=>({ok:r.status===4&&/could not confirm a draft URL/.test(r.stderr),expected:'exit 4 + warning',actual:`exit ${r.status} ${r.stderr.slice(0,100)}`}));
+ fs.rmSync(log,{force:true});stub('https://6a1b2c3d4e5f6a1b2c3d4e5f--incredible-biscotti-bcf58a.netlify.app',{change:true});r=run(good,['--deploy']);
+ await t.check('D7','if the live site\'s published deploy id changes during a draft deploy, the script exits 5 and prints the rollback target',async()=>({ok:r.status===5&&/SAFETY CHECK/.test(r.stderr)&&/Publish deploy 6adf6e4d0e82082a49c6f086/.test(r.stderr),expected:'exit 5 + rollback id',actual:`exit ${r.status} ${r.stderr.slice(0,160)}`}));
+ stub('x',{fail:true});r=run(good,['--deploy']);
+ await t.check('D8','a failing Netlify CLI gives exit 3 and a clear DEPLOYMENT FAILED message',async()=>({ok:r.status===3&&/DEPLOYMENT FAILED/.test(r.stderr),expected:'exit 3',actual:`exit ${r.status} ${r.stderr.slice(0,100)}`}));
+ fs.rmSync(log,{force:true});stub('x',{noRead:true});r=run(good,['--deploy']);
+ await t.check('D9','if the published deploy id cannot be read, deployment is refused BEFORE any deploy call',async()=>({ok:r.status===2&&/non-replacement cannot be verified/.test(r.stderr)&&!fs.existsSync(log),expected:'exit 2, no deploy call',actual:`exit ${r.status} ${r.stderr.slice(0,100)}`}));
  fs.writeFileSync(process.argv[2]||'staging-draft-deploy.json',JSON.stringify({run:new Date().toISOString(),build:'OFFLINE with a stub Netlify CLI',results:t.res},null,1));process.exit(t.res.every(x=>x.status==='PASS')?0:1)})().catch(e=>{console.error(e);process.exit(1)});
