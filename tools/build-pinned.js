@@ -1,7 +1,7 @@
 // Builds dist-pinned/ : the canonical pages with (1) the Supabase SDK served from vendor/ with SRI instead of a floating CDN,
 // (2) the QR library served locally, (3) a Content-Security-Policy built from the SHA-256 of each inline script (no 'unsafe-inline' for scripts).
 // Source pages are never modified. REFUSES to build if vendor/supabase.umd.js is missing or does not match vendor/MANIFEST.json.
-// Usage: node tools/build-pinned.js [--vendor vendor] [--out dist-pinned] [--qr vendor/qrcode-shim.js]
+// Usage: node tools/build-pinned.js [--vendor vendor] [--out dist-pinned] [--qr vendor/qrcode-shim.js] [--allow-fixture (tests only)]
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const a=process.argv.slice(2),opt=(n,d)=>{const i=a.indexOf('--'+n);return i>=0?a[i+1]:d};
 const root=process.cwd(),vendorDir=path.resolve(opt('vendor','vendor')),out=path.resolve(opt('out','dist-pinned')),qrSrc=path.resolve(opt('qr',path.join(vendorDir,'qrcode-shim.js')));
@@ -13,6 +13,7 @@ if(!fs.existsSync(manPath))die('vendor/MANIFEST.json is missing.');
 const man=JSON.parse(fs.readFileSync(manPath,'utf8'));const sdk=fs.readFileSync(sdkPath);
 if(sha('sha256',sdk,'hex')!==man.sha256)die('SDK file sha256 does not match MANIFEST.json (file changed after vendoring).');
 if(sha('sha384',sdk,'base64')!==man.sha384)die('SDK file sha384 does not match MANIFEST.json.');
+if(man.fixture&&!a.includes('--allow-fixture'))die('MANIFEST.json marks this vendor dir as a TEST FIXTURE, not a real SDK. Refusing to build a pseudo-release. (--allow-fixture exists only for the pipeline tests.)');
 if(!fs.existsSync(qrSrc))die('QR library file missing: '+qrSrc);
 const qr=fs.readFileSync(qrSrc);
 const pages=['index.html','GaonGreen_Login.html','GaonGreen_Register.html','GaonGreen_Company_Settings_Cloud_Beta.html','GaonGreen_ESG_Dashboard_Cloud_Beta.html','GaonGreen_KISSB_Cloud_Beta.html','GaonGreen_K-RE100_Cloud_Beta.html','GaonGreen_EPR_Cloud_Beta.html','GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html','GaonGreen_QR_ESG_Card_Cloud_Beta.html','GaonGreen_Evidence_Locker_Cloud_Beta.html','K-ISSB Reporting Wizard _ GaonGreen.html'];

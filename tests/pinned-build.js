@@ -3,7 +3,7 @@
 // WHAT IT DOES NOT PROVE: anything about the real @supabase/supabase-js bundle (not obtainable offline) or real Supabase behaviour.
 const fs=require('fs'),path=require('path'),crypto=require('crypto'),{spawnSync}=require('child_process');
 const S=require('./lib/serve.js'),T=require('./lib/t.js');
-const root=process.cwd(),tmp=fs.mkdtempSync('/tmp/claude-0/pinned-');const t=T.make();
+const root=process.cwd(),tmp=fs.mkdtempSync(path.join(require('os').tmpdir(),'pinned-'));const t=T.make();
 const run=(cmd,args,cwd)=>spawnSync(cmd,args,{cwd:cwd||root,encoding:'utf8'});
 const sha=(alg,b,enc)=>crypto.createHash(alg).update(b).digest(enc);
 (async()=>{
@@ -11,7 +11,7 @@ const sha=(alg,b,enc)=>crypto.createHash(alg).update(b).digest(enc);
  const vd=path.join(tmp,'vendor');fs.mkdirSync(vd);const sdk=fs.readFileSync('demo/vendor/supabase-demo.umd.js');fs.writeFileSync(path.join(vd,'supabase.umd.js'),sdk);fs.copyFileSync('demo/vendor/qrcode-shim.js',path.join(vd,'qrcode-shim.js'));
  const man={name:'@supabase/supabase-js',version:'0.0.0-FIXTURE',fixture:true,file:'vendor/supabase.umd.js',sha256:sha('sha256',sdk,'hex'),sha384:sha('sha384',sdk,'base64')};fs.writeFileSync(path.join(vd,'MANIFEST.json'),JSON.stringify(man));
  const out=path.join(tmp,'out');
- const b=run('node',['tools/build-pinned.js','--vendor',vd,'--out',out]);
+ const b=run('node',['tools/build-pinned.js','--vendor',vd,'--out',out,'--allow-fixture']);
  await t.check('P1','Build succeeds for all 12 pages from a manifest-verified fixture',async()=>({ok:b.status===0&&/built 12 pages/.test(b.stdout),expected:'exit 0, 12 pages',actual:`exit ${b.status} ${(b.stdout+b.stderr).slice(-160)}`}));
  const pages=fs.readdirSync(out).filter(f=>f.endsWith('.html'));const html=f=>fs.readFileSync(path.join(out,f),'utf8');
  await t.check('P2','No page references external script/import code, no CDN host, no floating @2 SDK',async()=>{const bad=pages.filter(f=>/(?:<script[^>]+src=|import[^;\n]*from\s*|import\()\s*["']https?:/i.test(html(f))||/cdn\.jsdelivr|esm\.sh|cdnjs\.cloudflare|supabase-js@2/.test(html(f)));return{ok:bad.length===0&&pages.length===12,expected:'0 offending pages of 12',actual:JSON.stringify(bad)}});
@@ -38,9 +38,9 @@ const sha=(alg,b,enc)=>crypto.createHash(alg).update(b).digest(enc);
  const cx=await pg.evaluate(async()=>{try{await fetch('https://attacker.example.invalid/x');return'allowed'}catch(e){return'blocked'}});
  await t.check('P8','connect-src blocks a fetch to a non-Supabase host',async()=>t.eq(cx,'blocked'));await pg.context().close();await srv.close();
  // tamper / missing
- fs.appendFileSync(path.join(vd,'supabase.umd.js'),'\n/*x*/');const bt=run('node',['tools/build-pinned.js','--vendor',vd,'--out',path.join(tmp,'out2')]);
+ fs.appendFileSync(path.join(vd,'supabase.umd.js'),'\n/*x*/');const bt=run('node',['tools/build-pinned.js','--vendor',vd,'--out',path.join(tmp,'out2'),'--allow-fixture']);
  await t.check('P9','Tampered vendor file (1 appended byte) makes the build REFUSE (non-zero exit, no output dir)',async()=>({ok:bt.status!==0&&/does not match MANIFEST/.test(bt.stderr)&&!fs.existsSync(path.join(tmp,'out2')),expected:'refused',actual:`exit ${bt.status} ${bt.stderr.slice(0,100)}`}));
- fs.rmSync(path.join(vd,'supabase.umd.js'));const bm=run('node',['tools/build-pinned.js','--vendor',vd,'--out',path.join(tmp,'out3')]);
+ fs.rmSync(path.join(vd,'supabase.umd.js'));const bm=run('node',['tools/build-pinned.js','--vendor',vd,'--out',path.join(tmp,'out3'),'--allow-fixture']);
  await t.check('P10','Missing vendor SDK file makes the build REFUSE with instructions',async()=>({ok:bm.status!==0&&/vendor-supabase\.sh/.test(bm.stderr),expected:'refused',actual:`exit ${bm.status} ${bm.stderr.slice(0,100)}`}));
  // vendor-copy against a fake node_modules tree
  const ft=path.join(tmp,'fake');fs.mkdirSync(path.join(ft,'node_modules/@supabase/supabase-js/dist/umd'),{recursive:true});
@@ -49,9 +49,18 @@ const sha=(alg,b,enc)=>crypto.createHash(alg).update(b).digest(enc);
  const vm=(()=>{try{return JSON.parse(fs.readFileSync(path.join(ft,'vendor/MANIFEST.json'),'utf8'))}catch(e){return{}}})();
  await t.check('P11','vendor-copy refuses a range pin (^2.118.0), an installed/pinned version mismatch, and a non-sha512 lockfile entry',async()=>({ok:v1.status!==0&&v2.status!==0&&v3.status!==0&&/exact/.test(v1.stderr)&&/!=/.test(v2.stderr)&&/sha512/.test(v3.stderr),expected:'3 refusals',actual:[v1.status,v2.status,v3.status].join()}));
  await t.check('P12','vendor-copy succeeds on a consistent tree and records version, sha256, sha384 and the lockfile tarball integrity',async()=>({ok:v4.status===0&&vm.version==='2.118.0'&&vm.sha256===sha('sha256',Buffer.from('/*fake sdk*/'),'hex')&&vm.tarballIntegrity==='sha512-AAAA',expected:'manifest fields',actual:JSON.stringify(vm).slice(0,140)}));
- // the real build must refuse right now because the real SDK is not vendored yet (honesty check)
- const real=run('node',['tools/build-pinned.js']);
- await t.check('P13','Honesty check: with no real vendor/ in the repo, the default build REFUSES (no pseudo-release can be produced by accident)',async()=>({ok:real.status!==0&&!fs.existsSync('dist-pinned'),expected:'refused, no dist-pinned',actual:`exit ${real.status}; dist-pinned exists=${fs.existsSync('dist-pinned')}`}));
+ // HERMETIC honesty checks. The default build (no --vendor/--out) resolves ./vendor and ./dist-pinned relative to the WORKING DIRECTORY, so the repo's own vendor/
+ // (which legitimately exists once the real SDK has been vendored) must never be an input here. Run the default invocation in controlled, empty-or-partial working dirs.
+ const BP=path.resolve('tools/build-pinned.js');const wd=n=>{const d=path.join(tmp,'wd-'+n);fs.mkdirSync(d);return d};const runIn=(cwd,extra)=>spawnSync('node',[BP,...(extra||[])],{cwd,encoding:'utf8'});
+ const w1=wd('empty'),real=runIn(w1);
+ await t.check('P13','Honesty check: with no vendor/ in the working directory, the default build REFUSES (no pseudo-release can be produced by accident)',async()=>({ok:real.status!==0&&/supabase\.umd\.js is missing/.test(real.stderr)&&!fs.existsSync(path.join(w1,'dist-pinned')),expected:'refused (SDK missing), no dist-pinned',actual:`exit ${real.status}; dist-pinned exists=${fs.existsSync(path.join(w1,'dist-pinned'))}; ${real.stderr.trim().slice(0,100)}`}));
+ const w2=wd('nomanifest');fs.mkdirSync(path.join(w2,'vendor'));fs.writeFileSync(path.join(w2,'vendor/supabase.umd.js'),sdk); // built fresh: earlier tests mutate/delete the shared fixture dir
+ const nm=runIn(w2);
+ await t.check('P13b','Default build REFUSES when vendor/supabase.umd.js exists but vendor/MANIFEST.json is missing',async()=>({ok:nm.status!==0&&/MANIFEST\.json is missing/.test(nm.stderr)&&!fs.existsSync(path.join(w2,'dist-pinned')),expected:'refused, no dist-pinned',actual:`exit ${nm.status}; ${nm.stderr.trim().slice(0,100)}`}));
+ const w3=wd('fixture');fs.mkdirSync(path.join(w3,'vendor'));fs.writeFileSync(path.join(w3,'vendor/supabase.umd.js'),sdk);fs.writeFileSync(path.join(w3,'vendor/MANIFEST.json'),JSON.stringify(man));fs.copyFileSync('demo/vendor/qrcode-shim.js',path.join(w3,'vendor/qrcode-shim.js'));const fx=runIn(w3);
+ await t.check('P13c','Default build REFUSES a vendor dir whose manifest is marked fixture (a test double can never become a release without --allow-fixture)',async()=>({ok:fx.status!==0&&/TEST FIXTURE/.test(fx.stderr)&&!fs.existsSync(path.join(w3,'dist-pinned')),expected:'refused, no dist-pinned',actual:`exit ${fx.status}; dist-pinned exists=${fs.existsSync(path.join(w3,'dist-pinned'))}; ${fx.stderr.trim().slice(0,100)}`}));
+ // Informational only (NOT an assertion): what the repo's own vendor/ looks like in this checkout.
+ {const mp=path.join(root,'vendor/MANIFEST.json');let st='absent';try{const m=JSON.parse(fs.readFileSync(mp,'utf8'));st=`present: ${m.name}@${m.version}${m.fixture?' (FIXTURE)':''}`}catch(e){if(fs.existsSync(path.join(root,'vendor')))st='vendor/ exists but MANIFEST.json missing/unreadable'}console.log('INFO repo vendor/ state (not asserted by P13): '+st)}
  fs.rmSync(tmp,{recursive:true,force:true});
  fs.writeFileSync(process.argv[2]||'pinned-build.json',JSON.stringify({run:new Date().toISOString(),build:'pipeline test with FIXTURE SDK (not the real SDK)',results:t.res},null,1));
  process.exit(t.res.some(r=>r.status!=='PASS')?1:0)})();
