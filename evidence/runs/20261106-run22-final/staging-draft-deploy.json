@@ -1,0 +1,48 @@
+{
+ "run": "2026-11-06T17:34:04.634Z",
+ "build": "OFFLINE with a stub Netlify CLI",
+ "results": [
+  {
+   "id": "D1",
+   "name": "default run is a dry run: checks pass, preserved file counted, the Netlify CLI is NOT called",
+   "status": "PASS",
+   "expected": "exit 0, no CLI call",
+   "actual": "exit 0 "
+  },
+  {
+   "id": "D2",
+   "name": "--deploy calls the CLI for the existing site id WITHOUT --prod/--alias, deploys a temp copy that contains the preserved page, and reports a draft URL",
+   "status": "PASS",
+   "expected": "draft deploy, no --prod",
+   "actual": "exit 0 call=deploy --dir /tmp/tmp.ZmPJo9lsCv --site 48c18d02-eb99-46b4-a68d-96f724940fd9 --message staging draft 2026-11-06T17:34Z - L: https://6a1b2c3d4e5f6a1b2c3d4e5f--incredible-biscotti-bcf58a.netlify.app (SSO-protected; the live site is unchanged)\n"
+  },
+  {
+   "id": "D3",
+   "name": "the dist folder itself is not modified (preserved file only added to the temp copy)",
+   "status": "PASS",
+   "expected": "absent in dist",
+   "actual": "false"
+  },
+  {
+   "id": "D4",
+   "name": "refuses (exit 2, CLI never called): fixture build, other staging project, production-targeted build, production ref in a file, secret pattern, missing _headers",
+   "status": "PASS",
+   "expected": "6/6 refused, no call",
+   "actual": "[]"
+  },
+  {
+   "id": "D5",
+   "name": "--prod, --alias and --prod-if-unlocked are refused outright",
+   "status": "PASS",
+   "expected": "[2,2,2]",
+   "actual": "[2,2,2]"
+  },
+  {
+   "id": "D6",
+   "name": "if the CLI result does not look like a draft URL (could be the live site), the script exits 4 and warns instead of claiming success",
+   "status": "PASS",
+   "expected": "exit 4 + warning",
+   "actual": "exit 4 WARNING: could not confirm a draft URL (got 'https://incredible-biscotti-bcf58a.netlify.app'). Check"
+  }
+ ]
+}
