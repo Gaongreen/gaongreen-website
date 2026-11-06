@@ -1,6 +1,6 @@
 // Functional checks: Supplier, QR (decoded from pixels), Evidence Locker (hash round-trip), cloud save/load round-trips, cross-page.
 // Runs on the OFFLINE DEMO build: results show page logic against a stand-in backend, NOT real Supabase behaviour.
-const S=require('./lib/serve.js'),T=require('./lib/t.js'),fs=require('fs'),crypto=require('crypto'),{execFileSync}=require('child_process');
+const S=require('./lib/serve.js'),T=require('./lib/t.js'),fs=require('fs'),crypto=require('crypto'),{execFileSync,spawnSync}=require('child_process');
 const tmp=process.env.TMPDIR_T||'/tmp/claude-0';
 (async()=>{const s=await S.start('demo'),t=T.make();
  const open=async f=>{const pg=await s.page();pg.on('dialog',d=>d.accept());await pg.goto(s.base+f);await pg.waitForTimeout(600);return pg};
@@ -21,10 +21,13 @@ const tmp=process.env.TMPDIR_T||'/tmp/claude-0';
  for(const [id,v] of Object.entries({company:'Example Exporter Co.',website:'https://example.com/esg',year:'2026',energy:'40',emissions:'120',recycling:'65',employees:'50',initiatives:'Fictional initiative'}))await pg.fill('#'+id,v);
  await pg.click('#generate');await pg.waitForTimeout(600);
  await pg.locator('#qr').screenshot({path:tmp+'/qr-test.png'});
- let decoded='';try{decoded=execFileSync('python3',['-I','tools/decode_qr.py',tmp+'/qr-test.png']).toString().trim()}catch(e){}
- await t.check('F-Q1','QR image decodes to a GaonGreen profile link',async()=>({ok:/#profile=/.test(decoded),expected:'link with #profile=',actual:decoded.slice(0,60)}));
- let payload={};try{const b=decoded.split('#profile=')[1];payload=JSON.parse(Buffer.from(decodeURIComponent(b).replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8'))}catch(e){}
- await t.check('F-Q2','Decoded QR payload carries company, website and numbers entered',async()=>({ok:payload.data&&payload.data.company==='Example Exporter Co.'&&payload.data.website==='https://example.com/esg'&&String(payload.data.energy)==='40',expected:'company/website/energy=40',actual:JSON.stringify(payload.data||{}).slice(0,120)}));
+ // Decoder runs with python3 -I (isolated: ignores user site-packages). PYTHON_BIN may point at a venv python that has opencv. Failures are REPORTED, never swallowed.
+ const dec=spawnSync(process.env.PYTHON_BIN||'python3',['-I','tools/decode_qr.py',tmp+'/qr-test.png'],{encoding:'utf8'});const decoded=(dec.stdout||'').trim();
+ const decDiag=`decoder exit=${dec.status} spawnError=${dec.error?dec.error.code:'none'} stderr="${(dec.stderr||'').trim().slice(0,160)}"`;
+ await t.check('F-Q0','QR decoder (python3 -I + OpenCV) is available and ran',async()=>({ok:!dec.error&&dec.status!==3&&dec.status!==2,expected:'decoder runs (exit 0 or 1)',actual:decDiag}));
+ await t.check('F-Q1','QR image decodes to a GaonGreen profile link',async()=>({ok:/#profile=/.test(decoded),expected:'link with #profile=',actual:decoded.slice(0,60)||'NO DECODED OUTPUT: '+decDiag}));
+ let payload={},parseErr='';try{const b=decoded.split('#profile=')[1];payload=JSON.parse(Buffer.from(decodeURIComponent(b).replace(/-/g,'+').replace(/_/g,'/'),'base64').toString('utf8'))}catch(e){parseErr=String(e.message).slice(0,80)}
+ await t.check('F-Q2','Decoded QR payload carries company, website and numbers entered',async()=>({ok:payload.data&&payload.data.company==='Example Exporter Co.'&&payload.data.website==='https://example.com/esg'&&String(payload.data.energy)==='40',expected:'company/website/energy=40',actual:payload.data?JSON.stringify(payload.data).slice(0,120):`NO PAYLOAD (decoded ${decoded.length} chars; parse: ${parseErr||'n/a'}; ${decDiag})`}));
  await pg.fill('#energy','150');await pg.click('#generate');await pg.waitForTimeout(400);
  await t.check('F-Q3','QR rejects renewable electricity 150% (no card generated)',async()=>({ok:/correct/i.test(await g(pg,'status')),expected:'correction message',actual:await g(pg,'status')}));
  await pg.fill('#energy','40');await pg.fill('#website','javascript:alert(1)');await pg.click('#generate');await pg.waitForTimeout(400);
