@@ -1,0 +1,5 @@
+PASS V1 dry run verifies and builds the commit but pushes nothing (remote refs identical)
+PASS V2 real run pushes ONLY a new branch vendor/supabase-sdk-2.118.0; main and the base branch are untouched
+PASS V3 pushed branch = base branch + exactly vendor/supabase.umd.js, vendor/MANIFEST.json, package-lock.json
+PASS V4 refuses (exit 2, nothing pushed): fixture manifest, secret pattern, sha mismatch, missing lockfile entry, implausibly small bundle
+PASS V5 the user's checkout is never modified: no repo was created or touched in the working directory

@@ -43,3 +43,9 @@ Not verified / open (do not claim otherwise):
 4. Human rehearsal (HUMAN_TEST_FORM.md) on the offline demo and staging.
 5. Production hosting/deploy decisions and any auth contract evidence.
 6. Apply the changes to your Codespace using `docs/APPLY_PROCEDURE.md`.
+
+## Addendum 2026-11-06 (after the draft PR was opened)
+- Full offline suite on the working tree: **212 PASS, 0 FAIL, exit 0** (`evidence/runs/20261106-run21-l10n-mime-vendor/`). Still all stand-in/mock based; no real-backend or human test.
+- Added: Evidence Locker canonical MIME declaration + proposed (NOT applied) bucket allow-list; opt-in live-suite checks (CHECK_MIME/CHECK_LIMITS); `tools/publish-vendor-branch.sh`; shared `gg-l10n.js` (Korean/Arabic for cloud panels, buttons, placeholders, status lines; Company Settings title/status were untranslated); tests func-evidence-mime, vendor-publish, func-l10n.
+- Staging inspected read-only (see `evidence/staging/`). Leaked-password protection needs the Pro plan (org is on free): not enabled. See `docs/STAGING_DECISIONS.md`.
+- Known remaining localization gaps: product names on the dashboard, aria-labels, sample placeholders, demo banner text, KISSB one-time profile status.
