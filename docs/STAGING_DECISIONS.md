@@ -39,3 +39,10 @@ ALLOW_STAGING=yes STAGING_URL=https://gdmejzbycgpuabvutkdk.supabase.co STAGING_K
 A_EMAIL=... A_PASSWORD=... B_EMAIL=... B_PASSWORD=... OUT=rls-staging-result.json node tests/rls/rls-isolation.mjs
 ```
 Emails must be on example.com/.org/.net, .invalid or .test (the suite refuses others). It writes and deletes only rows/objects marked `gg-rls-test` owned by the two accounts, and refuses production, secret keys and service_role. Add `CHECK_LIMITS=yes` now and `CHECK_MIME=yes` after step 2(b). Exit 0 = all passed, 1 = isolation failure, 2 = refused, 3 = result file unwritable. Logic validated against local mocks (H1-H8); the real run is still outstanding.
+
+## Real SDK integrated (2026-11-06)
+- Branch `vendor/supabase-sdk-2.118.0` (commit bc018b4, child of b440f9b) fast-forward merged into `recovery/lead-eng-2afe977`; main untouched.
+- Independently re-verified from the fetched blobs: vendor/supabase.umd.js 218252 bytes, sha256 ee3be8de…ed3d3 and sha384 match MANIFEST; package-lock.json entry @supabase/supabase-js 2.118.0 integrity sha512-FxI8UXMV… equals MANIFEST tarballIntegrity; no fixture marker; 8 locked dependencies listed.
+- NOT independently verifiable here: that the bytes equal the npm registry tarball contents (sandbox cannot reach the registry); provenance rests on the lockfile integrity recorded when you ran npm.
+- Staging build `dist-pinned` produced with the real SDK (fixture:false), target host = Phase 3 Staging only; `tools/staging-draft-deploy.sh` checks pass (dry run, nothing deployed).
+- `tests/real-sdk-smoke.js` (R1–R7): real bundle vs loopback mock (E2). Mock token response made realistic (user object, exp) because the real SDK validates it.

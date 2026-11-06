@@ -1,0 +1,44 @@
+{
+ "built": "2026-11-06T17:58:44.419Z",
+ "target": {
+  "host": "https://gdmejzbycgpuabvutkdk.supabase.co",
+  "keyPrefix": "sb_publishable_RV_G9My..."
+ },
+ "assets": {
+  "gg-nav.js": "sha256-488ee9dc5ed4f32712c7a39195305359dc780acc714eeaff2bac9e85dbe2b5a4",
+  "gg-nav.css": "sha256-9b630025b88fbea28498c42d15398fe21ef28dd48d5cb27b8a7dd97c163debe3",
+  "gg-l10n.js": "sha256-d9691e99cfbd7f989a27239ceb4f62fe40923b73ecb48bb8206d15359f86124a"
+ },
+ "sdk": {
+  "name": "@supabase/supabase-js",
+  "version": "2.118.0",
+  "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3",
+  "sri": "sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK",
+  "fixture": false
+ },
+ "qr": {
+  "file": "vendor/qrcode.js",
+  "sri": "sha384-LhwaNUoRT3y6BjN7tFXxHjInN/nb+us768Dc6KBiz83eLdjEHbca2X0/EGCDtrTq",
+  "source": "see header of the file"
+ },
+ "projectHost": "https://gdmejzbycgpuabvutkdk.supabase.co",
+ "pages": {
+  "index.html": "e132218b46112e9f6bc12ab4532877b7e939a7dd4106fd1f267a495f53137984",
+  "GaonGreen_Login.html": "ec1d78a84d33a042c78c9090257219d1ea87ac4f96ee9b501515eeaf8a5d3553",
+  "GaonGreen_Register.html": "9ec40815aecbc3ec8abd426a84468e812313627509a9ebd0b68991f5c5da3a0a",
+  "GaonGreen_Company_Settings_Cloud_Beta.html": "55dfe8a61127e6164bb47fdee660dd2ef8f7112b8760c4adcfb7b86a08d861bd",
+  "GaonGreen_ESG_Dashboard_Cloud_Beta.html": "0d6f481f5855ed6e108f199c07a6440fdd79cc445a68834306c82c29868075b8",
+  "GaonGreen_KISSB_Cloud_Beta.html": "e4f74fbd0624f377fedabc93466cbd76b2cfb70874162930b71d61700b550076",
+  "GaonGreen_K-RE100_Cloud_Beta.html": "972ac93f9f68f1783648f31d9941716a322f99ab4afbdf076d6c4f89f3e8ef5d",
+  "GaonGreen_EPR_Cloud_Beta.html": "4497204c5aefc44d255727b4ab44791afc048fb3c0fb33ac21332773bf5733e9",
+  "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html": "8e679f00e4b9d9557739c067f4761ac52ec6cb42a35293dcda624bc31c284c60",
+  "GaonGreen_QR_ESG_Card_Cloud_Beta.html": "9fb11a24740eaacf5866648065cdca6c858b6c31142bec63eb0e99f3640e5a3a",
+  "GaonGreen_Evidence_Locker_Cloud_Beta.html": "d133e921e6a56e5e9ee7e5852c32d34169a0d4cf08643498ea0eec4c5e766035",
+  "K-ISSB Reporting Wizard _ GaonGreen.html": "94988b1958f9ed92e124c5d9910b55e0c08978fd1019e1c8460b721a4eb056b3"
+ },
+ "limits": [
+  "meta-tag CSP cannot set frame-ancestors; use a host that sends headers for that",
+  "script-src hashes must be regenerated whenever an inline script changes (this build does that)",
+  "inline style attributes still require style-src unsafe-inline"
+ ]
+}

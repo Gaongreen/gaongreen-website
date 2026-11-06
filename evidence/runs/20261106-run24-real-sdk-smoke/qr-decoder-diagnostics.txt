@@ -1,0 +1,3 @@
+PASS Q-D1 cv2 not importable -> exit 3 and DECODER-UNAVAILABLE on stderr (simulated with python -S, which drops site-packages)
+PASS Q-D2 unreadable/missing image -> exit 2 and DECODER-IMAGE-UNREADABLE
+PASS Q-D3 image with no QR -> exit 1 and DECODER-NO-QR-FOUND (distinct from unavailable)

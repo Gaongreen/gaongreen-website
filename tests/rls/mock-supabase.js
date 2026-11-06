@@ -10,7 +10,7 @@ exports.start=(mode)=>new Promise(res=>{
  const send=(r,code,body,raw)=>{r.writeHead(code,{'content-type':raw?'text/plain':'application/json'});r.end(raw?body:JSON.stringify(body))};
  const srv=http.createServer((q,r)=>{let body='';q.on('data',d=>body+=d);q.on('end',()=>{
   const u=new URL(q.url,'http://x');const w=who(q);
-  if(u.pathname==='/auth/v1/token'){const j=JSON.parse(body||'{}'),us=users[j.email];if(!us||us.pw!==j.password)return send(r,400,{error:'invalid'});const h=b64({alg:'HS256'}),p=b64({sub:us.id,role:'authenticated'});return send(r,200,{access_token:h+'.'+p+'.'+sign(h+'.'+p),user:{id:us.id}})}
+  if(u.pathname==='/auth/v1/token'){const j=JSON.parse(body||'{}'),us=users[j.email];if(!us||us.pw!==j.password)return send(r,400,{error:'invalid'});const h=b64({alg:'HS256'}),p=b64({sub:us.id,role:'authenticated',aud:'authenticated',exp:Math.floor(Date.now()/1000)+3600});return send(r,200,{access_token:h+'.'+p+'.'+sign(h+'.'+p),token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,refresh_token:'mock-refresh',user:{id:us.id,aud:'authenticated',role:'authenticated',email:j.email,app_metadata:{},user_metadata:{},created_at:'2026-01-01T00:00:00Z'}})}
   if(w.bad)return send(r,401,{code:'PGRST301',message:'JWT invalid'});
   if(u.pathname.startsWith('/rest/v1/')){const t=u.pathname.slice(9);const T=tables[t]=tables[t]||[];const filt={};for(const [k,v] of u.searchParams)if(/^eq\./.test(v))filt[k]=v.slice(3);
    const own=r=>OWN.map(c=>r[c]).find(x=>x!==undefined);const match=r=>Object.entries(filt).every(([k,v])=>String(r[k])===v);
