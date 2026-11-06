@@ -1,0 +1,22 @@
+PASS B0 Validation text differs between a valid and an invalid state (guards the boundary tests below)
+PASS B1 recycled 0% is valid (recycled mass 0)
+PASS B2 recycled exactly 100% is valid (recycled mass 50 kg)
+PASS B3 recycled 100.01% is invalid, row shows em dash, row mass not counted
+PASS B4 recycled -0.01% is invalid
+PASS B5 quantity 0 is valid (mass 0)
+PASS B6 quantity 1.5 (not a whole number) is invalid
+PASS B7 quantity -1 is invalid
+PASS B8 weight 0 is valid
+PASS B9 weight -0.001 is invalid
+PASS B10 weight 0.001 g x 1 unit is valid; mass 0.000001 kg displays as 0 at 3 decimals
+PASS B11 very large inputs (1e9 g x 1e9 units) stay finite and display a number, not an em dash
+PASS B12 reduction 100% is valid: scenario 0 kg, saving 50 kg, change -100%
+PASS B13 reduction 100.01% is invalid: scenario shows em dash
+PASS B14 reduction -0.01% is invalid
+PASS B15 quantity change -100% is valid: scenario 0 kg
+PASS B16 quantity change -100.01% is invalid
+PASS B17 quantity change +1000% is valid: 50*0.9*11 = 495 kg, saving -445 kg, +890%
+PASS B18 quantity change +1000.01% is invalid
+PASS B19 reduction 100% with quantity +1000% is valid and gives 0 kg
+PASS B20 One invalid row does not hide the valid row: total stays 50 kg and the page flags invalid
+PASS B21 No uncaught JavaScript error occurred during any boundary case

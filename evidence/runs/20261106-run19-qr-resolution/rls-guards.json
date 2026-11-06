@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-06T15:55:12.148Z",
+ "build": "OFFLINE guards + diagnostics only; no network; not a Supabase verification",
+ "results": [
+  {
+   "id": "H7",
+   "name": "Guards: suite REFUSES (exit 2) for 8 unsafe configurations (no flag, production host x2, secret key, service_role JWT, real email, same account, plain http)",
+   "status": "PASS",
+   "expected": "8/8 refused with the expected message",
+   "actual": "[]"
+  },
+  {
+   "id": "H7b",
+   "name": "Guard refusal does not depend on the caller environment: production host is refused even when ALLOW_STAGING=yes and extra env is present",
+   "status": "PASS",
+   "expected": "exit 2 PRODUCTION",
+   "actual": "status=2 signal=null spawnError=none timedOut=false stderr=\"REFUSED: STAGING_URL host is a known PRODUCTION host: uyhmbecltrswiljbyass.supabase.co \""
+  },
+  {
+   "id": "D1",
+   "name": "Diagnostics: a spawn failure (missing binary) is reported as spawnError, not as an empty result",
+   "status": "PASS",
+   "expected": "spawnError ENOENT, status null",
+   "actual": "status=null signal=null spawnError=ENOENT timedOut=false"
+  },
+  {
+   "id": "D2",
+   "name": "Diagnostics: death by signal is reported as signal (not as a plain exit code)",
+   "status": "PASS",
+   "expected": "signal SIGTERM, status null",
+   "actual": "status=null signal=SIGTERM spawnError=none timedOut=false"
+  },
+  {
+   "id": "D3",
+   "name": "Diagnostics: a hung process is killed and reported as timedOut",
+   "status": "PASS",
+   "expected": "timedOut, SIGKILL",
+   "actual": "status=null signal=SIGKILL spawnError=none timedOut=true"
+  },
+  {
+   "id": "D4",
+   "name": "Diagnostics: stdout/stderr redact passwords, keys and JWTs",
+   "status": "PASS",
+   "expected": "no secret text, REDACTED markers present",
+   "actual": "key=sb_secret_[REDACTED] tok=[REDACTED-JWT] password: [REDACTED] Authorization: [REDACTED] abc.def.ghi custom=[REDACTED] "
+  },
+  {
+   "id": "D5",
+   "name": "Diagnostics: an unwritable result path gives exit 3 + RESULT-FILE-ERROR (never confused with an isolation failure, exit 1)",
+   "status": "PASS",
+   "expected": "exit 3, RESULT-FILE-ERROR",
+   "actual": "status=3 signal=null spawnError=none timedOut=false stderr=\"RESULT-FILE-ERROR: could not write OUT (ENOENT); check outcome was PASSED but is unrecorded \""
+  }
+ ]
+}
