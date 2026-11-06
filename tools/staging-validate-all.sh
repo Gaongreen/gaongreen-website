@@ -53,7 +53,8 @@ if [ -z "${A_PASSWORD:-}" ] || [ -z "${B_PASSWORD:-}" ]; then read -rsp "Passwor
 export PA="$A_PASSWORD" PB="$B_PASSWORD"
 A_PASSWORD="$A_PASSWORD" B_PASSWORD="$B_PASSWORD" "${RLS[@]}" "$A" "$B" --mime --out-dir "$WORK/private" >"$WORK/private/rls.log" 2>&1; RC=$?
 tail -12 "$WORK/private/rls.log" | grep -E "^(PASS|FAIL)|passed against|password-policy|exit code" | sed -e "s/$(printf '%s' "$A_PASSWORD" | sed 's/[][\.*^$/]/\\&/g')/[redacted]/g" -e "s/$(printf '%s' "$B_PASSWORD" | sed 's/[][\.*^$/]/\\&/g')/[redacted]/g" | cut -c1-200
-if [ $RC -eq 0 ] && ls "$WORK/private"/rls-staging-result-*.json >/dev/null 2>&1; then ok RLS "all checks passed"; else fail RLS "live test did not pass cleanly (exit $RC) — deployment will NOT run"; DEPLOY=skipped; fi
+if [ $RC -eq 0 ] && ls "$WORK/private"/rls-staging-result-*.json >/dev/null 2>&1; then ok RLS "all checks passed"; else HINT=""; grep -q "sign-in failed" "$WORK/private/rls.log" && HINT="; sign-in rejected: HTTP 400 invalid_credentials means the email or password typed was wrong (account existence/confirmation is checked separately) — retype carefully, nothing was changed"
+  fail RLS "live test did not pass cleanly (exit $RC)$HINT — deployment will NOT run"; DEPLOY=skipped; fi
 # ---- draft deploy: only when every required step so far passed
 if [ ${#FAILED[@]} -eq 0 ] && [ "$DEPLOY" = 1 ]; then
   if "${GUARD[@]}" "${GARGS[@]}" --deploy >"$WORK/private/deploy.txt" 2>&1; then ok DEPLOY "$(grep -E 'DRAFT deploy URL|verified' "$WORK/private/deploy.txt" | tr '\n' ' ' | cut -c1-200)"; else fail DEPLOY "DEPLOYMENT FAILED: $(grep -E 'DEPLOYMENT FAILED|REFUSED' "$WORK/private/deploy.txt" | head -1 | cut -c1-160)"; fi
