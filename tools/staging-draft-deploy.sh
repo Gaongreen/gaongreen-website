@@ -28,7 +28,10 @@ PRE=$(pub); [ -n "$PRE" ] || die "cannot read the site's currently published dep
 echo "live site currently serves deploy $PRE (must stay unchanged)"
 OUT=$("$NB" deploy --dir "$T" --site "$SITE" --message "staging draft $(date -u +%Y-%m-%dT%H:%MZ)" --json 2>&1); RC=$?; echo "$OUT" | sed -E 's/(token|Authorization)[^ ]*/\1=[redacted]/Ig' | tail -15
 if [ $RC -ne 0 ]; then echo "DEPLOYMENT FAILED: Netlify CLI exit $RC; the live site was not intentionally changed (checking...)" >&2; POST=$(pub); [ -n "$POST" ] && [ "$POST" != "$PRE" ] && echo "WARNING: published deploy changed $PRE -> $POST. Roll back: Netlify > Deploys > Publish deploy $PRE" >&2; exit 3; fi
-URL=$(printf '%s' "$OUT" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s.slice(s.indexOf("{")));console.log(j.deploy_url||"")}catch(e){console.log("")}})')
+# Parse id + URL from the CLI JSON; print the id so it can be compared with the Netlify dashboard (a mistyped/truncated id gives "Site not found").
+PARSED=$(printf '%s' "$OUT" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const j=JSON.parse(s.slice(s.indexOf("{")));console.log((j.deploy_id||"")+" "+(j.deploy_ssl_url||j.deploy_url||""))}catch(e){console.log(" ")}})')
+DID="${PARSED%% *}"; URL="${PARSED#* }"
 POST=$(pub)
 if [ "$POST" != "$PRE" ]; then echo "DEPLOYMENT FAILED SAFETY CHECK: the live site's published deploy changed ($PRE -> '${POST:-unreadable}'). Roll back: Netlify > Deploys > Publish deploy $PRE" >&2; exit 5; fi
-case "$URL" in https://*--*.netlify.app) echo "verified: live site still serves $PRE"; echo "DRAFT deploy URL: $URL (SSO-protected; the live site is unchanged)";; *) echo "DEPLOYMENT FAILED: could not confirm a draft URL (got '$URL'). Check the Netlify dashboard." >&2; exit 4;; esac
+if ! printf '%s' "$DID" | grep -Eq '^[0-9a-f]{24}$'; then echo "DEPLOYMENT FAILED: the CLI did not return a valid 24-hex deploy id (got '$DID'). Check the Netlify dashboard > Deploys." >&2; exit 4; fi
+case "$URL" in https://"$DID"--*.netlify.app) echo "verified: live site still serves $PRE"; echo "DRAFT deploy id: $DID"; echo "DRAFT deploy URL: $URL (team-login protected; the live site is unchanged)"; echo "if the URL shows 'Site not found', compare the id above with Netlify > Deploys (ids are exactly 24 hex characters)";; *) echo "DEPLOYMENT FAILED: could not confirm a draft URL that starts with the deploy id (got '$URL'). Check the Netlify dashboard." >&2; exit 4;; esac

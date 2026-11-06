@@ -48,3 +48,11 @@ bash tools/staging-validate-all.sh <fictionalA@example.com> <fictionalB@example.
 - The script reads the published deploy id before and after and fails (exit 5, rollback target printed) if it ever changes.
 - The backup page only needs copying at the **final production release** (a production deploy replaces the site's files). Until then it is preserved at the permanent URL `https://6adf6e4d0e82082a49c6f086--incredible-biscotti-bcf58a.netlify.app/validate-backup-only.html` (team SSO login required). Before the production release, save that page from that URL into the repo's release folder so it can be included with `--keep-file`.
 - Netlify authentication IS required (the CLI deploys as you): `npm i -g netlify-cli` then `netlify login` (prints a link to open in your browser; no secrets pass through chat). Alternative: create a short-lived personal access token in Netlify → User settings → Applications, type it silently with `read -rs NETLIFY_AUTH_TOKEN; export NETLIFY_AUTH_TOKEN`, and revoke it afterwards.
+
+## "Site not found" on a draft URL — read-only diagnosis (2026-11-06 23:17)
+Connector findings: live site still serves 6adf6e4d0e82082a49c6f086 (state current, unchanged); team-login (SSO) is required for all contexts. Netlify deploy ids are exactly 24 hex characters; the id reported ("6aee33e29e5443360a12475") has 23, and the API returns 404 for it → the id/URL used was almost certainly truncated or mistyped. SSO would show a login page, not "Site not found".
+Read-only listing of the real draft (prints ids/URLs only; changes nothing; needs `netlify login`):
+```
+netlify api listSiteDeploys --data '{"site_id":"48c18d02-eb99-46b4-a68d-96f724940fd9"}' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).slice(0,5).forEach(d=>console.log(d.id,d.state,d.context,d.created_at,d.deploy_ssl_url)))'
+```
+Open the `deploy_ssl_url` of the newest row whose context is not "production" (while logged in to the Netlify team). The script now also prints `DRAFT deploy id:` and fails if the id is not 24 hex or the URL does not start with it.
