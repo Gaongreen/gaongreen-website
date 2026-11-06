@@ -22,6 +22,7 @@ if(hosts.size!==1)die('expected exactly one Supabase project host in the pages, 
 const projectHost=[...hosts][0];
 fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(path.join(out,'vendor'),{recursive:true});
 fs.writeFileSync(path.join(out,'vendor/supabase.umd.js'),sdk);fs.writeFileSync(path.join(out,'vendor/MANIFEST.json'),JSON.stringify(man,null,1));fs.writeFileSync(path.join(out,'vendor/qrcode.js'),qr);
+const NAVASSETS={};for(const asset of ['gg-nav.js','gg-nav.css']){const b=fs.readFileSync(path.join(root,asset));fs.writeFileSync(path.join(out,asset),b);NAVASSETS[asset]='sha256-'+sha('sha256',b,'hex')} // shared navigation strip (same-origin, covered by script-src 'self')
 const sriSdk='sha384-'+sha('sha384',sdk,'base64'),sriQr='sha384-'+sha('sha384',qr,'base64');
 const report=[];const outputs={};
 for(const f of pages){let h=src[f];const sw=[];const rep=(re,to,l)=>{const n=(h.match(re)||[]).length;if(n){h=h.replace(re,to);sw.push(l+'x'+n)}};
@@ -40,6 +41,6 @@ for(const f of pages){let h=src[f];const sw=[];const rep=(re,to,l)=>{const n=(h.
  const csp=["default-src 'none'","script-src 'self' "+[...new Set(inl)].join(' '),"style-src 'self' 'unsafe-inline'","img-src 'self' data: blob:","font-src 'self' data:","connect-src 'self' "+projectHost,"form-action 'self'","base-uri 'self'","object-src 'none'","frame-src 'none'"].join('; ');
  h=h.replace(/<head[^>]*>/i,m=>m+`<meta http-equiv="Content-Security-Policy" content="${csp}">`);
  fs.writeFileSync(path.join(out,f),h);outputs[f]=sha('sha256',Buffer.from(h),'hex');report.push({page:f,swaps:sw,inlineScripts:inl.length});console.log('ok  '+f.padEnd(48)+(sw.join(' ')||'(no external code)')+`  inline-script hashes=${[...new Set(inl)].length}`)}
-const rel={built:new Date().toISOString(),sdk:{name:man.name,version:man.version,sha256:man.sha256,sri:sriSdk,fixture:!!man.fixture},qr:{file:'vendor/qrcode.js',sri:sriQr,source:'see header of the file'},projectHost,pages:outputs,limits:['meta-tag CSP cannot set frame-ancestors; use a host that sends headers for that','script-src hashes must be regenerated whenever an inline script changes (this build does that)','inline style attributes still require style-src unsafe-inline']};
+const rel={built:new Date().toISOString(),assets:NAVASSETS,sdk:{name:man.name,version:man.version,sha256:man.sha256,sri:sriSdk,fixture:!!man.fixture},qr:{file:'vendor/qrcode.js',sri:sriQr,source:'see header of the file'},projectHost,pages:outputs,limits:['meta-tag CSP cannot set frame-ancestors; use a host that sends headers for that','script-src hashes must be regenerated whenever an inline script changes (this build does that)','inline style attributes still require style-src unsafe-inline']};
 fs.writeFileSync(path.join(out,'RELEASE_MANIFEST.json'),JSON.stringify(rel,null,1));if(man.fixture)fs.writeFileSync(path.join(out,'FIXTURE_NOT_REAL_SDK.txt'),'This output was built from a TEST FIXTURE standing in for the SDK. Never deploy it.\n');
 console.log(`built ${pages.length} pages -> ${path.relative(root,out)}  (sdk ${man.version}${man.fixture?' FIXTURE':''})`);

@@ -39,6 +39,7 @@ class Query{
   then(res,rej){return Promise.resolve().then(()=>this.run()).then(res,rej)}
   run(){
     if(signedOut)return{data:null,error:err('JWT required: not signed in (demo)','401')};
+    if(backendDown)return{data:null,error:down()};
     const all=readTable(this.t);const match=r=>this.filters.every(f=>f(r));
     const shape=rows=>{rows=clone(rows);
       if(this.mode==='single'){return rows.length===1?{data:rows[0],error:null}:{data:null,error:err('JSON object requested, multiple (or no) rows returned','PGRST116')}}
@@ -62,13 +63,17 @@ class Query{
 }
 const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open(NS+'objects',1);q.onupgradeneeded=()=>q.result.createObjectStore('o',{keyPath:'k'});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
 const tx=async(mode,fn)=>{const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('o',mode);const st=t.objectStore('o');let out;const rq=fn(st);if(rq)rq.onsuccess=()=>{out=rq.result};t.oncomplete=()=>{db.close();res(out)};t.onerror=()=>{db.close();rej(t.error)}})};
+// TEST-ONLY fault injection for the OFFLINE STAND-IN (never present in real pages): lets automated tests simulate an expired session and a backend outage.
+let backendDown=false;
+const down=()=>err('Service unavailable (demo fault injection)','503');
+self.__ggDemoTest={expireSession(){signedOut=true;ss()&&ss().setItem(NS+'signedOut','1')},failBackend(on){backendDown=!!on}};
 const bucket=b=>({
-  async upload(path,file,opts){if(signedOut)return{data:null,error:err('not signed in (demo)','401')};const k=b+'/'+path;const ex=await tx('readonly',s=>s.get(k));
+  async upload(path,file,opts){if(signedOut)return{data:null,error:err('not signed in (demo)','401')};if(backendDown)return{data:null,error:down()};const k=b+'/'+path;const ex=await tx('readonly',s=>s.get(k));
     if(ex&&!(opts&&opts.upsert))return{data:null,error:{message:'The resource already exists',statusCode:'409'}};
     await tx('readwrite',s=>s.put({k,blob:file,type:(opts&&opts.contentType)||file.type||'application/octet-stream',size:file.size,at:Date.now()}));return{data:{path,id:uuid(),fullPath:k},error:null}},
-  async download(path){const o=await tx('readonly',s=>s.get(b+'/'+path));return o?{data:o.blob,error:null}:{data:null,error:{message:'Object not found',statusCode:'404'}}},
-  async remove(paths){for(const p of paths)await tx('readwrite',s=>s.delete(b+'/'+p));return{data:paths.map(name=>({name})),error:null}},
-  async list(prefix){const all=await tx('readonly',s=>s.getAll());const pre=b+'/'+(prefix||'');return{data:(all||[]).filter(o=>o.k.startsWith(pre)).map(o=>({name:o.k.slice(b.length+1),metadata:{size:o.size,mimetype:o.type}})),error:null}},
+  async download(path){if(backendDown)return{data:null,error:down()};const o=await tx('readonly',s=>s.get(b+'/'+path));return o?{data:o.blob,error:null}:{data:null,error:{message:'Object not found',statusCode:'404'}}},
+  async remove(paths){if(backendDown)return{data:null,error:down()};for(const p of paths)await tx('readwrite',s=>s.delete(b+'/'+p));return{data:paths.map(name=>({name})),error:null}},
+  async list(prefix){if(backendDown)return{data:null,error:down()};const all=await tx('readonly',s=>s.getAll());const pre=b+'/'+(prefix||'');return{data:(all||[]).filter(o=>o.k.startsWith(pre)).map(o=>({name:o.k.slice(b.length+1),metadata:{size:o.size,mimetype:o.type}})),error:null}},
   async createSignedUrl(path){const o=await tx('readonly',s=>s.get(b+'/'+path));return o?{data:{signedUrl:URL.createObjectURL(o.blob)},error:null}:{data:null,error:{message:'Object not found'}}},
   getPublicUrl(path){return{data:{publicUrl:'about:blank#demo-no-public-urls/'+encodeURIComponent(path)}}}
 });
@@ -78,7 +83,7 @@ function createClient(url,key,opts){
     auth:{
       async getSession(){return{data:{session:session()},error:null}},
       async getUser(){return signedOut?{data:{user:null},error:err('Auth session missing! (demo signed out)','401')}:{data:{user:clone(DEMO_USER)},error:null}},
-      onAuthStateChange(cb){listeners.add(cb);setTimeout(()=>{try{cb(signedOut?'SIGNED_OUT':'INITIAL_SESSION',session())}catch(e){console.error(e)}},0);return{data:{subscription:{unsubscribe(){listeners.delete(cb)}}}}},
+      onAuthStateChange(cb){listeners.add(cb);setTimeout(()=>{try{cb('INITIAL_SESSION',session())}catch(e){console.error(e)}},0) /* supabase-js always reports INITIAL_SESSION on subscribe (session may be null); it does not emit SIGNED_OUT here */;return{data:{subscription:{unsubscribe(){listeners.delete(cb)}}}}},
       async signInWithPassword(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required (demo accepts any fictional values)','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
       async signUp(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
       async signOut(){signedOut=true;ss()&&ss().setItem(NS+'signedOut','1');emit('SIGNED_OUT');return{error:null}},

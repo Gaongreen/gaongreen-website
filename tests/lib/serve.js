@@ -1,7 +1,7 @@
 // Shared helpers for demo tests: static server for demo/ + strict network guard.
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=require(process.env.PW_PATH||'/home/claude/.npm-global/lib/node_modules/playwright');
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.mjs':'text/javascript'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css; charset=utf-8','.json':'application/json'};
 // Strict allow-list for requests that may reach the network stack: URL-parsed, exact host 127.0.0.1 on THIS server's port, no userinfo; plus data:/blob:/about:.
 // (Replaces a ^http://127.0.0.1 prefix regex that also matched 127.0.0.1.evil.example, 127.0.0.1@evil.example and other ports.)
 const isAllowedUrl=exports.isAllowedUrl=(raw,port)=>{let u;try{u=new URL(String(raw))}catch{return false}

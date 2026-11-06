@@ -34,6 +34,11 @@ else{
  $('reset').addEventListener('submit',async ev=>{ev.preventDefault();const form=ev.currentTarget;busy(form,true);try{const {error}=await client.auth.resetPasswordForEmail($('resetEmail').value.trim(),{redirectTo:loginRedirect});if(error)throw error;message(tr('resetSent'),true);}catch(e){message(e.message||String(e));}finally{busy(form,false);}});
  $('update').addEventListener('submit',async ev=>{ev.preventDefault();const form=ev.currentTarget;busy(form,true);try{const {error}=await client.auth.updateUser({password:$('newPassword').value});if(error)throw error;await client.auth.signOut();show('authForm');message(tr('signedOut'),true);}catch(e){message(e.message||String(e));}finally{busy(form,false);}});
  $('logout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();if(error)message(error.message);else{show('authForm');message(tr('signedOut'),true);}});
- const hash=new URLSearchParams(location.hash.slice(1));if(hash.get('type')==='recovery')show('updateForm');else displaySession();
+ const hash=new URLSearchParams(location.hash.slice(1));
+ if(hash.get('type')==='recovery')show('updateForm');
+ else if(CONFIG.mode!=='register'&&new URLSearchParams(location.search).get('action')==='signout'){
+  // Reached from the shared nav "Sign out" link: end the session here (this page owns the client), then show the sign-in form.
+  (async()=>{const {error}=await client.auth.signOut();show('authForm');if(error)message(error.message);else message(tr('signedOut'),true);try{history.replaceState(null,'',location.pathname);}catch(e){}})();
+ } else displaySession();
 }
 </script></body></html>
