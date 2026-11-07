@@ -14,7 +14,7 @@ if(!/@example\.(test|com)$/.test(AE)||!/@example\.(test|com)$/.test(BE)){console
 if(MODE!=='staging'&&MODE!=='mock'){console.log('REFUSED: GG_LIVE_MODE must be staging or mock.');process.exit(2)}
 if(MODE==='mock'&&!/^http:\/\/127\.0\.0\.1:\d+$/.test(process.env.MOCK_URL||'')){console.log('REFUSED: mock mode needs MOCK_URL=http://127.0.0.1:<port>.');process.exit(2)}
 const CO={A:'Fictional A Co (live-iso)',B:'Fictional B Co (live-iso)'};
-const KEYS=['gaongreen-company-settings-v1','gaongreen-epr-scorecard-v1','gaongreen-kre100-helper-v1','gaongreen-kissb-draft-v1','gaongreen-evidence-v1','gaongreen-qr-esg-card-v1','gaongreen-supplier-scan-v1','gaongreen-supplier-draft-v1'];
+const KEYS=['gaongreen-company-settings-v1','gaongreen-epr-scorecard-v1','gaongreen-kre100-helper-v1','gaongreen-kissb-draft-v1','gaongreen-evidence-v1','gaongreen-qr-esg-card-v1','gaongreen-supplier-scan-v1','gaongreen-supplier-draft-v1','gaongreen-evidence-form-v1'];
 const PAGES=['GaonGreen_Company_Settings_Cloud_Beta.html','GaonGreen_ESG_Dashboard_Cloud_Beta.html','GaonGreen_KISSB_Cloud_Beta.html','GaonGreen_K-RE100_Cloud_Beta.html','GaonGreen_EPR_Cloud_Beta.html'];
 const short=s=>String(s||'').slice(0,8);
 (async()=>{
@@ -33,8 +33,8 @@ const short=s=>String(s||'').slice(0,8);
  const go=async(p,f)=>{await p.goto(s.base+f);await p.waitForTimeout(600)};
  const uidOf=p=>p.evaluate(()=>window.ggAccountGuard&&window.ggAccountGuard.sessionUser());
  // Independent identity: the "sub" claim of the real access token, read from the SDK's own stored session. Never returned verbatim.
- const subOf=p=>p.evaluate(()=>{for(const k of Object.keys(localStorage)){if(/^sb-.+-auth-token$/.test(k)){try{const j=JSON.parse(localStorage.getItem(k));const at=j&&(j.access_token||(j.currentSession&&j.currentSession.access_token));if(at)return JSON.parse(atob(at.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).sub}catch(e){}}}return null});
- const tokenKeys=p=>p.evaluate(()=>Object.keys(localStorage).filter(k=>/^sb-.+-auth-token$/.test(k)).length);
+ const subOf=p=>p.evaluate(()=>{for(const k of Object.keys(sessionStorage)){if(/^sb-.+-auth-token$/.test(k)){try{const j=JSON.parse(sessionStorage.getItem(k));const at=j&&(j.access_token||(j.currentSession&&j.currentSession.access_token));if(at)return JSON.parse(atob(at.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).sub}catch(e){}}}return null});
+ const tokenKeys=p=>p.evaluate(()=>Object.keys(sessionStorage).filter(k=>/^sb-.+-auth-token$/.test(k)).length);
  const signIn=async(p,email,pw)=>{await go(p,'GaonGreen_Login.html');
   if(await tokenKeys(p)) {await go(p,'GaonGreen_Login.html?action=signout');await p.waitForTimeout(800)}
   await p.fill('#email',email);await p.fill('#password',pw);await p.click('#form button[type=submit]');
@@ -71,12 +71,12 @@ const short=s=>String(s||'').slice(0,8);
  await go(pg,PAGES[0]);const aBack=await pg.inputValue('#company');const aAll=await readAll(pg);
  await go(pg,PAGES[1]);await pg.waitForTimeout(800);const aDash=await pg.evaluate(()=>document.body.innerText);
  await t.check('L4','back as A: A\'s own data is restored exactly (company, all keys); B\'s company never appears',async()=>({ok:subA2===subA&&aBack===CO.A&&KEYS.every(k=>aAll[k]!==null)&&!JSON.stringify(aAll).includes('"owner":"B"')&&!aDash.includes(CO.B),expected:'A restored, no B',actual:JSON.stringify({sameUser:subA2===subA,company:aBack,keys:KEYS.filter(k=>aAll[k]!==null).length,dashShowsB:aDash.includes(CO.B)})}));
- // L5 stale tab: tab1 stays open as A while tab2 switches to B in the same profile
+ // L5 sessions are per TAB: a second tab signs in as B while tab 1 stays A. Neither tab sees the other's data, tab 1 keeps working as A.
  const tab1=pg,tab2=await ctx.newPage();await go(tab1,PAGES[0]);
- await signOut(tab2);await signIn(tab2,BE,BP);
- await tab1.evaluate(()=>{window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))});await tab1.waitForTimeout(1500);
- const t1=await tab1.evaluate(()=>({company:document.querySelector('#company')&&document.querySelector('#company').value,ls:localStorage.getItem('gaongreen-company-settings-v1'),guard:window.ggAccountGuard&&window.ggAccountGuard.sessionUser()}));
- await t.check('L5','stale tab: a tab opened as A that is still open after the profile switched to B no longer shows or reads A\'s data',async()=>{const showsA=(t1.company||'').includes(CO.A)||String(t1.ls||'').includes(CO.A);return{ok:!showsA&&t1.guard===subB,expected:'no A data, guard sees B',actual:JSON.stringify({showsA,guard:short(t1.guard)})}});
+ await go(tab2,'GaonGreen_Login.html');const inherited=await tokenKeys(tab2);await signIn(tab2,BE,BP);const g2=await uidOf(tab2);await go(tab2,PAGES[0]);const b2=await tab2.inputValue('#company');
+ const t1=await tab1.evaluate(()=>({company:document.querySelector('#company')&&document.querySelector('#company').value,guard:window.ggAccountGuard&&window.ggAccountGuard.sessionUser()}));
+ await go(tab1,PAGES[0]);const a1=await tab1.inputValue('#company');
+ await t.check('L5','two tabs, two accounts at once: tab 2 (B) sees none of A\'s data; tab 1 still runs as A with A\'s data; the new tab did not inherit tab 1\'s session before signing in',async()=>({ok:g2===subB&&b2===CO.B&&t1.guard===subA&&a1===CO.A&&inherited===0,expected:'isolated per tab',actual:JSON.stringify({tab2Guard:short(g2),tab2Own:b2===CO.B,tab1Guard:short(t1.guard),tab1Company:a1})}));
  await tab2.close();
  // L6 no cloud writes and no unexpected hosts
  await t.check('L6','this test made no cloud data writes (no write method to rest/storage; HEAD count queries are reads) and contacted no host other than 127.0.0.1 and the staging project',async()=>({ok:!writes.length&&!blocked.length,expected:'0 writes, 0 blocked',actual:JSON.stringify({writes,blocked:[...new Set(blocked)]})}));

@@ -5,7 +5,7 @@ const core=fs.readFileSync(path.join(root,'tools/supabase-demo-core.js'),'utf8')
 const fixtures=`self.GAONGREEN_DEMO_FIXTURES=${JSON.stringify({company_profiles:[{owner_id:'00000000-0000-4000-8000-000000000001',company_name:'Example Exporter Co. (fictional)',country:'KR',industry:'Packaging (fictional)',currency:'KRW',expenses:[]}]})};\n`;
 fs.mkdirSync(path.join(out,'vendor'),{recursive:true});
 fs.writeFileSync(path.join(out,'vendor/demo-fixtures.js'),fixtures);
-for(const asset of ['gg-nav.js','gg-nav.css','gg-l10n.js','gg-account-guard.js'])fs.copyFileSync(path.join(root,asset),path.join(out,asset)); // shared navigation strip
+for(const asset of ['gg-nav.js','gg-nav.css','gg-l10n.js','gg-auth-config.js','gg-idle.js','gg-account-guard.js'])fs.copyFileSync(path.join(root,asset),path.join(out,asset)); // shared navigation strip
 fs.writeFileSync(path.join(out,'vendor/supabase-demo.umd.js'),'(function(){\n'+core+'\nself.supabase={createClient};\n})();\n');
 fs.writeFileSync(path.join(out,'vendor/supabase-demo.mjs'),core+'\nexport{createClient};export default{createClient};\n');
 const pages=['index.html','GaonGreen_Login.html','GaonGreen_Register.html','GaonGreen_Company_Settings_Cloud_Beta.html','GaonGreen_ESG_Dashboard_Cloud_Beta.html','GaonGreen_KISSB_Cloud_Beta.html','GaonGreen_K-RE100_Cloud_Beta.html','GaonGreen_EPR_Cloud_Beta.html','GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html','GaonGreen_QR_ESG_Card_Cloud_Beta.html','GaonGreen_Evidence_Locker_Cloud_Beta.html','K-ISSB Reporting Wizard _ GaonGreen.html'];

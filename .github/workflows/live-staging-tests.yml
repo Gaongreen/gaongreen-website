@@ -30,7 +30,7 @@ jobs:
           B_PASSWORD: ${{ secrets.STAGING_CUSTOMER_B_PASSWORD }}
         run: bash tools/ci-live-staging.sh
   live-browser:
-    name: Live browser - real sign-in, cross-account local data (staging only)
+    name: Live browser - real sign-in, session-only, idle timeout, cross-account local data (staging only)
     if: github.repository == 'Gaongreen/gaongreen-website' && github.ref == 'refs/heads/recovery/lead-eng-2afe977'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -58,14 +58,14 @@ jobs:
           A_PASSWORD: ${{ secrets.STAGING_CUSTOMER_A_PASSWORD }}
           B_PASSWORD: ${{ secrets.STAGING_CUSTOMER_B_PASSWORD }}
         run: node tests/live-browser-isolation.js "$RUNNER_TEMP/live-browser.json" "$RUNNER_TEMP/pack"
-      - name: Session probe (investigation only; fictional account A; no cloud writes)
+      - name: Live session-only and idle-timeout test (fictional account A; one fictional row, deleted again)
         if: always()
         env:
           PW_PATH: ${{ runner.temp }}/pw/node_modules/playwright
           GG_LIVE_MODE: staging
           A_EMAIL: customer-a@example.test
           A_PASSWORD: ${{ secrets.STAGING_CUSTOMER_A_PASSWORD }}
-        run: node tests/live-browser-session-probe.js "$RUNNER_TEMP/session-probe.json" "$RUNNER_TEMP/pack"
+        run: node tests/live-browser-session.js "$RUNNER_TEMP/live-browser-session.json" "$RUNNER_TEMP/pack"
   offline:
     name: Offline regression (account isolation, localization) - no secrets
     if: github.repository == 'Gaongreen/gaongreen-website' && github.ref == 'refs/heads/recovery/lead-eng-2afe977'

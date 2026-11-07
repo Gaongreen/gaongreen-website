@@ -1,0 +1,48 @@
+{
+ "run": "2026-11-07T18:08:13.349Z",
+ "build": "live-browser-isolation.js validated offline vs loopback mock (E2)",
+ "results": [
+  {
+   "id": "B0",
+   "name": "pinned staging-target build (real SDK) succeeds",
+   "status": "PASS",
+   "expected": 0,
+   "actual": 0
+  },
+  {
+   "id": "B1",
+   "name": "with the guard: all 10 real-session checks pass (L0-L7 incl. the reported A->B scenario and two accounts in two tabs)",
+   "status": "PASS",
+   "expected": "10/10 PASS",
+   "actual": "10/10"
+  },
+  {
+   "id": "B2",
+   "name": "no password or token appears in the script output or the result file",
+   "status": "PASS",
+   "expected": "clean",
+   "actual": "checked"
+  },
+  {
+   "id": "B3",
+   "name": "negative control: with the guard disabled the script FAILS and flags the reported bug (L3b) - it cannot pass vacuously",
+   "status": "PASS",
+   "expected": "exit 1, L3b+L4 FAIL",
+   "actual": "{\"exit\":1,\"L3b\":\"FAIL\",\"L4\":\"FAIL\"}"
+  },
+  {
+   "id": "B5",
+   "name": "live-browser-session.js (offline, mock): runs to completion; S1-S8 pass (session-only, refresh, cloud save/load, idle warning/sign-out/revocation, unsaved text kept, restored stale tab, duplicated tab); no password/token in output",
+   "status": "PASS",
+   "expected": "pass",
+   "actual": "{\"exit\":0,\"pass\":[\"S1\",\"S2\",\"S3\",\"S4\",\"S5a\",\"S5b\",\"S5c\",\"S6\",\"S7b\",\"S8\"]}"
+  },
+  {
+   "id": "B4",
+   "name": "refusals: missing passwords, a non-example e-mail, and an unknown mode each exit 2 without contacting anything",
+   "status": "PASS",
+   "expected": "2,2,2",
+   "actual": "2,2,2"
+  }
+ ]
+}

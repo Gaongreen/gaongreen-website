@@ -1,6 +1,6 @@
 # Session design proposal: session-only sign-in with a 30-minute idle timeout
 
-Status: **PROPOSAL ONLY. Nothing here is implemented.** It needs Marina's approval (section 9). No Supabase Auth setting, hosting or DNS change is part of it unless marked "needs separate approval".
+Status: **IMPLEMENTED on the recovery branch (approved 2026-11-07 20:26: options a, b, c). Offline tests pass; the live staging run is awaiting approval.** Section 10 records what was built, the corrections found while building, the results and the remaining limits. No Supabase Auth setting, JWT lifetime, hosting or DNS change was made.
 Applies to the recovery branch `recovery/lead-eng-2afe977`. Evidence classes: E1 offline Chromium, E2 mock, E3 reading, E4 human, E5 real staging.
 
 ## 1. Short answers to the questions asked
@@ -27,7 +27,7 @@ All cloud pages create the client with `persistSession:true, autoRefreshToken:tr
 Rejected "Option 2" (custom localStorage adapter that detects a new browser session with Web Locks or a heartbeat): shares the sign-in across tabs, but is complex, has more failure modes (crash, sleep, restored windows) and gives a weaker guarantee than Option 1. Not recommended.
 
 ### 3.2 Idle timer: new `gg-idle.js` (loaded on every signed-in page)
-* `lastActivity` (epoch ms) is kept in sessionStorage under `gg-last-activity`. Activity events: pointerdown, keydown, scroll, touchstart, and return to visible. Writes are throttled to once per 5 s.
+* `lastActivity` (epoch ms) is kept in sessionStorage under `gg-last-activity`. Activity events: pointerdown, keydown, scroll, wheel, touchstart, input - **trusted (real user) events only**, so page scripts cannot keep a session alive. Returning to a tab is NOT activity: it triggers a check. Writes are throttled to once per 5 s.
 * Checks every 30 s and also on `visibilitychange`, `focus` and `pageshow` (laptop sleep, restored tab) and immediately before any cloud write or load. Comparison uses `Date.now()` against the stored timestamp, so timer throttling in background tabs cannot extend the session.
 * At **28 minutes** idle a banner (EN/KO/AR, RTL-aware, keyboard-focusable) says the session ends in 2 minutes, with **Stay signed in**.
 * At **30 minutes**: (1) local per-account data is already saved (the tools save locally on edit); (2) `signOut({scope:'local'})`; (3) in a `finally`, remove the token key from sessionStorage even if the network call failed; (4) redirect to `Login.html?reason=idle`, which shows "You were signed out after 30 minutes of inactivity."
@@ -72,3 +72,28 @@ Single commit on the recovery branch; reverting restores localStorage persistenc
 
 ## 9. Decision requested
 Approve: (a) Option 1 (sessionStorage) with the 30-minute idle timer and 2-minute warning; (b) the "each tab signs in separately" trade-off; (c) building it on the recovery branch with tests T1 to T12. Separate, optional: (d) JWT expiry reduced to about 900 s (Auth setting, exact change to be approved); (e) the "Clear data stored on this device" button. Until you approve, nothing in this file is implemented.
+
+## 10. Implementation record (2026-11-07)
+
+### Built
+* `gg-auth-config.js`: `ggAuth()`/`ggCreateClient()` force `storage = sessionStorage`; every page creates its client through `ggCreateClient` (10 pages; static test I9). Deletes legacy persistent tokens from localStorage (one-time migration; those refresh tokens stay valid on the server until used, a pilot-size risk noted below).
+* `gg-idle.js`: 30 min idle / 28 min warning (EN/KO/AR, RTL, `role=alertdialog`, 44 px buttons). Stamp `gg-last-activity` in sessionStorage. A **genuine sign-in** starts the clock only if none exists (the SDK re-emits SIGNED_IN on tab focus; counting that as activity was a real flaw found by test T4d/K-RE100 and fixed). The earliest check runs in `<head>`: a restored tab with a stale or missing stamp is signed out before any page script can make a data call; its old session is handed to the Login page, which revokes it with `setSession` + `signOut({scope:'local'})`. While running: flush, `signOut({scope:'local'})` on the registered clients, remove the token, go to Login with a reason message.
+* **Dead sessions.** The SDK keeps a revoked/expired-refresh session in storage and emits no SIGNED_OUT (observed). An active session is refreshed well before expiry, so a token expired for 2+ minutes means refresh failed: the tab flushes and ends cleanly ("ended" message). Test T9.
+* `gg-account-guard.js` reads the user from sessionStorage; the `storage` cross-tab listener is gone because identity is now per tab. Account-local namespaces are unchanged and now also cover the new key `gaongreen-evidence-form-v1`.
+* **Flush before sign-out** (`gg-flush` event; `gg-probe` for the warning): Company Settings, EPR, K-RE100, K-ISSB (main form with a dirty flag so a blank form can never overwrite a saved draft, cloud cache, evidence section), QR card, Supplier scan, Evidence Locker (text fields saved; a chosen **file cannot be saved and is named in the 28-minute warning and on the Login page**).
+* Login: all sign-outs use `scope:'local'`; reason messages EN/KO/AR.
+* Not touched: JWT lifetime, Auth settings, hosting, DNS, production, `main`.
+
+### Results (offline, E2: real SDK 2.118.0 vs loopback mock, Playwright fake clock)
+`tests/func-session.js`: T1 session-only + legacy token removed; T2 reload; T3a-d new context / restored stale tab (no data call, revoked) / no stamp; T4a-d warning, stay, activity, refocus; T5a-b 30-min sign-out + server revocation; T7 per tool (Company Settings, EPR, K-RE100, K-ISSB, QR, Supplier, Evidence Locker) typed-but-unsaved text survives, only in the account namespace; T7f named lost file; T8 account switch after idle; T9 dead session; T10 duplicated tab; T11 cloud save/load; T12 guard identifies the user. `tests/func-account-isolation.js` I1-I9 (I5 and I8 rewritten for per-tab sessions). `tests/live-browser-wrapper.js` validates the live scripts offline, including a negative control.
+Live staging (E5) results: **pending approval of the CI run** (jobs `live`, `live-browser` incl. `tests/live-browser-isolation.js` and `tests/live-browser-session.js`).
+
+### Remaining limitations and risks
+1. **Closing the browser is not a guarantee** (session-restore; probe P3 on staging). The 30-minute stamp bounds it.
+2. Client-side timer only; Supabase Free has no server-side inactivity timeout. A stolen token is not stopped. Idle sign-out revokes the refresh token on the server, but the access token stays valid up to its lifetime (staging probe P5b: data API still answers 200). Shortening the JWT lifetime is the only bound and was NOT changed (needs approval).
+3. **New tab = new sign-in** (friction). Duplicated tabs share one session (staging probe P7: no revocation seen in one trial, but the dead-session path ends the tab cleanly).
+4. Legacy persistent refresh tokens already issued stay valid on the server until used or revoked (pilot-size risk; no user action possible from here).
+5. An unsaved FILE choice in Evidence Locker cannot be preserved (named in the warning instead).
+6. An hour-long background tab with a throttled timer is judged on wake-up by the stored stamp, so it signs out on return; this is intended.
+7. A page whose JS fails to load cannot run the timer (Login/Register and all tool pages load the scripts in `<head>`).
+8. Fake-clock tests cannot prove behaviour on every browser's session-restore; one human pass on Chrome, Safari and a phone is still required (docs/HUMAN_TEST_FORM.md).

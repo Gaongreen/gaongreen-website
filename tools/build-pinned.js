@@ -34,7 +34,7 @@ if(hosts.size!==1)die('expected exactly one Supabase project host in the pages, 
 const projectHost=[...hosts][0];
 fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(path.join(out,'vendor'),{recursive:true});
 fs.writeFileSync(path.join(out,'vendor/supabase.umd.js'),sdk);fs.writeFileSync(path.join(out,'vendor/MANIFEST.json'),JSON.stringify(man,null,1));fs.writeFileSync(path.join(out,'vendor/qrcode.js'),qr);
-const NAVASSETS={};for(const asset of ['gg-nav.js','gg-nav.css','gg-l10n.js','gg-account-guard.js']){const b=fs.readFileSync(path.join(root,asset));fs.writeFileSync(path.join(out,asset),b);NAVASSETS[asset]='sha256-'+sha('sha256',b,'hex')} // shared navigation strip (same-origin, covered by script-src 'self')
+const NAVASSETS={};for(const asset of ['gg-nav.js','gg-nav.css','gg-l10n.js','gg-auth-config.js','gg-idle.js','gg-account-guard.js']){const b=fs.readFileSync(path.join(root,asset));fs.writeFileSync(path.join(out,asset),b);NAVASSETS[asset]='sha256-'+sha('sha256',b,'hex')} // shared navigation strip (same-origin, covered by script-src 'self')
 const sriSdk='sha384-'+sha('sha384',sdk,'base64'),sriQr='sha384-'+sha('sha384',qr,'base64');
 const report=[];const outputs={};const cspByPage={};
 for(const f of pages){let h=src[f];const sw=[];const rep=(re,to,l)=>{const n=(h.match(re)||[]).length;if(n){h=h.replace(re,to);sw.push(l+'x'+n)}};

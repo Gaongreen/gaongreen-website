@@ -7,7 +7,7 @@
    superseded the first time anon writes. A page loaded as one identity while the browser session has become another (stale tab) reads null, its writes are dropped, and it reloads itself.
    Loaded synchronously in <head> before the page scripts. Plain ES5. No network. Opt out of auto-reload with <html data-gg-guard="no-reload"> (Login/Register). */
 (function(){'use strict';
-var KEYS=['gaongreen-company-settings-v1','gaongreen-epr-scorecard-v1','gaongreen-kre100-helper-v1','gaongreen-kissb-draft-v1','gaongreen-evidence-v1','gaongreen-qr-esg-card-v1','gaongreen-supplier-scan-v1','gaongreen-supplier-draft-v1'];
+var KEYS=['gaongreen-company-settings-v1','gaongreen-epr-scorecard-v1','gaongreen-kre100-helper-v1','gaongreen-kissb-draft-v1','gaongreen-evidence-v1','gaongreen-qr-esg-card-v1','gaongreen-supplier-scan-v1','gaongreen-supplier-draft-v1','gaongreen-evidence-form-v1'];
 var IDB_NAMES=['gaongreen-epr-backup-v1','gaongreen-evidence-locker-v1'];   /* IndexedDB databases (EPR local backup, local Evidence Locker documents): same redirect, signed-in users get "<name>::<user id>", anon keeps the original name */
 var TOKEN=/^sb-[A-Za-z0-9_-]+-auth-token$/,ID=/^[A-Za-z0-9-]{8,64}$/;
 var L=null;try{L=window.localStorage;L.getItem('x')}catch(e){L=null}
@@ -15,7 +15,8 @@ if(!L||!window.Storage)return;
 var SP=Storage.prototype,rawGet=SP.getItem,rawSet=SP.setItem,rawRemove=SP.removeItem;
 var G=window.ggAccountGuard={KEYS:KEYS.slice(),loadedAs:null,reloadRequested:false};
 function isKey(k){return KEYS.indexOf(k)>=0}
-function sessionUser(){try{for(var i=0;i<L.length;i++){var k=L.key(i);if(TOKEN.test(k)){var s=JSON.parse(rawGet.call(L,k));var id=s&&((s.user&&s.user.id)||(s.currentSession&&s.currentSession.user&&s.currentSession.user.id));if(typeof id==='string'&&ID.test(id))return id}}}catch(e){}return null}
+var SS=null;try{SS=window.sessionStorage;SS.getItem('x')}catch(e){SS=null}   /* the auth session lives in sessionStorage (session-only sign-in, see gg-auth-config.js); localStorage tokens are never trusted */
+function sessionUser(){try{if(!SS)return null;for(var i=0;i<SS.length;i++){var k=SS.key(i);if(TOKEN.test(k)){var s=JSON.parse(rawGet.call(SS,k));var id=s&&((s.user&&s.user.id)||(s.currentSession&&s.currentSession.user&&s.currentSession.user.id));if(typeof id==='string'&&ID.test(id))return id}}}catch(e){}return null}
 function nsKey(k,u){return k+'::'+(u||'anon')}
 function wantsReload(){var h=document.documentElement;return !(h&&h.getAttribute('data-gg-guard')==='no-reload')}
 function requestReload(){if(G.reloadRequested||document.readyState==='loading'||!wantsReload())return;G.reloadRequested=true;var ev=null;try{ev=new CustomEvent('gg-account-changed',{cancelable:true,detail:{from:G.loadedAs,to:sessionUser()}})}catch(e){}var go=ev?window.dispatchEvent(ev):true;if(go)setTimeout(function(){try{location.reload()}catch(e){}},50)}
@@ -40,7 +41,6 @@ SP.removeItem=function(k){
   if(isKey(k)){var u=sessionUser();if(u!==G.loadedAs){requestReload();return}rawRemove.call(L,nsKey(k,u));if(u===null)rawRemove.call(L,k);return}
   var r=rawRemove.apply(this,arguments);if(TOKEN.test(k))setTimeout(check,0);return r}
  return rawRemove.apply(this,arguments)};
-window.addEventListener('storage',function(e){if(!e.key||TOKEN.test(e.key))check()});
 window.addEventListener('focus',check);
 window.addEventListener('pageshow',function(e){if(e.persisted)check()});
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')check()});

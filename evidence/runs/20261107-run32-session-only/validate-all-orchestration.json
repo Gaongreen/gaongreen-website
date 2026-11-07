@@ -1,0 +1,125 @@
+{
+ "run": "2026-11-07T18:10:11.108Z",
+ "build": "OFFLINE stubs",
+ "results": [
+  {
+   "id": "O1",
+   "name": "all steps pass -> exit 0, RESULT: PASS, draft deploy called once, share summary written, no password on screen",
+   "status": "PASS",
+   "expected": "exit 0",
+   "actual": "exit 0 calls=build,guard-dry,rls,guard-deploy it first; it contains no raw logs. Raw files stay in /tmp/vao-aGiUPS/gg-staging-validation.Z9Iaqb/private (do not share).\nRESULT: PASS\n*** TEST MODE: tool overrides active — not a real validation ***\n"
+  },
+  {
+   "id": "O2",
+   "name": "working files live in the temp dir (outside the repo), mode 700; repo copy has no new files",
+   "status": "PASS",
+   "expected": "outside repo, 700",
+   "actual": "/tmp/vao-aGiUPS/gg-staging-validation.Z9Iaqb 700 demo,stubs,tests,tools,vendor"
+  },
+  {
+   "id": "O3",
+   "name": "share.txt is allow-listed: contains result/steps/check ids, no passwords, no paths, no raw logs",
+   "status": "PASS",
+   "expected": "clean",
+   "actual": "GAONGREEN STAGING VALIDATION — shareable summary (allow-listed fields only)\ngenerated: 2026-11-07T18:10:09.661Z\nRESULT     PASS\nCOMMIT     unknown\nTREE_DIRTY no\nPRECHECK   ok\nOFFLINE    skipped (alrea"
+  },
+  {
+   "id": "O4",
+   "name": "build failure -> exit 1, FAIL (BUILD), guard/RLS/deploy never run, passwords never requested",
+   "status": "PASS",
+   "expected": "exit 1, only build",
+   "actual": "exit 1 calls=build"
+  },
+  {
+   "id": "O5",
+   "name": "live RLS failure -> exit 1, FAIL (RLS), deploy NEVER attempted, summary says NOT RUN, JWT/email scrubbed from the shareable summary",
+   "status": "PASS",
+   "expected": "no deploy",
+   "actual": "exit 1 calls=build,guard-dry,rls"
+  },
+  {
+   "id": "O6",
+   "name": "RLS \"success\" without a result file is treated as failure (no deploy)",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 calls=build,guard-dry,rls"
+  },
+  {
+   "id": "O7",
+   "name": "deployment failure -> exit 1, \"DEPLOYMENT FAILED\" reported, RESULT: FAIL (DEPLOY), never PASS",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1  Raw files stay in /tmp/vao-aGiUPS/gg-staging-validation.koJ9Yq/private (do not share).\nRESULT: FAIL (DEPLOY)\n*** TEST MODE: tool overrides active — not a real validation ***\n!! DEPLOY FAILED: DEPLOYMENT FAILED: DEPLOYMENT FAILED: Netlify CLI exit 7\n"
+  },
+  {
+   "id": "O8",
+   "name": "deploy guard refusal -> exit 1, FAIL (GUARD), RLS and deploy not run",
+   "status": "PASS",
+   "expected": "build,guard-dry",
+   "actual": "exit 1 calls=build,guard-dry"
+  },
+  {
+   "id": "O9",
+   "name": "missing required file -> exit 1 at PRECHECK, nothing is built/run",
+   "status": "PASS",
+   "expected": "exit 1 precheck",
+   "actual": "exit 1 calls="
+  },
+  {
+   "id": "O10",
+   "name": "missing --keep-file -> exit 1 at PRECHECK",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1"
+  },
+  {
+   "id": "O11",
+   "name": "--no-deploy with everything passing -> exit 0 but RESULT says PASS-NO-DEPLOY (never plain PASS), no deploy call",
+   "status": "PASS",
+   "expected": "PASS-NO-DEPLOY",
+   "actual": "exit 0 ).\nRESULT: PASS-NO-DEPLOY (draft deploy not requested)\n*** TEST MODE: tool overrides active — not a real validation ***\n"
+  },
+  {
+   "id": "O12",
+   "name": "if a password reaches the summary text the leak detector WITHHOLDS it (no share.txt), exit 1, password not printed",
+   "status": "PASS",
+   "expected": "withheld",
+   "actual": "exit 1 leak detector (treated as NOT clean)\n*** TEST MODE: tool overrides active — not a real validation ***\n!! RLS FAILED: live test did not pass cleanly (exit 1) — deployment will NOT run\nSHARE FILE WITHHELD: a supplied password (or its encoding) appears\n"
+  },
+  {
+   "id": "O13",
+   "name": "test overrides are ignored without GG_TEST_MODE=1 (real tools required; stubs not used)",
+   "status": "PASS",
+   "expected": "exit 1, stubs unused",
+   "actual": "exit 1 working directory for this run (outside the repo): /tmp/vao-aGiUPS/gg-staging-validation.ADNj0E\n\n================ SUMMARY ================\n=========================================\nThe shareable file "
+  },
+  {
+   "id": "O14",
+   "name": "sign-in refusal (exit 2) fails the run, never deploys, and explains invalid_credentials without changing anything",
+   "status": "PASS",
+   "expected": "exit 1 + hint",
+   "actual": "exit 1 cted: HTTP 400 invalid_credentials means the email or password typed was wrong (account existence/confirmation is checked separately) — retype carefully, nothing was changed — deployment will NOT run\n"
+  },
+  {
+   "id": "O15",
+   "name": "--use-ci-proof: a verified passing CI run replaces the typed-password test (no passwords, RLS stub never called), draft deployed, RESULT: PASS, exact draft id/URL shown in the shareable summary",
+   "status": "PASS",
+   "expected": "pass via CI proof",
+   "actual": "exit 0 calls=build,guard-dry,ciproof,guard-deploy UPS/gg-staging-validation.0TiiJI/share.txt). Read it first; it contains no raw logs. Raw files stay in /tmp/vao-aGiUPS/gg-staging-validation.0TiiJI/private (do not share).\nRESULT: PASS\n*** TEST MODE: tool overrides active — not a real validation ***\n"
+  },
+  {
+   "id": "O16",
+   "name": "--use-ci-proof without a passing CI run for this commit -> exit 1, FAIL (RLS), deploy never attempted",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 calls=build,guard-dry,ciproof ot share).\nRESULT: FAIL (RLS)\n*** TEST MODE: tool overrides active — not a real validation ***\n!! RLS FAILED: CI proof missing: NOT PROVEN: no successful run for this commit — deployment will NOT run\n"
+  },
+  {
+   "id": "O17",
+   "name": "no arguments (neither emails nor --use-ci-proof) -> usage, exit 2, nothing run",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 usage: /tmp/vao-aGiUPS/c3/tools/staging-validate-all.sh <A@example.com> <B@example.com> [--keep-file"
+  }
+ ]
+}

@@ -24,3 +24,7 @@ Reads the signed-in user id synchronously from the SDK's persisted session (`sb-
 
 ## Tests (`tests/func-account-isolation.js`, I1–I8; with the guard disabled I1–I5, I7, I8 FAIL, proving they reproduce the bug)
 I1 reported scenario on Company Settings + dashboard; I2 all 8 localStorage keys on all 8 pages, A->B->A->B byte-for-byte; I3 pre-guard data; I4 sign-out/in; I5 stale tab; I6 static: every key used by any page is registered, guard loaded before first use; I7 IndexedDB; I8 rapid flips with a second tab.
+
+
+## Update 2026-11-07: session-only sign-in
+The auth session now lives in `sessionStorage` (per tab; see docs/SESSION_DESIGN.md). `ggAccountGuard.sessionUser()` reads it from there; localStorage tokens are never trusted and are deleted on load. Because identity is per tab, a sign-in change in one tab can no longer alter another tab's identity: two tabs may be signed in as different accounts at once, each reading and writing only its own `<key>::<userId>` namespace. The stale-identity handling (drop writes, fire `gg-account-changed`, reload) remains as defence in depth for a tab whose own session record changes after load. New registered key: `gaongreen-evidence-form-v1` (Evidence Locker form text kept across an automatic sign-out).
