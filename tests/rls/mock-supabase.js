@@ -7,7 +7,7 @@ exports.start=(mode)=>new Promise(res=>{
  const b64=o=>Buffer.from(JSON.stringify(o)).toString('base64url'),sign=s=>crypto.createHmac('sha256',SECRET).update(s).digest('base64url');
  const tables={},objects={},sessions={},rts={},REUSE_MS=Number(process.env.MOCK_REUSE_MS||10000),res204=r=>{r.writeHead(204);r.end()};const OWN=['owner_id','user_id'];
  const who=req=>{const a=(req.headers.authorization||'').replace(/^Bearer /,'');const p=a.split('.');if(p.length!==3)return{anon:true};if(mode!=='weak-jwt'&&sign(p[0]+'.'+p[1])!==p[2])return{bad:true};try{return{uid:JSON.parse(Buffer.from(p[1],'base64url').toString()).sub}}catch{return{bad:true}}};
- const send=(r,code,body,raw)=>{r.writeHead(code,{'content-type':raw?'text/plain':'application/json'});r.end(raw?body:JSON.stringify(body))};
+ let LAT=Number(process.env.MOCK_LATENCY_MS||0);const send=(r,code,body,raw)=>{const go=()=>{r.writeHead(code,{'content-type':raw?'text/plain':'application/json'});r.end(raw?body:JSON.stringify(body))};LAT>0?setTimeout(go,LAT):go()};
  const srv=http.createServer((q,r)=>{let body='';q.on('data',d=>body+=d);q.on('end',()=>{
   const u=new URL(q.url,'http://x');const w=who(q);
   if(u.pathname==='/auth/v1/token'){const j=JSON.parse(body||'{}');const grant=u.searchParams.get('grant_type');const h=b64({alg:'HS256'});
@@ -16,6 +16,7 @@ exports.start=(mode)=>new Promise(res=>{
    if(grant==='refresh_token'){const t=rts[j.refresh_token];const dead=()=>send(r,400,{code:'refresh_token_not_found',message:'Invalid Refresh Token: Refresh Token Not Found'});if(!t||!sessions[t.sid])return dead();
     if(t.used!==null){if(Date.now()-t.used>REUSE_MS){delete sessions[t.sid];return dead()}}else t.used=Date.now();const us=Object.values(users).find(x=>x.id===t.uid);return send(r,200,issue(us,t.sid,t.email))}
    const us=users[j.email];if(!us||us.pw!==j.password)return send(r,400,{error:'invalid'});const sid=crypto.randomUUID();sessions[sid]=true;return send(r,200,issue(us,sid,j.email))}
+  if(u.pathname==='/__mock/latency'){LAT=Number(u.searchParams.get('ms')||0);return res204(r)}
   if(u.pathname==='/__mock/sessions')return send(r,200,{count:Object.keys(sessions).length});
   if(u.pathname==='/auth/v1/logout'&&q.method==='POST'){const a=(q.headers.authorization||'').replace(/^Bearer /,'').split('.');try{const sid=JSON.parse(Buffer.from(a[1],'base64url').toString()).session_id;if(sid)delete sessions[sid]}catch{}res204(r);return}
   if(u.pathname==='/auth/v1/user'&&q.method==='GET'){if(w.bad||w.anon)return send(r,401,{code:401,message:'invalid JWT'});const a=(q.headers.authorization||'').replace(/^Bearer /,'').split('.');let sid;try{sid=JSON.parse(Buffer.from(a[1],'base64url').toString()).session_id}catch{}if(sid&&!sessions[sid])return send(r,403,{code:'session_not_found',message:'Session from session_id claim in JWT does not exist'});const us=Object.values(users).find(x=>x.id===w.uid);return send(r,200,{id:w.uid,aud:'authenticated',role:'authenticated',email:Object.keys(users).find(k=>users[k]===us),app_metadata:{},user_metadata:{}})}

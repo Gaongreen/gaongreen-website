@@ -13,7 +13,10 @@ const API=MODE==='staging'?'https://'+STAGING_HOST:process.env.MOCK_URL;
 const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observation',actual:JSON.stringify(actual)});console.log('INFO '+id+' '+name+'  '+JSON.stringify(actual))};
 (async()=>{
  const s=await S.start(dir);const blocked=[],reqs=[];
+ const authLog=[];let inflight=0;
  const mk=async(state)=>{const ctx=await s.browser.newContext(state?{storageState:state}:{});await ctx.clock.install();
+  ctx.on('request',r=>{if(r.url().includes(STAGING_HOST))inflight++});ctx.on('requestfinished',r=>{if(r.url().includes(STAGING_HOST))inflight=Math.max(0,inflight-1)});ctx.on('requestfailed',r=>{if(r.url().includes(STAGING_HOST))inflight=Math.max(0,inflight-1)});
+  ctx.on('response',r=>{try{const u=new URL(r.url());if(u.host===STAGING_HOST&&/^\/auth\/v1\//.test(u.pathname))authLog.push(r.request().method()+' '+u.pathname.replace('/auth/v1/','')+' '+r.status())}catch(e){}});
   await ctx.route('**/*',async route=>{const rq=route.request(),u=new URL(rq.url());if(S.isAllowedUrl(rq.url(),s.port))return route.continue();
    if(u.protocol==='https:'&&u.host===STAGING_HOST){reqs.push({m:rq.method(),p:u.pathname});if(MODE==='staging')return route.continue();const cors={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'*','access-control-expose-headers':'*'};
     if(rq.method()==='OPTIONS')return route.fulfill({status:204,headers:cors});
@@ -24,6 +27,7 @@ const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observ
  const sess=p=>p.evaluate(()=>{for(const k of Object.keys(sessionStorage))if(/^sb-.+-auth-token$/.test(k)){const j=JSON.parse(sessionStorage.getItem(k));return{k,v:sessionStorage.getItem(k),rt:j.refresh_token,at:j.access_token,uid:j.user&&j.user.id}}return null});
  const signIn=async p=>{await go(p,'GaonGreen_Login.html');await p.fill('#email',AE);await p.fill('#password',AP);await p.click('#form button[type=submit]');for(let i=0;i<60;i++){if(await inStore(p,'sessionStorage'))break;await p.waitForTimeout(200)}await p.waitForTimeout(500)};
  const idle=async(p,ms)=>{let left=ms;while(left>0){const d=Math.min(15000,left);await p.clock.runFor(d);left-=d;await p.waitForTimeout(15)}await p.waitForTimeout(900)};
+ const idleSettled=async(p,ms)=>{let left=ms;while(left>0){const d=Math.min(15000,left);await p.clock.runFor(d);left-=d;for(let i=0;i<150&&inflight>0;i++)await p.waitForTimeout(20);await p.waitForTimeout(15)}await p.waitForTimeout(900)};
  const msgOf=q=>q.evaluate(()=>(document.getElementById('status')||{}).textContent||'');
  const http=async(path,hdr,method,body)=>(await fetch(API+path,{method:method||'GET',headers:{apikey:KEY,'content-type':'application/json',...hdr},body:body?JSON.stringify(body):undefined})).status;
  const cloudRead=p=>p.evaluate(async()=>{const c=window.ggClients&&window.ggClients[0];if(!c)return{noClient:true};const r=await c.from('company_profiles').select('owner_id').limit(1);return{ok:!r.error}});
@@ -46,12 +50,15 @@ const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observ
  // S5 idle (own context: its fake clock runs ahead of real time, and server token expiry is real-clock based)
  const c5=await mk();const p5=await c5.newPage();await signIn(p5);await go(p5,'GaonGreen_Company_Settings_Cloud_Beta.html');await p5.fill('#company','Unsaved live text');await idle(p5,29*MIN);
  const warn=await p5.evaluate(()=>!!document.getElementById('gg-idle-banner'));await p5.click('#gg-idle-stay');await p5.waitForTimeout(300);const warnGone=await p5.evaluate(()=>!document.getElementById('gg-idle-banner'));
- const se2=await sess(p5);await idle(p5,31*MIN);const signedOut=!(await inStore(p5,'sessionStorage')),msg=await msgOf(p5),rv=await revoked(se2);
+ const se2=await sess(p5);const mark=authLog.length;await idleSettled(p5,31*MIN);await p5.waitForFunction(()=>!sessionStorage.getItem('gg-revoke'),null,{timeout:15000}).catch(()=>{});await p5.waitForTimeout(2500);const signedOut=!(await inStore(p5,'sessionStorage')),msg=await msgOf(p5),rv=await revoked(se2);const calls=authLog.slice(mark);
  await t.check('S5a','idle: warning at 28 minutes, "Stay signed in" resets, then 30 minutes of inactivity signs out with a visible message',async()=>({ok:warn&&warnGone&&signedOut&&/30 minutes/.test(msg),expected:'warn, stay, out',actual:JSON.stringify({warn,warnGone,signedOut,msg:msg.slice(0,50)})}));
- await t.check('S5b','the automatic sign-out revoked the session on the real server: old refresh token rejected, old access token rejected by Auth /user',async()=>({ok:rv.ok,expected:'4xx and 401/403',actual:JSON.stringify({refresh:rv.refresh,user:rv.user})}));
+ await t.check('S5b','the automatic sign-out revoked the session on the real server: old refresh token rejected, old access token rejected by Auth /user',async()=>({ok:rv.ok,expected:'4xx and 401/403',actual:JSON.stringify({refresh:rv.refresh,user:rv.user,authCallsDuringSignOut:calls})}));
  const st5=await c5.storageState();await c5.close();const c5b=await mk(st5);const p5b=await c5b.newPage();await signIn(p5b);await go(p5b,'GaonGreen_Company_Settings_Cloud_Beta.html');const kept=await p5b.inputValue('#company');
  await t.check('S5c','unsaved text typed before the automatic sign-out is still there after signing in again (flushed to the account-local store)',async()=>({ok:kept==='Unsaved live text',expected:'kept',actual:JSON.stringify({kept})}));
  try{await p5b.evaluate(()=>window.ggClients[0].auth.signOut({scope:'local'}))}catch(e){}
+ // S5d the hand-off path live: fake clock jumps (safety timeout fires before the network), so the Login page must finish the revocation
+ const c5d=await mk();const p5d=await c5d.newPage();await signIn(p5d);const se5d=await sess(p5d);await go(p5d,'GaonGreen_Company_Settings_Cloud_Beta.html');await idle(p5d,31*MIN);await p5d.waitForFunction(()=>!sessionStorage.getItem('gg-revoke'),null,{timeout:15000}).catch(()=>{});await p5d.waitForTimeout(3000);const rv5d=await revoked(se5d);
+ await t.check('S5d','automatic sign-out when the logout cannot finish before the safety timeout (fast-forwarded clock): the Login hand-off still revokes the server session',async()=>({ok:!(await inStore(p5d,'sessionStorage'))&&rv5d.ok,expected:'signed out + revoked',actual:JSON.stringify({refresh:rv5d.refresh,user:rv5d.user})}));await c5d.close();
  // S6 restored tab with a stale activity stamp: signed out and revoked before any data call
  const c6s=await mk();const p6s=await c6s.newPage();await signIn(p6s);const dump6=await sess(p6s);
   {const c=await mk();await c.addInitScript(d=>{try{if(!sessionStorage.getItem(d.k)){sessionStorage.setItem(d.k,d.v);sessionStorage.setItem('gg-last-activity',String(Date.now()-45*60000))}}catch(e){}},{k:dump6.k,v:dump6.v});const q=await c.newPage();const w=reqs.length;await go(q,'GaonGreen_Company_Settings_Cloud_Beta.html');await q.waitForTimeout(3500);

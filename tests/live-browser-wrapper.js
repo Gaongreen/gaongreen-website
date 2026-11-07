@@ -19,7 +19,7 @@ const run=(args,env,script)=>new Promise(res=>{const c=spawn('node',[path.join(r
  const m2=await M.start('allowlist');
  const r6=await run([path.join(tmp,'r6.json'),path.join(tmp,'pk')],{...env,MOCK_URL:m2.url},'tests/live-browser-session.js');
  const j6=fs.existsSync(path.join(tmp,'r6.json'))?JSON.parse(fs.readFileSync(path.join(tmp,'r6.json'),'utf8')):{results:[]};const ids6=j6.results.filter(x=>x.status==='PASS').map(x=>x.id);
- await t.check('B5','live-browser-session.js (offline, mock): runs to completion; S1-S8 pass (session-only, refresh, cloud save/load, idle warning/sign-out/revocation, unsaved text kept, restored stale tab, duplicated tab); no password/token in output',async()=>({ok:r6.status===0&&['S1','S2','S3','S4','S5a','S5b','S5c','S6','S7b','S8'].every(i=>ids6.includes(i))&&!(r6.out+r6.err+JSON.stringify(j6)).includes('mockpass-A-1234'),expected:'pass',actual:JSON.stringify({exit:r6.status,pass:ids6})}));
+ await t.check('B5','live-browser-session.js (offline, mock): runs to completion; S1-S8 pass (session-only, refresh, cloud save/load, idle warning/sign-out/revocation, unsaved text kept, restored stale tab, duplicated tab); no password/token in output',async()=>({ok:r6.status===0&&['S1','S2','S3','S4','S5a','S5b','S5c','S5d','S6','S7b','S8'].every(i=>ids6.includes(i))&&!(r6.out+r6.err+JSON.stringify(j6)).includes('mockpass-A-1234'),expected:'pass',actual:JSON.stringify({exit:r6.status,pass:ids6})}));
  m2.close();
  const r3=await run([path.join(tmp,'r3.json'),path.join(tmp,'pk')],{GG_LIVE_MODE:'mock',MOCK_URL:'http://127.0.0.1:1'});
  const r4=await run([path.join(tmp,'r4.json'),path.join(tmp,'pk')],{...env,A_EMAIL:'a@gmail.com'});

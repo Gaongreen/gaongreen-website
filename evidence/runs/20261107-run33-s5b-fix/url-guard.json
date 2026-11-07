@@ -1,0 +1,90 @@
+{
+ "run": "2026-11-07T18:22:49.554Z",
+ "build": "OFFLINE; guard predicate + Chromium interception",
+ "results": [
+  {
+   "id": "U-ALLOW http://127.0.0.1:35709/",
+   "name": "legitimate URL is allowed: http://127.0.0.1:35709/",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-ALLOW http://127.0.0.1:35709/index.html?x=1#h",
+   "name": "legitimate URL is allowed: http://127.0.0.1:35709/index.html?x=1#h",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-ALLOW http://127.0.0.1:35709",
+   "name": "legitimate URL is allowed: http://127.0.0.1:35709",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-ALLOW data:text/plain,hi",
+   "name": "legitimate URL is allowed: data:text/plain,hi",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-ALLOW blob:null/abc",
+   "name": "legitimate URL is allowed: blob:null/abc",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-ALLOW about:blank",
+   "name": "legitimate URL is allowed: about:blank",
+   "status": "PASS",
+   "expected": "allowed",
+   "actual": "true"
+  },
+  {
+   "id": "U-DENY hostname suffix",
+   "name": "all 5 \"hostname suffix\" URLs are rejected as non-local",
+   "status": "PASS",
+   "expected": "none allowed",
+   "actual": "[]"
+  },
+  {
+   "id": "U-DENY embedded credentials",
+   "name": "all 4 \"embedded credentials\" URLs are rejected as non-local",
+   "status": "PASS",
+   "expected": "none allowed",
+   "actual": "[]"
+  },
+  {
+   "id": "U-DENY wrong port",
+   "name": "all 5 \"wrong port\" URLs are rejected as non-local",
+   "status": "PASS",
+   "expected": "none allowed",
+   "actual": "[]"
+  },
+  {
+   "id": "U-DENY other host or scheme",
+   "name": "all 13 \"other host or scheme\" URLs are rejected as non-local",
+   "status": "PASS",
+   "expected": "none allowed",
+   "actual": "[]"
+  },
+  {
+   "id": "U-BROWSER",
+   "name": "in Chromium, deceptive hostname-suffix and wrong-port requests are intercepted and aborted",
+   "status": "PASS",
+   "expected": "4 intercepted, 4 blocked",
+   "actual": "{\"out\":[\"blocked\",\"blocked\",\"blocked\",\"blocked\"],\"seen\":true,\"external\":[\"http://127.0.0.1.evil.example/p1\",\"http://127.0.0.1.evil.example:35709/p2\",\"http://127.0.0.1:1/p3\",\"http://127.0.0.1:35710/p4\"]}"
+  },
+  {
+   "id": "U-OWN",
+   "name": "the guard still lets the page load and use its own server (existing functionality preserved)",
+   "status": "PASS",
+   "expected": "page loads, 0 external",
+   "actual": "chars=3570 external=0"
+  }
+ ]
+}

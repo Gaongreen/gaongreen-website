@@ -36,12 +36,18 @@ function banner(lostList,secs){var b=document.getElementById('gg-idle-banner'),t
  b.dir=lang()==='ar'?'rtl':'ltr';b.querySelector('#gg-idle-msg').textContent=t.warn+' '+t.left+' '+Math.floor(secs/60)+':'+('0'+(secs%60)).slice(-2);
  b.querySelector('#gg-idle-lost').textContent=lostList.length?t.lost+lostList.join(', '):'';b.querySelector('#gg-idle-stay').textContent=t.stay;b.querySelector('#gg-idle-out').textContent=t.out}
 function hide(){var b=document.getElementById('gg-idle-banner');if(b&&b.parentNode)b.parentNode.removeChild(b)}
-/* Automatic or manual sign-out while the page is running. */
-function end(reason){if(G.signingOut)return;G.signingOut=true;var lost=flush();var cl=window.ggClients||[],ps=[];
- cl.forEach(function(c){try{ps.push(Promise.resolve(c.auth.signOut({scope:'local'})).catch(function(){}))}catch(e){}});
- var rec=null;if(!cl.length){var k=tokenKeys()[0];if(k)try{rec=SS.getItem(k)}catch(e){}}
- var done=function(){if(rec){try{SS.setItem(REVOKE,rec)}catch(e){}}removeToken();leave(reason,lost)};
- var timer=setTimeout(done,5000);Promise.all(ps).then(function(){clearTimeout(timer);done()},function(){clearTimeout(timer);done()})}
+/* Automatic or manual sign-out while the page is running.
+   Server-side revocation must not depend on the page staying alive: the SDK may first have to REFRESH a token that is close to expiry and only then send the logout request, and a slow network can outlast
+   the safety timeout. So the session record is captured BEFORE signing out, and if the logout did not complete cleanly (error, timeout, no client) it is handed to the Login page (key gg-revoke) which retries
+   the revocation with a fresh page. (Found by a staging run: S5b showed a session left alive after an automatic sign-out.) */
+function end(reason){if(G.signingOut)return;G.signingOut=true;var lost=flush();var cl=window.ggClients||[],ps=[],rec=null,finished=false;
+ try{var k0=tokenKeys()[0];if(k0)rec=SS.getItem(k0)}catch(e){}
+ var timer=null;
+ function finish(revoked){if(finished)return;finished=true;if(timer)clearTimeout(timer);if(!revoked&&rec){try{SS.setItem(REVOKE,rec)}catch(e){}}removeToken();leave(reason,lost)}
+ if(!cl.length){finish(false);return}
+ cl.forEach(function(c){try{ps.push(Promise.resolve(c.auth.signOut({scope:'local'})).then(function(r){return !(r&&r.error)},function(){return false}))}catch(e){ps.push(Promise.resolve(false))}});
+ timer=setTimeout(function(){finish(false)},5000);
+ Promise.all(ps).then(function(r){finish(r.every(Boolean))},function(){finish(false)})}
 G.end=end;
 /* The SDK keeps a dead session in storage when its refresh token was revoked/expired (it does not emit SIGNED_OUT). An ACTIVE session is refreshed long before it expires, so a token that has been expired for 2+ minutes means refreshing has failed: end the session cleanly. */
 function expiredSession(){try{var k=tokenKeys()[0];if(!k)return false;var j=JSON.parse(SS.getItem(k));var e=j&&(j.expires_at||(j.currentSession&&j.currentSession.expires_at));return typeof e==='number'&&Date.now()/1000>e+120}catch(x){return false}}

@@ -69,6 +69,13 @@ const TOOLS=[['Company Settings','GaonGreen_Company_Settings_Cloud_Beta.html','#
  {const ctx=await mk();const p=await ctx.newPage();await signIn(p,A,PA);await go(p,'GaonGreen_Company_Settings_Cloud_Beta.html');await idle(p,29*MIN);
   await p.evaluate(()=>{window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))});await p.waitForTimeout(500);const stillBanner=await p.evaluate(()=>!!document.getElementById('gg-idle-banner'));await idle(p,2*MIN);const out=!(await inStore(p,'sessionStorage'));
   await t.check('T4d','tab refocus (SDK re-emits SIGNED_IN) does not reset the idle clock: warning still shown at 29 minutes and signed out by 31',async()=>({ok:stillBanner&&out,expected:'banner then out',actual:JSON.stringify({stillBanner,out})}));await ctx.close()}
+ // T5c (regression for the live S5b failure): the token is close to expiry at sign-out time, so the SDK must REFRESH before it can log out, and the network is slow; the page's fake clock jumps ahead of real time so the 5 s safety timeout fires first.
+ // The server session must still end: through the Login hand-off if the direct logout could not finish. (Before the fix the logout was never sent and the session stayed alive.)
+ {const ctx=await mk();const p=await ctx.newPage();await signIn(p,A,PA);await go(p,'GaonGreen_Company_Settings_Cloud_Beta.html');await idle(p,29*MIN);await p.click('#gg-idle-stay');await p.waitForTimeout(300);await idle(p,28*MIN);
+  const cnt0=(await (await fetch(mock.url+'/__mock/sessions')).json()).count;await fetch(mock.url+'/__mock/latency?ms=300');
+  await idle(p,4*MIN);await p.waitForTimeout(3000);await fetch(mock.url+'/__mock/latency?ms=0');await p.waitForTimeout(2500);
+  const cnt1=(await (await fetch(mock.url+'/__mock/sessions')).json()).count;const out=!(await inStore(p,'sessionStorage'));const m=await msgOf(p);const pending=await p.evaluate(()=>sessionStorage.getItem('gg-revoke')!==null);
+  await t.check('T5c','token near expiry + slow network at the automatic sign-out (safety timeout fires first): the tab is signed out AND the server session ends (direct logout or Login hand-off) - never left alive; no pending hand-off remains',async()=>({ok:out&&/30 minutes/.test(m)&&cnt0-cnt1===1&&!pending,expected:'signed out and revoked',actual:JSON.stringify({signedOut:out,msg:m.slice(0,30),liveSessionsBefore:cnt0,after:cnt1,handoffPending:pending})}));await ctx.close()}
  // activity keeps the session alive
  {const ctx=await mk();const p=await ctx.newPage();await signIn(p,A,PA);await go(p,'GaonGreen_Company_Settings_Cloud_Beta.html');
   for(let i=0;i<4;i++){await idle(p,20*MIN);await p.keyboard.press('Shift');await p.waitForTimeout(200)}const alive=await inStore(p,'sessionStorage');
