@@ -22,3 +22,6 @@ Repository-level secrets (https://github.com/Gaongreen/gaongreen-website/setting
 
 ## Reading results
 Actions tab → "Live staging tests" → latest run → job summary (RESULT: PASS / FAIL with the failing check ids). Exit 2 = secrets missing; "sign-in rejected" = the secrets do not match the staging accounts.
+
+## Live browser job (added for the cross-account local-data check)
+Job `live-browser` (same environment, same approval click as `live`) builds the pinned staging pack (real SDK 2.118.0, staging target, publishable key only) and runs `tests/live-browser-isolation.js`: real sign-in through the Login page as customer A and B, A to B to A in one browser profile, plus a stale tab. It asserts that `ggAccountGuard.sessionUser()` equals the `sub` of the real access token, that B never sees A's local data (all 8 keys, Company Settings, dashboard), and that A's data comes back. It makes no cloud writes (any non-GET to rest/storage fails it). `tests/live-browser-wrapper.js` validates the script offline against the loopback mock, including a negative control with the guard disabled. `tools/check-ci-proof.sh` now requires BOTH live jobs to succeed.
