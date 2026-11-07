@@ -1,0 +1,76 @@
+{
+ "run": "2026-11-07T12:46:07.878Z",
+ "build": "demo (offline stand-in with injected faults; NOT real Supabase)",
+ "results": [
+  {
+   "id": "X1-save",
+   "name": "Expired session: cloud SAVE on all 6 tools + Settings shows an error/sign-in message, writes nothing and keeps the user's local data",
+   "status": "PASS",
+   "expected": "7/7 tools handled",
+   "actual": "[]"
+  },
+  {
+   "id": "X1-load",
+   "name": "Expired session: cloud LOAD on all 6 tools + Settings shows an error/sign-in message, writes nothing and keeps the user's local data",
+   "status": "PASS",
+   "expected": "7/7 tools handled",
+   "actual": "[]"
+  },
+  {
+   "id": "F1-save",
+   "name": "Backend outage: cloud SAVE on all 6 tools + Settings shows an error, writes nothing and keeps local data",
+   "status": "PASS",
+   "expected": "7/7 tools handled",
+   "actual": "[]"
+  },
+  {
+   "id": "F1-load",
+   "name": "Backend outage: cloud LOAD on all 6 tools + Settings shows an error, writes nothing and keeps local data",
+   "status": "PASS",
+   "expected": "7/7 tools handled",
+   "actual": "[]"
+  },
+  {
+   "id": "Q-C",
+   "name": "QR: cloud save, clear, cloud load restores company, year and energy",
+   "status": "PASS",
+   "expected": "Example Exporter Co.|2026|40|https://example.com/esg",
+   "actual": "saved=true Example Exporter Co.|2026|40|https://example.com/esg"
+  },
+  {
+   "id": "L-R1",
+   "name": "Evidence cloud: a file over 10 MB is rejected with a message; no table row and no stored object",
+   "status": "PASS",
+   "expected": "rejected, nothing stored",
+   "actual": "rows 0->0 objs 0->0 msg=\"File exceeds 10 MB.\""
+  },
+  {
+   "id": "L-R2",
+   "name": "Evidence cloud: a disallowed extension (.exe) is rejected with a message; nothing stored",
+   "status": "PASS",
+   "expected": "rejected, nothing stored",
+   "actual": "rows 0->0 objs 0->0 msg=\"Unsupported file type.\""
+  },
+  {
+   "id": "L-R3",
+   "name": "Evidence local library: >10 MB and .exe are rejected (library stays empty); a valid file afterwards IS accepted (positive control)",
+   "status": "PASS",
+   "expected": "0,0,1",
+   "actual": "0,0,1"
+  },
+  {
+   "id": "L-R4",
+   "name": "Evidence cloud: when the backend is down, upload shows an error and no row/object appears",
+   "status": "PASS",
+   "expected": "error, nothing stored",
+   "actual": "rows 0->0 objs 0->0 msg=\"Cloud error: Service unavailable (demo fault injection)\""
+  },
+  {
+   "id": "P-1",
+   "name": "K-ISSB: print layout renders to a PDF containing the company, the six indicator values and the Missing marker, and no navigation strip",
+   "status": "PASS",
+   "expected": "all values present, Missing present, no nav",
+   "actual": "missing=[] hasMissing=true navLeak=false pdfChars=3446"
+  }
+ ]
+}

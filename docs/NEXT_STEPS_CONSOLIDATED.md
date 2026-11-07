@@ -56,3 +56,10 @@ Read-only listing of the real draft (prints ids/URLs only; changes nothing; need
 netlify api listSiteDeploys --data '{"site_id":"48c18d02-eb99-46b4-a68d-96f724940fd9"}' | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>JSON.parse(s).slice(0,5).forEach(d=>console.log(d.id,d.state,d.context,d.created_at,d.deploy_ssl_url)))'
 ```
 Open the `deploy_ssl_url` of the newest row whose context is not "production" (while logged in to the Netlify team). The script now also prints `DRAFT deploy id:` and fails if the id is not 24 hex or the URL does not start with it.
+
+## Draft deploy WITHOUT typing passwords (2026-11-07): `--use-ci-proof`
+Once the GitHub Actions "Live staging tests" run has passed for the exact commit you are deploying (see docs/CI_LIVE_STAGING.md), the draft can be created without re-running the live tests locally:
+```
+git pull && bash tools/staging-validate-all.sh --use-ci-proof
+```
+`tools/check-ci-proof.sh` (read-only, needs `gh` logged in) refuses unless: tracked files are clean, HEAD is the pushed tip of `recovery/lead-eng-2afe977`, and a successful run of the workflow for exactly that commit (push or manual, that branch, < 24 h old) has its live job AND test step concluded `success`. Any new commit needs a new run (Actions → Run workflow, then approve under Review deployments). Everything else is unchanged: build for staging only, deploy guard, draft only, live-deploy-unchanged check, shareable summary (now shows the exact draft id and URL). If `gh` is unavailable or lacks permission to read Actions in your Codespace, fall back to the password version of the command.

@@ -7,14 +7,15 @@ set -uo pipefail
 umask 077
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; cd "$REPO" || exit 2
 URL="https://gdmejzbycgpuabvutkdk.supabase.co"; KEY="sb_publishable_RV_G9MyL3cRJpl67w6gXUg_BpvFP6x8"   # staging URL + PUBLISHABLE key (public by design)
-A="${1:-}"; B="${2:-}"; [ -n "$A" ] && [ -n "$B" ] || { echo "usage: $0 <A@example.com> <B@example.com> [--keep-file F] [--no-deploy] [--with-offline]" >&2; exit 2; }; shift 2
-KEEP=""; DEPLOY=1; OFFLINE=0
-while [ $# -gt 0 ]; do case "$1" in --keep-file) KEEP="${2:-}"; shift;; --no-deploy) DEPLOY=0;; --with-offline) OFFLINE=1;; *) echo "unknown option $1" >&2; exit 2;; esac; shift; done
+A=""; B=""; if [ $# -ge 2 ] && [[ "$1" != --* ]]; then A="$1"; B="$2"; shift 2; fi
+KEEP=""; DEPLOY=1; OFFLINE=0; CIPROOF=0
+while [ $# -gt 0 ]; do case "$1" in --keep-file) KEEP="${2:-}"; shift;; --no-deploy) DEPLOY=0;; --with-offline) OFFLINE=1;; --use-ci-proof) CIPROOF=1;; *) echo "unknown option $1" >&2; exit 2;; esac; shift; done
+[ "$CIPROOF" = 1 ] || { [ -n "$A" ] && [ -n "$B" ] || { echo "usage: $0 <A@example.com> <B@example.com> [--keep-file F] [--no-deploy] [--with-offline]   |   $0 --use-ci-proof [--keep-file F] [--no-deploy]" >&2; exit 2; }; }
 # Test hooks (simulated-failure tests only). Ignored unless GG_TEST_MODE=1; announced loudly when active.
 BUILD=(node tools/build-pinned.js --vendor vendor --target-url "$URL" --target-key "$KEY" --qr demo/vendor/qrcode-shim.js --out)   # + <dist>
-GUARD=(bash tools/staging-draft-deploy.sh); RLS=(bash tools/run-live-rls.sh); NEED_NETLIFY=1
+GUARD=(bash tools/staging-draft-deploy.sh); RLS=(bash tools/run-live-rls.sh); CIP=(bash tools/check-ci-proof.sh); NEED_NETLIFY=1
 if [ "${GG_TEST_MODE:-}" = 1 ]; then echo "*** TEST MODE: tool overrides active — not a real validation ***" >&2
-  [ -n "${GG_BUILD_SH:-}" ] && BUILD=(bash "$GG_BUILD_SH"); [ -n "${GG_GUARD_SH:-}" ] && GUARD=(bash "$GG_GUARD_SH"); [ -n "${GG_RLS_SH:-}" ] && RLS=(bash "$GG_RLS_SH"); NEED_NETLIFY=0; fi
+  [ -n "${GG_BUILD_SH:-}" ] && BUILD=(bash "$GG_BUILD_SH"); [ -n "${GG_GUARD_SH:-}" ] && GUARD=(bash "$GG_GUARD_SH"); [ -n "${GG_RLS_SH:-}" ] && RLS=(bash "$GG_RLS_SH"); [ -n "${GG_CIPROOF_SH:-}" ] && CIP=(bash "$GG_CIPROOF_SH"); NEED_NETLIFY=0; fi
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/gg-staging-validation.XXXXXX")" || { echo "cannot create a temp dir" >&2; exit 2; }; chmod 700 "$WORK"; mkdir "$WORK/private"
 STATE="$WORK/state.txt"; : >"$STATE"; DIST="$WORK/dist-pinned"; FAILED=()
 set_state(){ printf '%s=%s\n' "$1" "$2" >>"$STATE"; }
@@ -36,7 +37,7 @@ finish(){  # builds the allow-listed share file, decides the overall result, exi
 }
 echo "working directory for this run (outside the repo): $WORK"
 # ---- precheck: everything required must exist BEFORE asking for passwords
-MISS=(); for f in vendor/supabase.umd.js vendor/MANIFEST.json tools/build-pinned.js tools/staging-draft-deploy.sh tools/run-live-rls.sh tools/summarize-validation.js tests/rls/rls-isolation.mjs demo/vendor/qrcode-shim.js; do [ -f "$f" ] || MISS+=("$f"); done
+MISS=(); for f in vendor/supabase.umd.js vendor/MANIFEST.json tools/build-pinned.js tools/staging-draft-deploy.sh tools/run-live-rls.sh tools/check-ci-proof.sh tools/summarize-validation.js tests/rls/rls-isolation.mjs demo/vendor/qrcode-shim.js; do [ -f "$f" ] || MISS+=("$f"); done
 command -v node >/dev/null 2>&1 || MISS+=("node"); [ "$DEPLOY" = 1 ] && [ "$NEED_NETLIFY" = 1 ] && ! command -v "${NETLIFY_BIN:-netlify}" >/dev/null 2>&1 && MISS+=("netlify CLI (npm i -g netlify-cli; netlify login) — or rerun with --no-deploy")
 [ -n "$KEEP" ] && [ ! -f "$KEEP" ] && MISS+=("--keep-file $KEEP")
 if [ ${#MISS[@]} -gt 0 ]; then fail PRECHECK "missing: ${MISS[*]}"; finish; fi; ok PRECHECK
@@ -47,7 +48,10 @@ if "${BUILD[@]}" "$DIST" >"$WORK/private/build.log" 2>&1 && [ -f "$DIST/RELEASE_
 # ---- guard (checks only)
 GARGS=(--dist "$DIST"); [ -n "$KEEP" ] && GARGS+=(--keep-file "$KEEP")
 if "${GUARD[@]}" "${GARGS[@]}" >"$WORK/private/guard.log" 2>&1; then ok GUARD; else fail GUARD "deploy guard refused: $(tail -1 "$WORK/private/guard.log" | cut -c1-140)"; finish; fi
-# ---- live RLS / storage / MIME (passwords read silently here; they only reach the test process)
+# ---- live RLS / storage / MIME: either typed passwords (direct) or a verified passing CI run for this exact commit (--use-ci-proof, no passwords)
+if [ "$CIPROOF" = 1 ]; then
+  if "${CIP[@]}" >"$WORK/private/ciproof.log" 2>&1; then ok RLS "verified in CI: $(grep -oE 'run [0-9]+ for commit [0-9a-f]{8}' "$WORK/private/ciproof.log" | head -1)"; else fail RLS "CI proof missing: $(tail -1 "$WORK/private/ciproof.log" | cut -c1-200) — deployment will NOT run"; DEPLOY=skipped; fi
+else
 [ -r /dev/tty ] || [ -n "${A_PASSWORD:-}" ] || { fail RLS "no terminal to ask for passwords"; finish; }
 if [ -z "${A_PASSWORD:-}" ] || [ -z "${B_PASSWORD:-}" ]; then read -rsp "Password for $A (hidden): " A_PASSWORD </dev/tty; echo >&2; read -rsp "Password for $B (hidden): " B_PASSWORD </dev/tty; echo >&2; fi
 export PA="$A_PASSWORD" PB="$B_PASSWORD"
@@ -55,6 +59,7 @@ A_PASSWORD="$A_PASSWORD" B_PASSWORD="$B_PASSWORD" "${RLS[@]}" "$A" "$B" --mime -
 tail -12 "$WORK/private/rls.log" | grep -E "^(PASS|FAIL)|passed against|password-policy|exit code" | sed -e "s/$(printf '%s' "$A_PASSWORD" | sed 's/[][\.*^$/]/\\&/g')/[redacted]/g" -e "s/$(printf '%s' "$B_PASSWORD" | sed 's/[][\.*^$/]/\\&/g')/[redacted]/g" | cut -c1-200
 if [ $RC -eq 0 ] && ls "$WORK/private"/rls-staging-result-*.json >/dev/null 2>&1; then ok RLS "all checks passed"; else HINT=""; grep -q "sign-in failed" "$WORK/private/rls.log" && HINT="; sign-in rejected: HTTP 400 invalid_credentials means the email or password typed was wrong (account existence/confirmation is checked separately) — retype carefully, nothing was changed"
   fail RLS "live test did not pass cleanly (exit $RC)$HINT — deployment will NOT run"; DEPLOY=skipped; fi
+fi
 # ---- draft deploy: only when every required step so far passed
 if [ ${#FAILED[@]} -eq 0 ] && [ "$DEPLOY" = 1 ]; then
   if "${GUARD[@]}" "${GARGS[@]}" --deploy >"$WORK/private/deploy.txt" 2>&1; then ok DEPLOY "$(grep -E 'DRAFT deploy URL|verified' "$WORK/private/deploy.txt" | tr '\n' ' ' | cut -c1-200)"; else fail DEPLOY "DEPLOYMENT FAILED: $(grep -E 'DEPLOYMENT FAILED|REFUSED' "$WORK/private/deploy.txt" | head -1 | cut -c1-160)"; fi
