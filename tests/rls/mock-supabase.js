@@ -3,7 +3,7 @@
 const http=require('http'),crypto=require('crypto');
 const ALLOW=['application/pdf','image/png','image/jpeg','image/webp','text/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.wordprocessingml.document','text/plain'];
 exports.start=(mode)=>new Promise(res=>{
- const SECRET='mock-secret',users={'a@example.com':{pw:'pa',id:'11111111-1111-4111-8111-111111111111'},'b@example.com':{pw:'pb',id:'22222222-2222-4222-8222-222222222222'}};
+ const SECRET='mock-secret',users={'a@example.com':{pw:process.env.MOCK_PW_A||'pa',id:'11111111-1111-4111-8111-111111111111'},'b@example.com':{pw:process.env.MOCK_PW_B||'pb',id:'22222222-2222-4222-8222-222222222222'}};
  const b64=o=>Buffer.from(JSON.stringify(o)).toString('base64url'),sign=s=>crypto.createHmac('sha256',SECRET).update(s).digest('base64url');
  const tables={},objects={};const OWN=['owner_id','user_id'];
  const who=req=>{const a=(req.headers.authorization||'').replace(/^Bearer /,'');const p=a.split('.');if(p.length!==3)return{anon:true};if(mode!=='weak-jwt'&&sign(p[0]+'.'+p[1])!==p[2])return{bad:true};try{return{uid:JSON.parse(Buffer.from(p[1],'base64url').toString()).sub}}catch{return{bad:true}}};
