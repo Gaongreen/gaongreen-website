@@ -19,3 +19,11 @@ Use fictional data only (see DEMO_RUNBOOK.md). Mark Pass / Fail / N/A and note a
 | 13 | Sign out; back button does not show protected data | | |
 | 14 | (Staging only) second fictional user cannot see first user's data or files | | |
 Overall: ____  Blocking issues: ____
+
+## Account switching in ONE browser (added 2026-11-07)
+With the draft that contains `gg-account-guard.js` (needs a new draft deploy — not yet done):
+- [ ] As Customer A: save Company Settings (company name), save a K-ISSB / K-RE100 / EPR / Supplier / QR local entry.
+- [ ] Sign out; sign in as Customer B in the SAME browser: dashboard company name, Company Settings and every tool show NO data of A.
+- [ ] B enters own company name; sign out; sign in as A again: A's own data is back, B's is not shown.
+- [ ] Evidence Locker: documents of A are not listed for B (and vice versa).
+- [ ] Two tabs: sign out/in as B in tab 2, then edit in tab 1 — tab 1 reloads and A's edit is not saved into B.
