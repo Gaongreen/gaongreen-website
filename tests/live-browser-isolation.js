@@ -22,7 +22,7 @@ const short=s=>String(s||'').slice(0,8);
  await ctx.route('**/*',async route=>{const rq=route.request(),u=new URL(rq.url());
   if(S.isAllowedUrl(rq.url(),s.port))return route.continue();
   if(u.protocol==='https:'&&u.host===STAGING_HOST){
-   if(rq.method()!=='GET'&&rq.method()!=='OPTIONS'&&!/^\/auth\/v1\//.test(u.pathname))writes.push(rq.method()+' '+u.pathname.slice(0,40));
+   if(rq.method()!=='GET'&&rq.method()!=='HEAD'&&rq.method()!=='OPTIONS'&&!/^\/auth\/v1\//.test(u.pathname))writes.push(rq.method()+' '+u.pathname.slice(0,40));
    if(MODE==='staging')return route.continue();
    const cors={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'*','access-control-expose-headers':'*'};
    if(rq.method()==='OPTIONS')return route.fulfill({status:204,headers:cors});
@@ -79,7 +79,7 @@ const short=s=>String(s||'').slice(0,8);
  await t.check('L5','stale tab: a tab opened as A that is still open after the profile switched to B no longer shows or reads A\'s data',async()=>{const showsA=(t1.company||'').includes(CO.A)||String(t1.ls||'').includes(CO.A);return{ok:!showsA&&t1.guard===subB,expected:'no A data, guard sees B',actual:JSON.stringify({showsA,guard:short(t1.guard)})}});
  await tab2.close();
  // L6 no cloud writes and no unexpected hosts
- await t.check('L6','this test made no cloud data writes (no non-GET to rest/storage) and contacted no host other than 127.0.0.1 and the staging project',async()=>({ok:!writes.length&&!blocked.length,expected:'0 writes, 0 blocked',actual:JSON.stringify({writes,blocked:[...new Set(blocked)]})}));
+ await t.check('L6','this test made no cloud data writes (no write method to rest/storage; HEAD count queries are reads) and contacted no host other than 127.0.0.1 and the staging project',async()=>({ok:!writes.length&&!blocked.length,expected:'0 writes, 0 blocked',actual:JSON.stringify({writes,blocked:[...new Set(blocked)]})}));
  await t.check('L7','no uncaught page errors',async()=>({ok:!errs.length,expected:'none',actual:JSON.stringify(errs.slice(0,3))}));
  // cleanup: end the session so no token remains; the context is discarded
  try{await signOut(pg)}catch(e){}

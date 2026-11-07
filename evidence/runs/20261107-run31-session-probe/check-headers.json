@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-07T17:05:46.863Z",
+ "build": "OFFLINE loopback; tests the checker logic only",
+ "results": [
+  {
+   "id": "H-ok",
+   "name": "checker passes a deployment that serves the audited bytes with correct headers (12 pages)",
+   "status": "PASS",
+   "expected": "exit 0",
+   "actual": "exit 0 check-headers: 59 PASS, 0 FAIL against http://127.0.0.1:45857 "
+  },
+  {
+   "id": "H-noXFO",
+   "name": "checker FAILS (exit 1) when: noXFO",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 FAIL index.html baseline-headers  missing/wrong: x-frame-options | FAIL GaonGreen_Login.html baseline-headers  missing/wrong: x-frame-options | FAIL GaonGreen_Register.html baseline-headers  missing/wrong: x-frame-options "
+  },
+  {
+   "id": "H-noCSP",
+   "name": "checker FAILS (exit 1) when: noCSP",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 FAIL GaonGreen_Login.html csp-header  header= | check-headers: 58 PASS, 1 FAIL against http://127.0.0.1:44065 "
+  },
+  {
+   "id": "H-noFA",
+   "name": "checker FAILS (exit 1) when: noFA",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 FAIL index.html csp-header  header=default-src 'none'; script-src 'self' 'sha256-J+wlPsX+B2rEt5nJLXaYxMUR5DXFQyh2V1YNIXitSg8='; style-src 'self' 'unsafe-in | FAIL GaonGreen_Login.html csp-header  header=default-src 'none'; script-src 'self' 'sha256-crG6tgpBTF2bBAZ10HORldHh9th6jP26DHklteA8+AM='; style-src 'self' 'unsafe-in | FAIL GaonGreen_Register.html csp-header  header=default-src 'none'; script-src 'self' 'sha256-Wv1mJ8ZMTSdZ7n6y2tB4vCSq+tovzgLqHapKSVivhdM='; style-src 'self' 'unsafe-in "
+  },
+  {
+   "id": "H-tamper",
+   "name": "checker FAILS (exit 1) when: tamper",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 FAIL GaonGreen_Login.html body-sha256  served body differs from RELEASE_MANIFEST (not the audited build, or modified by the host) | check-headers: 58 PASS, 1 FAIL against http://127.0.0.1:42055 "
+  },
+  {
+   "id": "H-badSdk",
+   "name": "checker FAILS (exit 1) when: badSdk",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 FAIL GaonGreen_Login.html sri ./vendor/supabase.umd.js  served script does not match SRI (status 200) | FAIL GaonGreen_Register.html sri ./vendor/supabase.umd.js  served script does not match SRI (status 200) | FAIL GaonGreen_Company_Settings_Cloud_Beta.html sri ./vendor/supabase.umd.js  served script does not match SRI (status 200) "
+  },
+  {
+   "id": "H-refuse",
+   "name": "checker refuses (exit 2, no request): http remote, production Supabase host, PRODUCTION_HOSTS, credentials in URL, invalid URL",
+   "status": "PASS",
+   "expected": "5/5 exit 2",
+   "actual": "[]"
+  }
+ ]
+}
