@@ -1,0 +1,17 @@
+PASS F-S1 Supplier mixed answers: score 63%, coverage 12/15, 10 flagged
+PASS F-S2 Supplier all yes: 100%, 15/15, 0 flagged
+PASS F-S3 Supplier cloud save then load restores answers (score back to 100%)
+PASS F-Q0 QR decoder (python3 -I + OpenCV) is available and ran
+PASS F-Q-RES QR image the page generates is high resolution (>=300 px; 150 px was only ~2 px per module for the ~420-char link and decoded unreliably)
+PASS F-Q1 QR image decodes to a GaonGreen profile link
+PASS F-Q2 Decoded QR payload carries company, website and numbers entered
+PASS F-Q3 QR rejects renewable electricity 150% (no card generated)
+PASS F-Q4 QR card renders NO clickable link for a javascript: website (unsafe URL dropped at render)
+PASS F-Q5 Hostile shared profile link: no script execution, no unsafe links, text shown inert
+PASS F-L1 Evidence cloud upload lists the document
+PASS F-L2 Evidence download bytes equal uploaded bytes (SHA-256)
+PASS F-L3 Evidence delete removes the document from the list
+PASS F-L4 Evidence local save increments the document total to 1
+PASS F-C1 K-RE100 cloud save, clear, cloud load restores total=1200 and PPA=300
+PASS F-C2 EPR cloud save, clear, cloud load restores total 50 kg
+PASS F-X1 Dashboard shows the fictional company profile
