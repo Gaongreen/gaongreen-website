@@ -1,0 +1,6 @@
+FAIL F-Q0 QR decoder (python3 -I + OpenCV) is available and ran  expected="decoder runs (exit 0 or 1)" actual="decoder exit=3 spawnError=none stderr=\"DECODER-UNAVAILABLE: cannot import cv2 (ModuleNotFoundError: No module named 'cv2')\""
+FAIL F-Q1 QR image decodes to a GaonGreen profile link  expected="link with #profile=" actual="NO DECODED OUTPUT: decoder exit=3 spawnError=none stderr=\"DECODER-UNAVAILABLE: cannot import cv2 (ModuleNotFoundError: No module named 'cv2')\""
+FAIL F-Q2 Decoded QR payload carries company, website and numbers entered  expected="company/website/energy=40" actual="NO PAYLOAD (decoded 0 chars; parse: Unexpected token '�', \"�w^~)�\" is not valid JSON; decoder exit=3 spawnError=none stderr=\"DECODER-UNAVAILABLE: cannot import cv2 (ModuleNotFoundError: No module named
+PASS F-Q3 QR rejects renewable electricity 150% (no card generated)
+PASS F-Q4 QR card renders NO clickable link for a javascript: website (unsafe URL dropped at render)
+PASS F-Q5 Hostile shared profile link: no script execution, no unsafe links, text shown inert

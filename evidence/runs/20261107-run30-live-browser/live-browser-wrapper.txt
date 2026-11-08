@@ -1,0 +1,5 @@
+PASS B0 pinned staging-target build (real SDK) succeeds
+PASS B1 with the guard: all 10 real-session checks pass (L0-L7 incl. the reported A->B scenario and the stale tab)
+PASS B2 no password or token appears in the script output or the result file
+PASS B3 negative control: with the guard disabled the script FAILS and flags the reported bug (L3b) - it cannot pass vacuously
+PASS B4 refusals: missing passwords, a non-example e-mail, and an unknown mode each exit 2 without contacting anything

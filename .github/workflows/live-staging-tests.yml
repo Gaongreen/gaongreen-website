@@ -1,0 +1,92 @@
+# Live staging tests for GaonGreen. STAGING ONLY (Phase 3 Staging project gdmejzbycgpuabvutkdk); never production.
+# Triggers: push to the recovery branch, or manual run. NO pull_request / pull_request_target / schedule triggers: forks and other branches can never reach the secrets.
+# The passwords live ONLY in the GitHub environment "staging-live-tests" (secrets STAGING_CUSTOMER_A_PASSWORD, STAGING_CUSTOMER_B_PASSWORD). See docs/CI_LIVE_STAGING.md.
+name: Live staging tests
+on:
+  push:
+    branches: [recovery/lead-eng-2afe977]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: live-staging-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  live:
+    name: Live auth, RLS, storage, MIME (staging only)
+    if: github.repository == 'Gaongreen/gaongreen-website' && github.ref == 'refs/heads/recovery/lead-eng-2afe977'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: staging-live-tests
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Live staging security tests (only a scrubbed summary is printed)
+        env:
+          A_EMAIL: customer-a@example.test
+          B_EMAIL: customer-b@example.test
+          A_PASSWORD: ${{ secrets.STAGING_CUSTOMER_A_PASSWORD }}
+          B_PASSWORD: ${{ secrets.STAGING_CUSTOMER_B_PASSWORD }}
+        run: bash tools/ci-live-staging.sh
+  live-browser:
+    name: Live browser - real sign-in, session-only, idle timeout, cross-account local data (staging only)
+    if: github.repository == 'Gaongreen/gaongreen-website' && github.ref == 'refs/heads/recovery/lead-eng-2afe977'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: staging-live-tests
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pw" playwright@1.63.0
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Build the pinned staging pack (real SDK, staging target; publishable key only)
+        run: |
+          node tools/build-pinned.js --vendor vendor \
+            --target-url "https://gdmejzbycgpuabvutkdk.supabase.co" \
+            --target-key "sb_publishable_RV_G9MyL3cRJpl67w6gXUg_BpvFP6x8" \
+            --qr demo/vendor/qrcode-shim.js --out "$RUNNER_TEMP/pack" > /dev/null
+      - name: Real-session isolation test (fictional accounts; no cloud writes; only pass/fail lines printed)
+        env:
+          PW_PATH: ${{ runner.temp }}/pw/node_modules/playwright
+          GG_LIVE_MODE: staging
+          A_EMAIL: customer-a@example.test
+          B_EMAIL: customer-b@example.test
+          A_PASSWORD: ${{ secrets.STAGING_CUSTOMER_A_PASSWORD }}
+          B_PASSWORD: ${{ secrets.STAGING_CUSTOMER_B_PASSWORD }}
+        run: node tests/live-browser-isolation.js "$RUNNER_TEMP/live-browser.json" "$RUNNER_TEMP/pack"
+      - name: Live session-only and idle-timeout test (fictional account A; one fictional row, deleted again)
+        if: always()
+        env:
+          PW_PATH: ${{ runner.temp }}/pw/node_modules/playwright
+          GG_LIVE_MODE: staging
+          A_EMAIL: customer-a@example.test
+          A_PASSWORD: ${{ secrets.STAGING_CUSTOMER_A_PASSWORD }}
+        run: node tests/live-browser-session.js "$RUNNER_TEMP/live-browser-session.json" "$RUNNER_TEMP/pack"
+  offline:
+    name: Offline regression (account isolation, localization) - no secrets
+    if: github.repository == 'Gaongreen/gaongreen-website' && github.ref == 'refs/heads/recovery/lead-eng-2afe977'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install headless Chromium for the tests
+        run: |
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pw" playwright@1.63.0
+          "$RUNNER_TEMP/pw/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Build offline demo and run browser regression tests
+        env:
+          PW_PATH: ${{ runner.temp }}/pw/node_modules/playwright
+        run: |
+          node tools/build-demo.js
+          node tests/func-account-isolation.js "$RUNNER_TEMP/account-isolation.json"
+          node tests/func-post-logout.js "$RUNNER_TEMP/post-logout.json"
+          node tests/func-l10n.js "$RUNNER_TEMP/l10n.json"
+          node tests/live-rls-wrapper.js "$RUNNER_TEMP/live-rls-wrapper.json"
+          node tests/live-browser-wrapper.js "$RUNNER_TEMP/live-browser-wrapper.json"
+          node tests/validate-all-orchestration.js "$RUNNER_TEMP/orchestration.json"

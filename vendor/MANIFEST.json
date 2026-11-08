@@ -1,0 +1,59 @@
+{
+ "name": "@supabase/supabase-js",
+ "version": "2.118.0",
+ "file": "vendor/supabase.umd.js",
+ "source": "node_modules/@supabase/supabase-js/dist/umd/supabase.js",
+ "bytes": 218252,
+ "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3",
+ "sha384": "TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK",
+ "tarballIntegrity": "sha512-FxI8UXMVC2UG7IkeiI8fuQZqq2oI3JeSuN8MPIC2RLVaoEAxKS0nqE6kii9Ewpq8f9gNPM6git1Y8f0vN/QLFw==",
+ "lockedDependencies": [
+  {
+   "name": "@supabase/auth-js",
+   "version": "2.118.0",
+   "integrity": "sha512-xWfPXyhS2KDSfAneMtI6p/tBnbdiz/5vaRKXEqUfzfC9WCniKr2Ds5o5G7RIGig0bom4z6wUY9zaV07WDVTfnQ=="
+  },
+  {
+   "name": "@supabase/functions-js",
+   "version": "2.118.0",
+   "integrity": "sha512-4ofletPa/noKAU6KHeqsd3FztGzRPUEJRey1MKY0o+PIHaVePqRPShIXtl37gcVyIWaFM+zNg6r9zh0uUSFOSA=="
+  },
+  {
+   "name": "@supabase/phoenix",
+   "version": "0.4.5",
+   "integrity": "sha512-aAn9H9ovVyeApKy11OWOrrOGq8DV68yWeH4ud2lN9fzn4aO8Zb5GLL9m1pUg9nLqIcT+ZDfAcsZe0E/nqdv2lw=="
+  },
+  {
+   "name": "@supabase/postgrest-js",
+   "version": "2.118.0",
+   "integrity": "sha512-JXy+37KPApHsyotaQACovv/Jy9E22rfiWLRuT+2UjoEAcAIelDFIrsF/FY47Dy19mO7lI0Tq+zDCX8oJ2Ozfiw=="
+  },
+  {
+   "name": "@supabase/realtime-js",
+   "version": "2.118.0",
+   "integrity": "sha512-pzCIEWjqD5/xqEZQerpt+q9rsgYkcrkgCJgf0W2ULqC4fYUeB/p9CFa3t9vn+IVh6dMN9r4ZCE262lZvUC+Bfw=="
+  },
+  {
+   "name": "@supabase/storage-js",
+   "version": "2.118.0",
+   "integrity": "sha512-5MNkKt2Moy7Jud/sPX7/28BwdDxZMCVHGJT00b8op3KRa9LKSjOAYU5IcfGWIstaasAqY8GkbA6oI3IRDgB1YQ=="
+  },
+  {
+   "name": "@supabase/supabase-js",
+   "version": "2.118.0",
+   "integrity": "sha512-FxI8UXMVC2UG7IkeiI8fuQZqq2oI3JeSuN8MPIC2RLVaoEAxKS0nqE6kii9Ewpq8f9gNPM6git1Y8f0vN/QLFw=="
+  },
+  {
+   "name": "iceberg-js",
+   "version": "0.8.1",
+   "integrity": "sha512-1dhVQZXhcHje7798IVM+xoo/1ZdVfzOMIc8/rgVSijRK38EDqOJoGula9N/8ZI5RD8QTxNQtK/Gozpr+qUqRRA=="
+  },
+  {
+   "name": "tslib",
+   "version": "2.8.1",
+   "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="
+  }
+ ],
+ "generatedBy": "tools/vendor-copy.js",
+ "note": "Provenance = npm registry tarball integrity recorded in package-lock.json (sha512). See docs/PINNED_SDK.md for what this does and does not prove."
+}

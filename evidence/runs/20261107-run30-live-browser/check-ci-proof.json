@@ -1,0 +1,83 @@
+{
+ "run": "2026-11-07T16:53:18.953Z",
+ "build": "OFFLINE stub gh + temp repo",
+ "results": [
+  {
+   "id": "K1",
+   "name": "passing live run for exactly this commit, on the recovery branch, recent -> PROVEN (exit 0)",
+   "status": "PASS",
+   "expected": "exit 0",
+   "actual": "exit 0 "
+  },
+  {
+   "id": "K2",
+   "name": "a passing run for a DIFFERENT commit does not count (exit 2)",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: no successful live-staging-tests.yml run for commit 5cca214f within 24 h (trigger one: A"
+  },
+  {
+   "id": "K3",
+   "name": "a failed run does not count",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2"
+  },
+  {
+   "id": "K4",
+   "name": "a passing run older than 24 h does not count",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: no successful live-staging-tests.yml run for commit 5cca214f within 24 h (trigger one: A"
+  },
+  {
+   "id": "K5",
+   "name": "runs from another branch or a pull_request event do not count",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2"
+  },
+  {
+   "id": "K6",
+   "name": "overall success but the live test step skipped/neutral does not count",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: a run exists but its live job/test step did not conclude success\n"
+  },
+  {
+   "id": "K7",
+   "name": "live job not successful does not count",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2"
+  },
+  {
+   "id": "K7b",
+   "name": "live-browser job failed -> proof refused (real-session isolation must pass too)",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2"
+  },
+  {
+   "id": "K8",
+   "name": "modified tracked file -> refused (only a committed, pushed state is proven)",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: tracked files are modified; deploy only a committed, pushed state\n"
+  },
+  {
+   "id": "K9",
+   "name": "local commit that is not the pushed tip -> refused",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: HEAD (cdc5e49a) is not the pushed tip of recovery/lead-eng-2afe977 (5cca214f); git pull first\n"
+  },
+  {
+   "id": "K10",
+   "name": "gh unavailable/not logged in -> NOT PROVEN, never a pass",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 NOT PROVEN: cannot read workflow runs (gh not logged in?)\n"
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "run": "2026-11-05T06:34:29.313Z",
+ "build": "demo (offline stand-in; page-logic only)",
+ "results": [
+  {
+   "id": "F-K1",
+   "name": "K-RE100 total renewable MWh = 500",
+   "status": "PASS",
+   "expected": "500",
+   "actual": "500"
+  },
+  {
+   "id": "F-K2",
+   "name": "K-RE100 share = 41.67%",
+   "status": "PASS",
+   "expected": "41.67%",
+   "actual": "41.67%"
+  },
+  {
+   "id": "F-K3",
+   "name": "K-RE100 gap to target = 700",
+   "status": "PASS",
+   "expected": "700",
+   "actual": "700"
+  },
+  {
+   "id": "F-K4",
+   "name": "K-RE100 projected share with +400 = 75%",
+   "status": "PASS",
+   "expected": "75%",
+   "actual": "75%"
+  },
+  {
+   "id": "F-K5",
+   "name": "K-RE100 negative MWh is rejected (sum shows em dash)",
+   "status": "PASS",
+   "expected": "—",
+   "actual": "—"
+  },
+  {
+   "id": "F-E1",
+   "name": "EPR total packaging = 60 kg",
+   "status": "PASS",
+   "expected": "60",
+   "actual": "60"
+  },
+  {
+   "id": "F-E2",
+   "name": "EPR total = 0.06 t",
+   "status": "PASS",
+   "expected": "0.06",
+   "actual": "0.06"
+  },
+  {
+   "id": "F-E3",
+   "name": "EPR recycled content = 10 kg",
+   "status": "PASS",
+   "expected": "10",
+   "actual": "10"
+  },
+  {
+   "id": "F-E4",
+   "name": "EPR scenario (10% reduction) = 54 kg, saving 6 kg, -10%",
+   "status": "PASS",
+   "expected": "54|6|-10%",
+   "actual": "54|6|-10%"
+  },
+  {
+   "id": "F-E5",
+   "name": "EPR scenario with +20% units = 64.8 kg, +8%",
+   "status": "PASS",
+   "expected": "64.8|8%",
+   "actual": "64.8|8%"
+  },
+  {
+   "id": "F-E6",
+   "name": "EPR recycled >100% is flagged invalid",
+   "status": "PASS",
+   "expected": "validation message",
+   "actual": "Check for negative values, invalid quantities, or recycled content outside 0–100%."
+  }
+ ]
+}

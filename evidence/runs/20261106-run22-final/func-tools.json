@@ -1,0 +1,125 @@
+{
+ "run": "2026-11-06T17:29:31.688Z",
+ "build": "demo (offline stand-in; page-logic only)",
+ "results": [
+  {
+   "id": "F-S1",
+   "name": "Supplier mixed answers: score 63%, coverage 12/15, 10 flagged",
+   "status": "PASS",
+   "expected": "63%|12/15|10",
+   "actual": "63%|12/15|10"
+  },
+  {
+   "id": "F-S2",
+   "name": "Supplier all yes: 100%, 15/15, 0 flagged",
+   "status": "PASS",
+   "expected": "100%|15/15|0",
+   "actual": "100%|15/15|0"
+  },
+  {
+   "id": "F-S3",
+   "name": "Supplier cloud save then load restores answers (score back to 100%)",
+   "status": "PASS",
+   "expected": "100%",
+   "actual": "100%"
+  },
+  {
+   "id": "F-Q0",
+   "name": "QR decoder (python3 -I + OpenCV) is available and ran",
+   "status": "PASS",
+   "expected": "decoder runs (exit 0 or 1)",
+   "actual": "decoder exit=0 spawnError=none stderr=\"\""
+  },
+  {
+   "id": "F-Q-RES",
+   "name": "QR image the page generates is high resolution (>=300 px; 150 px was only ~2 px per module for the ~420-char link and decoded unreliably)",
+   "status": "PASS",
+   "expected": ">=300x300",
+   "actual": "400x400"
+  },
+  {
+   "id": "F-Q1",
+   "name": "QR image decodes to a GaonGreen profile link",
+   "status": "PASS",
+   "expected": "link with #profile=",
+   "actual": "http://127.0.0.1:37421/GaonGreen_QR_ESG_Card_Cloud_Beta.html"
+  },
+  {
+   "id": "F-Q2",
+   "name": "Decoded QR payload carries company, website and numbers entered",
+   "status": "PASS",
+   "expected": "company/website/energy=40",
+   "actual": "{\"company\":\"Example Exporter Co.\",\"sector\":\"\",\"country\":\"South Korea\",\"website\":\"https://example.com/esg\",\"year\":\"2026\","
+  },
+  {
+   "id": "F-Q3",
+   "name": "QR rejects renewable electricity 150% (no card generated)",
+   "status": "PASS",
+   "expected": "correction message",
+   "actual": "Correct the highlighted field before generating a public card."
+  },
+  {
+   "id": "F-Q4",
+   "name": "QR card renders NO clickable link for a javascript: website (unsafe URL dropped at render)",
+   "status": "PASS",
+   "expected": "no javascript: href",
+   "actual": "[]"
+  },
+  {
+   "id": "F-Q5",
+   "name": "Hostile shared profile link: no script execution, no unsafe links, text shown inert",
+   "status": "PASS",
+   "expected": "public view loaded (banner shown, name contains Evil Co as inert text), xss undefined, 0 injected imgs, 0 unsafe links",
+   "actual": "{\"imgs\":0,\"unsafe\":0,\"banner\":\"block\",\"name\":\"<img src=x onerror=\\\"window.__xss=1\\\">Evil Co\"}"
+  },
+  {
+   "id": "F-L1",
+   "name": "Evidence cloud upload lists the document",
+   "status": "PASS",
+   "expected": "title listed",
+   "actual": "Fictional utility bill\n\nExample Exporter Co. · 2026 · Company registration\n\nbill"
+  },
+  {
+   "id": "F-L2",
+   "name": "Evidence download bytes equal uploaded bytes (SHA-256)",
+   "status": "PASS",
+   "expected": "49db8715ec5b92ed6cb9098d3b7cace47ed7fae693ec69a30b62070007e34440",
+   "actual": "49db8715ec5b92ed6cb9098d3b7cace47ed7fae693ec69a30b62070007e34440"
+  },
+  {
+   "id": "F-L3",
+   "name": "Evidence delete removes the document from the list",
+   "status": "PASS",
+   "expected": "not listed",
+   "actual": "No cloud documents saved yet."
+  },
+  {
+   "id": "F-L4",
+   "name": "Evidence local save increments the document total to 1",
+   "status": "PASS",
+   "expected": "1",
+   "actual": "1"
+  },
+  {
+   "id": "F-C1",
+   "name": "K-RE100 cloud save, clear, cloud load restores total=1200 and PPA=300",
+   "status": "PASS",
+   "expected": "cleared then restored",
+   "actual": "cleared=\"\" total=1200"
+  },
+  {
+   "id": "F-C2",
+   "name": "EPR cloud save, clear, cloud load restores total 50 kg",
+   "status": "PASS",
+   "expected": "0 then 50",
+   "actual": "0 then 50"
+  },
+  {
+   "id": "F-X1",
+   "name": "Dashboard shows the fictional company profile",
+   "status": "PASS",
+   "expected": "company name on page",
+   "actual": "Home Dashboard K-ISSB K-RE100 EPR Supplier ESG QR Card Evidence Locker Settings Sign out D"
+  }
+ ]
+}

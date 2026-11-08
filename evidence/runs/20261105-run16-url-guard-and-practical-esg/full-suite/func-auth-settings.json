@@ -1,0 +1,125 @@
+{
+ "run": "2026-11-05T18:34:08.213Z",
+ "build": "demo (offline stand-in; NOT real Supabase)",
+ "results": [
+  {
+   "id": "A1",
+   "name": "Login: demo starts signed in and shows the account email",
+   "status": "PASS",
+   "expected": "signedIn section visible with demo email",
+   "actual": "demo.user@example.invalid"
+  },
+  {
+   "id": "A2",
+   "name": "Login: sign out returns to the sign-in form with a success notice",
+   "status": "PASS",
+   "expected": "authForm shown, ok notice",
+   "actual": "{\"text\":\"Signed out.\",\"cls\":\"status show ok\"}"
+  },
+  {
+   "id": "A3",
+   "name": "Login: empty form is invalid at browser level (required) and clicking Sign in does not sign in",
+   "status": "PASS",
+   "expected": "invalid, still signed out",
+   "actual": "{\"valid\":false,\"tooShort\":false,\"valueMissing\":true}"
+  },
+  {
+   "id": "A4",
+   "name": "Login: 7-character password is blocked by the browser (minlength=8) and no sign-in happens",
+   "status": "PASS",
+   "expected": "tooShort, still signed out",
+   "actual": "{\"valid\":false,\"tooShort\":true,\"valueMissing\":false}"
+  },
+  {
+   "id": "A4b",
+   "name": "Login: the page JS also rejects a 7-character password if browser validation is bypassed",
+   "status": "PASS",
+   "expected": "error notice, still signed out",
+   "actual": "{\"text\":\"Password must contain at least 8 characters.\",\"cls\":\"status show error\"}"
+  },
+  {
+   "id": "A5",
+   "name": "Login: password of exactly 8 characters is accepted (boundary) and signs in",
+   "status": "PASS",
+   "expected": "signedIn visible",
+   "actual": "{\"text\":\"\",\"cls\":\"status\"}"
+  },
+  {
+   "id": "A6",
+   "name": "Login: \"Forgot password\" opens the reset form with the email prefilled",
+   "status": "PASS",
+   "expected": "resetForm visible + prefilled",
+   "actual": "person@example.invalid"
+  },
+  {
+   "id": "A7",
+   "name": "Login: submitting the reset form shows a success notice",
+   "status": "PASS",
+   "expected": "ok notice",
+   "actual": "{\"text\":\"If the address is registered, a password reset email will arrive shortly.\",\"cls\":\"status show ok\"}"
+  },
+  {
+   "id": "A8",
+   "name": "Register: mismatched confirmation is rejected",
+   "status": "PASS",
+   "expected": "error notice",
+   "actual": "{\"text\":\"Passwords do not match.\",\"cls\":\"status show error\"}"
+  },
+  {
+   "id": "A9",
+   "name": "Register: matching 8-char password shows success and clears the form",
+   "status": "PASS",
+   "expected": "ok notice + form reset",
+   "actual": "{\"text\":\"Check your email for a confirmation link, then return here to sign in.\",\"cls\":\"status show ok\"} email="
+  },
+  {
+   "id": "A10",
+   "name": "EPR: when signed out, cloud save is refused and no draft row is written",
+   "status": "PASS",
+   "expected": "table unchanged + sign-in prompt",
+   "actual": "changed=false status=Not signed in. Please sign in and return to this page."
+  },
+  {
+   "id": "S1",
+   "name": "Settings: adding an expense creates one row with the entered values",
+   "status": "PASS",
+   "expected": "1 row, amount 1500",
+   "actual": "1 rows"
+  },
+  {
+   "id": "S2",
+   "name": "Settings: JSON export is valid and carries company, currency and expense",
+   "status": "PASS",
+   "expected": "company/currency/entries[1]",
+   "actual": "{\n  \"version\": 1,\n  \"company\": \"Settings Test Co (fictional)\",\n  \"country\": \"KR\",\n  \"industry\": \"Packaging\",\n  \"currency\": \"USD\",\n  \"entries"
+  },
+  {
+   "id": "S3",
+   "name": "Settings: clear empties company and expenses",
+   "status": "PASS",
+   "expected": "empty",
+   "actual": ""
+  },
+  {
+   "id": "S4",
+   "name": "Settings: JSON import of the exported file restores everything (round trip)",
+   "status": "PASS",
+   "expected": "restored",
+   "actual": "Settings Test Co (fictional)|USD|1"
+  },
+  {
+   "id": "S5",
+   "name": "Settings: cloud save, clear, cloud load restores company and expense (stand-in)",
+   "status": "PASS",
+   "expected": "restored",
+   "actual": "Settings Test Co (fictional)|1"
+  },
+  {
+   "id": "S6",
+   "name": "Settings: importing a malformed file does not erase current data",
+   "status": "PASS",
+   "expected": "unchanged",
+   "actual": "Settings Test Co (fictional)"
+  }
+ ]
+}

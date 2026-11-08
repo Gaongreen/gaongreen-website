@@ -1,0 +1,3 @@
+PASS M1 All 10 allowed extensions x 4 browser-declared types (40 uploads): stored content type is the canonical one for the extension
+PASS M2 The page accepts exactly the 10 extensions in the canonical table (no extension without a type, none extra)
+PASS M3 Proposed (NOT applied) bucket allow-list SQL contains exactly the canonical types, touches only bucket evidence-locker, and has no other statement

@@ -1,0 +1,7 @@
+PASS H-ok checker passes a deployment that serves the audited bytes with correct headers (12 pages)
+PASS H-noXFO checker FAILS (exit 1) when: noXFO
+PASS H-noCSP checker FAILS (exit 1) when: noCSP
+PASS H-noFA checker FAILS (exit 1) when: noFA
+PASS H-tamper checker FAILS (exit 1) when: tamper
+PASS H-badSdk checker FAILS (exit 1) when: badSdk
+PASS H-refuse checker refuses (exit 2, no request): http remote, production Supabase host, PRODUCTION_HOSTS, credentials in URL, invalid URL

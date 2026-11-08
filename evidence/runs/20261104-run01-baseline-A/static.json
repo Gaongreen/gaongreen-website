@@ -1,0 +1,135 @@
+{
+ "run": "2026-11-04T08:58:02.980Z",
+ "canonicalPages": [
+  "index.html",
+  "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+  "GaonGreen_Company_Settings_Cloud_Beta.html",
+  "GaonGreen_KISSB_Cloud_Beta.html",
+  "GaonGreen_K-RE100_Cloud_Beta.html",
+  "GaonGreen_EPR_Cloud_Beta.html",
+  "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+  "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+  "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+  "GaonGreen_Login.html",
+  "K-ISSB Reporting Wizard _ GaonGreen.html",
+  "GaonGreen_Register.html"
+ ],
+ "brokenLinks": [
+  "GaonGreen_ESG_Dashboard.html"
+ ],
+ "results": [
+  {
+   "id": "S1",
+   "name": "Canonical set resolves (every local link target exists)",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_ESG_Dashboard.html"
+   ]
+  },
+  {
+   "id": "S2",
+   "name": "No floating SDK version (supabase-js must be pinned x.y.z)",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+    "GaonGreen_Company_Settings_Cloud_Beta.html",
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_K-RE100_Cloud_Beta.html",
+    "GaonGreen_EPR_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+    "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "GaonGreen_Register.html"
+   ]
+  },
+  {
+   "id": "S3",
+   "name": "Every external script has integrity= (SRI)",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_EPR_Cloud_Beta.html",
+    "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+    "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "GaonGreen_Register.html"
+   ]
+  },
+  {
+   "id": "S4",
+   "name": "No ES-module import of third-party code from a CDN URL",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_Company_Settings_Cloud_Beta.html",
+    "GaonGreen_K-RE100_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_QR_ESG_Card_Cloud_Beta.html"
+   ]
+  },
+  {
+   "id": "S5",
+   "name": "Auth sessions are not persisted (persistSession:false or absent client)",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_EPR_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "GaonGreen_Register.html"
+   ]
+  },
+  {
+   "id": "S6",
+   "name": "detectSessionInUrl is not enabled",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "GaonGreen_Register.html"
+   ]
+  },
+  {
+   "id": "S7",
+   "name": "No secret/service-role key material",
+   "status": "PASS"
+  },
+  {
+   "id": "S8",
+   "name": "A Content-Security-Policy is declared",
+   "status": "FAIL",
+   "detail": [
+    "index.html",
+    "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+    "GaonGreen_Company_Settings_Cloud_Beta.html",
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_K-RE100_Cloud_Beta.html",
+    "GaonGreen_EPR_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+    "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "K-ISSB Reporting Wizard _ GaonGreen.html",
+    "GaonGreen_Register.html"
+   ]
+  },
+  {
+   "id": "S9",
+   "name": "Supabase project URL/key are not duplicated inline (single config module)",
+   "status": "FAIL",
+   "detail": [
+    "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+    "GaonGreen_Company_Settings_Cloud_Beta.html",
+    "GaonGreen_KISSB_Cloud_Beta.html",
+    "GaonGreen_K-RE100_Cloud_Beta.html",
+    "GaonGreen_EPR_Cloud_Beta.html",
+    "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+    "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+    "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+    "GaonGreen_Login.html",
+    "GaonGreen_Register.html"
+   ]
+  }
+ ]
+}

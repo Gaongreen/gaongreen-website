@@ -1,0 +1,17 @@
+PASS A1 Login: demo starts signed in and shows the account email
+PASS A2 Login: sign out returns to the sign-in form with a success notice
+PASS A3 Login: empty form is invalid at browser level (required) and clicking Sign in does not sign in
+PASS A4 Login: 7-character password is blocked by the browser (minlength=8) and no sign-in happens
+PASS A4b Login: the page JS also rejects a 7-character password if browser validation is bypassed
+PASS A5 Login: password of exactly 8 characters is accepted (boundary) and signs in
+PASS A6 Login: "Forgot password" opens the reset form with the email prefilled
+PASS A7 Login: submitting the reset form shows a success notice
+PASS A8 Register: mismatched confirmation is rejected
+PASS A9 Register: matching 8-char password shows success and clears the form
+PASS A10 EPR: when signed out, cloud save is refused and no draft row is written
+PASS S1 Settings: adding an expense creates one row with the entered values
+PASS S2 Settings: JSON export is valid and carries company, currency and expense
+PASS S3 Settings: clear empties company and expenses
+PASS S4 Settings: JSON import of the exported file restores everything (round trip)
+PASS S5 Settings: cloud save, clear, cloud load restores company and expense (stand-in)
+PASS S6 Settings: importing a malformed file does not erase current data

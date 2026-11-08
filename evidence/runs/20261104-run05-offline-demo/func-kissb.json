@@ -1,0 +1,90 @@
+{
+ "run": "2026-11-04T11:43:54.025Z",
+ "build": "demo (offline stand-in; page-logic only)",
+ "results": [
+  {
+   "id": "F-I1",
+   "name": "K-ISSB total Scope 1+2 = 420 tCO2e",
+   "status": "PASS",
+   "expected": "420",
+   "actual": "420"
+  },
+  {
+   "id": "F-I2",
+   "name": "K-ISSB emissions per employee = 4.2",
+   "status": "PASS",
+   "expected": "4.2",
+   "actual": "4.2"
+  },
+  {
+   "id": "F-I3",
+   "name": "K-ISSB GHG intensity per revenue = 0.08 (0.084 rounded)",
+   "status": "PASS",
+   "expected": "0.08",
+   "actual": "0.08"
+  },
+  {
+   "id": "F-I4",
+   "name": "K-ISSB total energy = 4,100 GJ",
+   "status": "PASS",
+   "expected": "4,100",
+   "actual": "4,100"
+  },
+  {
+   "id": "F-I5",
+   "name": "K-ISSB energy intensity = 0.82 GJ/KRW m",
+   "status": "PASS",
+   "expected": "0.82",
+   "actual": "0.82"
+  },
+  {
+   "id": "F-I6",
+   "name": "K-ISSB renewable share = 25%",
+   "status": "PASS",
+   "expected": "25",
+   "actual": "25"
+  },
+  {
+   "id": "F-I7",
+   "name": "K-ISSB unfilled water/waste indicators show Missing (not 0)",
+   "status": "PASS",
+   "expected": "Missing",
+   "actual": "Missing"
+  },
+  {
+   "id": "F-I8",
+   "name": "K-ISSB rejects renewable electricity > total electricity",
+   "status": "PASS",
+   "expected": "cannot exceed message",
+   "actual": "Please check: Renewable electricity cannot exceed total electricity."
+  },
+  {
+   "id": "F-I9",
+   "name": "K-ISSB local \"Resume saved\" restores the saved company name",
+   "status": "PASS",
+   "expected": "Example Exporter Co.",
+   "actual": "Example Exporter Co."
+  },
+  {
+   "id": "F-I10",
+   "name": "K-ISSB cloud save then load restores the company name",
+   "status": "PASS",
+   "expected": "Cloud Co (fictional)",
+   "actual": "Cloud Co (fictional)"
+  },
+  {
+   "id": "F-I11",
+   "name": "K-ISSB Arabic switches the page to right-to-left",
+   "status": "PASS",
+   "expected": "rtl",
+   "actual": "{\"h\":\"rtl\",\"b\":\"\",\"lang\":\"ar\"}"
+  },
+  {
+   "id": "F-I12",
+   "name": "K-ISSB Korean renders Hangul in the page title",
+   "status": "PASS",
+   "expected": "Hangul",
+   "actual": "K-ISSB 보고서 작성 도우미"
+  }
+ ]
+}

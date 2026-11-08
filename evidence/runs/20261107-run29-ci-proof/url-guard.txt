@@ -1,0 +1,12 @@
+PASS U-ALLOW http://127.0.0.1:41479/ legitimate URL is allowed: http://127.0.0.1:41479/
+PASS U-ALLOW http://127.0.0.1:41479/index.html?x=1#h legitimate URL is allowed: http://127.0.0.1:41479/index.html?x=1#h
+PASS U-ALLOW http://127.0.0.1:41479 legitimate URL is allowed: http://127.0.0.1:41479
+PASS U-ALLOW data:text/plain,hi legitimate URL is allowed: data:text/plain,hi
+PASS U-ALLOW blob:null/abc legitimate URL is allowed: blob:null/abc
+PASS U-ALLOW about:blank legitimate URL is allowed: about:blank
+PASS U-DENY hostname suffix all 5 "hostname suffix" URLs are rejected as non-local
+PASS U-DENY embedded credentials all 4 "embedded credentials" URLs are rejected as non-local
+PASS U-DENY wrong port all 5 "wrong port" URLs are rejected as non-local
+PASS U-DENY other host or scheme all 13 "other host or scheme" URLs are rejected as non-local
+PASS U-BROWSER in Chromium, deceptive hostname-suffix and wrong-port requests are intercepted and aborted
+PASS U-OWN the guard still lets the page load and use its own server (existing functionality preserved)

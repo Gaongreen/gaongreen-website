@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-06T18:09:04.934Z",
+ "build": "OFFLINE local bare repo, synthetic bundle",
+ "results": [
+  {
+   "id": "V1",
+   "name": "dry run verifies and builds the commit but pushes nothing (remote refs identical)",
+   "status": "PASS",
+   "expected": "exit 0, remote unchanged",
+   "actual": "exit 0 warning: --depth is ignored in local clones; use file:// instead.\n"
+  },
+  {
+   "id": "V2",
+   "name": "real run pushes ONLY a new branch vendor/supabase-sdk-2.118.0; main and the base branch are untouched",
+   "status": "PASS",
+   "expected": "1 new ref, others identical",
+   "actual": "{\"exit\":0,\"added\":[\"refs/heads/vendor/supabase-sdk-2.118.0 f4333e38608c220013f51806cf235c50648019b4\"],\"err\":\"warning: --depth is ignored in local clones; use file:// instead.\\nTo /tmp/vp-x3LCj6/origin.git\\n * [n\"}"
+  },
+  {
+   "id": "V3",
+   "name": "pushed branch = base branch + exactly vendor/supabase.umd.js, vendor/MANIFEST.json, package-lock.json",
+   "status": "PASS",
+   "expected": "3 files",
+   "actual": "[\"package-lock.json\",\"vendor/MANIFEST.json\",\"vendor/supabase.umd.js\"]"
+  },
+  {
+   "id": "V4",
+   "name": "refuses (exit 2, nothing pushed): fixture manifest, secret pattern, sha mismatch, missing lockfile entry, implausibly small bundle",
+   "status": "PASS",
+   "expected": "5/5 refused",
+   "actual": "[]"
+  },
+  {
+   "id": "V5",
+   "name": "the user's checkout is never modified: no repo was created or touched in the working directory",
+   "status": "PASS",
+   "expected": "empty cwd",
+   "actual": ""
+  },
+  {
+   "id": "V6",
+   "name": "--verify-only needs no network or git: succeeds with an unreachable origin, prints the verdict, creates nothing",
+   "status": "PASS",
+   "expected": "exit 0, no files",
+   "actual": "exit 0 "
+  },
+  {
+   "id": "V7",
+   "name": "a token embedded in the origin URL is never printed (stdout+stderr), in verify-only and dry-run",
+   "status": "PASS",
+   "expected": "token absent",
+   "actual": "[]"
+  }
+ ]
+}

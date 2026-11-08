@@ -1,0 +1,11 @@
+PASS F-K1 K-RE100 total renewable MWh = 500
+PASS F-K2 K-RE100 share = 41.67%
+PASS F-K3 K-RE100 gap to target = 700
+PASS F-K4 K-RE100 projected share with +400 = 75%
+PASS F-K5 K-RE100 negative MWh is rejected (sum shows em dash)
+PASS F-E1 EPR total packaging = 60 kg
+PASS F-E2 EPR total = 0.06 t
+PASS F-E3 EPR recycled content = 10 kg
+PASS F-E4 EPR scenario (10% reduction) = 54 kg, saving 6 kg, -10%
+PASS F-E5 EPR scenario with +20% units = 64.8 kg, +8%
+PASS F-E6 EPR recycled >100% is flagged invalid

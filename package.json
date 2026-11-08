@@ -1,0 +1,21 @@
+{
+  "name": "gaongreen-website",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GaonGreen static site. package.json exists only to pin and vendor third-party browser code reproducibly.",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0"
+  },
+  "gaongreen": {
+    "note": "2.118.0 is the CANDIDATE reviewed earlier. Before adopting, run `npm view @supabase/supabase-js@2.118.0 deprecated` (empty = not deprecated) and choose the newest stable version that satisfies your minimum-age rule. Then change this exact version, regenerate package-lock.json and re-run tools/vendor-supabase.sh.",
+    "scripts_note": "test:offline and test:rls-offline use only loopback mocks. test:rls-staging is the MANUAL real-staging run: it refuses unless ALLOW_STAGING=yes and a non-production https URL are given (see docs/RLS_STAGING_RUNBOOK.md)."
+  },
+  "scripts": {
+    "test:offline": "bash tests/run-all.sh evidence/runs/local-offline",
+    "test:rls-offline": "node tests/rls-harness.js rls-harness.json && node tests/rls-guards.js rls-guards.json",
+    "test:rls-staging": "node tests/rls/rls-isolation.mjs"
+  }
+}

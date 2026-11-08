@@ -1,0 +1,188 @@
+{
+ "run": "2026-11-07T18:30:18.557Z",
+ "build": "pinned pack (REAL SDK 2.118.0) vs loopback MOCK, fake clock (E2)",
+ "results": [
+  {
+   "id": "T1",
+   "name": "the session is in sessionStorage and not in localStorage; a legacy persistent token in localStorage is deleted on load (one-time migration)",
+   "status": "PASS",
+   "expected": "session-only + legacy removed",
+   "actual": "{\"inL\":false,\"inS\":true,\"legacyGone\":true}"
+  },
+  {
+   "id": "T12",
+   "name": "ggAccountGuard.sessionUser() identifies the user from the sessionStorage session",
+   "status": "PASS",
+   "expected": "guard == session user",
+   "actual": "{\"guard\":\"11111111\",\"user\":\"11111111\"}"
+  },
+  {
+   "id": "T2",
+   "name": "a page reload keeps the session and the activity stamp",
+   "status": "PASS",
+   "expected": "kept",
+   "actual": "{\"afterReload\":true,\"stamp\":true}"
+  },
+  {
+   "id": "T3a",
+   "name": "a brand-new browser context (browser closed and reopened) has no session",
+   "status": "PASS",
+   "expected": "none",
+   "actual": "checked"
+  },
+  {
+   "id": "T3b",
+   "name": "a restored tab whose last activity is older than 30 minutes is signed out (token removed, redirected to Login with the reason) before any cloud data call",
+   "status": "PASS",
+   "expected": "signed out, no data calls",
+   "actual": "{\"gone\":true,\"url\":\"GaonGreen_Login.html\",\"msg\":\"You were signed out after 30 minutes of inactivity\",\"dataCalls\":0}"
+  },
+  {
+   "id": "T3c",
+   "name": "...and its session was revoked on the server (old refresh token rejected)",
+   "status": "PASS",
+   "expected": "4xx",
+   "actual": 400
+  },
+  {
+   "id": "T3d",
+   "name": "a session with no activity stamp (unknown age) is treated as expired, not trusted",
+   "status": "PASS",
+   "expected": "signed out with a message",
+   "actual": "GaonGreen_Login.html"
+  },
+  {
+   "id": "T4a",
+   "name": "no warning before 28 minutes of inactivity; a warning (role=alertdialog) appears at 28 minutes",
+   "status": "PASS",
+   "expected": "none at 27, banner at 29",
+   "actual": "{\"early\":false,\"warn\":{\"text\":\"You will be signed out soon because of inactivity. Your work on this device is being saved. Time left: 1:00Stay signed i\",\"role\":\"alertdialog\"}}"
+  },
+  {
+   "id": "T4b",
+   "name": "\"Stay signed in\" resets the clock: still signed in 29 minutes later (and the next warning shows again)",
+   "status": "PASS",
+   "expected": "signed in, new banner",
+   "actual": "{\"still\":true,\"bannerAfter\":true}"
+  },
+  {
+   "id": "T5a",
+   "name": "30 minutes idle: signed out, token removed, redirected to Login with reason=idle and a visible message",
+   "status": "PASS",
+   "expected": "signed out",
+   "actual": "{\"gone\":true,\"url\":\"GaonGreen_Login.html\",\"msg\":\"You were signed out after 30 minutes of inactivity. Your wor\"}"
+  },
+  {
+   "id": "T5b",
+   "name": "sign-out used the server-side local-scope logout: exactly this one session is revoked on the server (the mock's live-session count drops by one)",
+   "status": "PASS",
+   "expected": "exactly this session revoked on the server",
+   "actual": "{\"sessionsRevoked\":1,\"logoutCalls\":3}"
+  },
+  {
+   "id": "T4d",
+   "name": "tab refocus (SDK re-emits SIGNED_IN) does not reset the idle clock: warning still shown at 29 minutes and signed out by 31",
+   "status": "PASS",
+   "expected": "banner then out",
+   "actual": "{\"stillBanner\":true,\"out\":true}"
+  },
+  {
+   "id": "T5c",
+   "name": "token near expiry + slow network at the automatic sign-out (safety timeout fires first): the tab is signed out AND the server session ends (direct logout or Login hand-off) - never left alive; no pending hand-off remains",
+   "status": "PASS",
+   "expected": "signed out and revoked",
+   "actual": "{\"signedOut\":true,\"msg\":\"You were signed out after 30 m\",\"liveSessionsBefore\":1,\"after\":0,\"handoffPending\":false}"
+  },
+  {
+   "id": "T4c",
+   "name": "continuous activity (a click every 20 minutes, 80 minutes in total) never signs the user out",
+   "status": "PASS",
+   "expected": "still signed in",
+   "actual": true
+  },
+  {
+   "id": "T7-Company-Settings",
+   "name": "Company Settings: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-company-settings-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-EPR-Packaging",
+   "name": "EPR Packaging: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-epr-scorecard-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-K-RE100",
+   "name": "K-RE100: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-kre100-helper-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-K-ISSB-main-form-",
+   "name": "K-ISSB (main form): text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-kissb-draft-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-QR-ESG-Card",
+   "name": "QR ESG Card: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-qr-esg-card-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-Supplier-ESG-Scan",
+   "name": "Supplier ESG Scan: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-supplier-draft-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7-Evidence-Locker",
+   "name": "Evidence Locker: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)",
+   "status": "PASS",
+   "expected": "value preserved under the account namespace",
+   "actual": "{\"fieldFound\":true,\"signedOut\":true,\"keys\":[\"gaongreen-evidence-form-v1\"],\"onlyInAccountNamespace\":true}"
+  },
+  {
+   "id": "T7f",
+   "name": "Evidence Locker: a chosen file (cannot be kept) is named in the 28-minute warning and in the message shown after the automatic sign-out",
+   "status": "PASS",
+   "expected": "file named twice",
+   "actual": "{\"warning\":\"Not saved automatically (will be discarded): evidence-test.pdf\",\"login\":\"You were signed out after 30 minutes of inactivity. Your work on this device was saved. Not saved automatically: evidence-test.pdf\"}"
+  },
+  {
+   "id": "T8",
+   "name": "idle sign-out as A, then B signs in: B sees none of A's data (Company Settings, dashboard); A's unsaved company name is back when A signs in again",
+   "status": "PASS",
+   "expected": "isolated and restored",
+   "actual": "{\"bEmpty\":true,\"dashShowsA\":false,\"aBack\":\"Fictional A Co (idle)\"}"
+  },
+  {
+   "id": "T9",
+   "name": "an expired/revoked session that the SDK can no longer refresh (active user, token expired 2+ minutes): the tab flushes local edits, removes the dead token and goes to Login with an \"ended\" message; the edit is still there after signing in again",
+   "status": "PASS",
+   "expected": "ended + kept",
+   "actual": "{\"gone\":true,\"url\":\"GaonGreen_Login.html\",\"msg\":\"Your session ended (it was closed elsewh\",\"kept\":true}"
+  },
+  {
+   "id": "T10",
+   "name": "duplicated tab: both tabs work; when one idles out and revokes the shared session, the other tab ends cleanly at its next refresh (flush + Login with a reason), never shows another account's data",
+   "status": "PASS",
+   "expected": "both out cleanly",
+   "actual": "{\"both\":true,\"p1out\":true,\"p2out\":true,\"url\":\"GaonGreen_Login.html\"}"
+  },
+  {
+   "id": "T11",
+   "name": "cloud save and cloud load still work with the session-only client (POST to company_profiles; the saved value comes back)",
+   "status": "PASS",
+   "expected": "saved and loaded",
+   "actual": "{\"posts\":1,\"back\":\"Cloud Co T11\"}"
+  }
+ ]
+}

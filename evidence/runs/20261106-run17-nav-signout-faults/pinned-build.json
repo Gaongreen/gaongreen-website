@@ -1,0 +1,118 @@
+{
+ "run": "2026-11-06T15:22:14.889Z",
+ "build": "pipeline test with FIXTURE SDK (not the real SDK)",
+ "results": [
+  {
+   "id": "P1",
+   "name": "Build succeeds for all 12 pages from a manifest-verified fixture",
+   "status": "PASS",
+   "expected": "exit 0, 12 pages",
+   "actual": "exit 0 porting Wizard _ GaonGreen.html        (no external code)  inline-script hashes=5\nbuilt 12 pages -> ../../../tmp/pinned-Jk27rn/out  (sdk 0.0.0-FIXTURE FIXTURE)\n"
+  },
+  {
+   "id": "P2",
+   "name": "No page references external script/import code, no CDN host, no floating @2 SDK",
+   "status": "PASS",
+   "expected": "0 offending pages of 12",
+   "actual": "[]"
+  },
+  {
+   "id": "P3",
+   "name": "Every page that uses the SDK loads it with an SRI attribute equal to the sha384 of the vendored file",
+   "status": "PASS",
+   "expected": "10 SDK pages, all with matching SRI",
+   "actual": "users=10 bad=[]"
+  },
+  {
+   "id": "P4",
+   "name": "CSP: script-src has no unsafe-inline/unsafe-eval, only self + sha256 hashes; connect-src is self + the one Supabase host",
+   "status": "PASS",
+   "expected": "all pages compliant",
+   "actual": "[]"
+  },
+  {
+   "id": "P5",
+   "name": "All 12 pages load under their own hash-based CSP: 0 CSP violations, 0 JS errors, 0 external requests",
+   "status": "PASS",
+   "expected": "0/0/0",
+   "actual": "{\"viol\":0,\"jsErr\":[],\"ext\":[],\"sample\":[]}"
+  },
+  {
+   "id": "P5b",
+   "name": "Every page whose code uses window.supabase (including the dynamic-import page) has the library loaded: createClient is a function",
+   "status": "PASS",
+   "expected": "0 pages missing the library",
+   "actual": "pagesUsingWindowSupabase=10 missing=[]"
+  },
+  {
+   "id": "P6",
+   "name": "Scripts really execute under the CSP: K-RE100 sum 500 and EPR total 50 kg computed",
+   "status": "PASS",
+   "expected": "500/50",
+   "actual": "500/50"
+  },
+  {
+   "id": "P7",
+   "name": "CSP is actually enforced: an injected inline <script> and an inline onerror handler do NOT run and are reported",
+   "status": "PASS",
+   "expected": "ran=0, >=1 violation",
+   "actual": "{\"ran\":0,\"v\":[\"script-src-elem\",\"script-src-attr\"]}"
+  },
+  {
+   "id": "P8",
+   "name": "connect-src blocks a fetch to a non-Supabase host",
+   "status": "PASS",
+   "expected": "blocked",
+   "actual": "blocked"
+  },
+  {
+   "id": "P9",
+   "name": "Tampered vendor file (1 appended byte) makes the build REFUSE (non-zero exit, no output dir)",
+   "status": "PASS",
+   "expected": "refused",
+   "actual": "exit 1 BUILD REFUSED: SDK file sha256 does not match MANIFEST.json (file changed after vendoring).\n"
+  },
+  {
+   "id": "P10",
+   "name": "Missing vendor SDK file makes the build REFUSE with instructions",
+   "status": "PASS",
+   "expected": "refused",
+   "actual": "exit 1 BUILD REFUSED: vendor/supabase.umd.js is missing. Run tools/vendor-supabase.sh in an environment wit"
+  },
+  {
+   "id": "P11",
+   "name": "vendor-copy refuses a range pin (^2.118.0), an installed/pinned version mismatch, and a non-sha512 lockfile entry",
+   "status": "PASS",
+   "expected": "3 refusals",
+   "actual": "1,1,1"
+  },
+  {
+   "id": "P12",
+   "name": "vendor-copy succeeds on a consistent tree and records version, sha256, sha384 and the lockfile tarball integrity",
+   "status": "PASS",
+   "expected": "manifest fields",
+   "actual": "{\"name\":\"@supabase/supabase-js\",\"version\":\"2.118.0\",\"file\":\"vendor/supabase.umd.js\",\"source\":\"node_modules/@supabase/supabase-js/dist/umd/su"
+  },
+  {
+   "id": "P13",
+   "name": "Honesty check: with no vendor/ in the working directory, the default build REFUSES (no pseudo-release can be produced by accident)",
+   "status": "PASS",
+   "expected": "refused (SDK missing), no dist-pinned",
+   "actual": "exit 1; dist-pinned exists=false; BUILD REFUSED: vendor/supabase.umd.js is missing. Run tools/vendor-supabase.sh in an environment wit"
+  },
+  {
+   "id": "P13b",
+   "name": "Default build REFUSES when vendor/supabase.umd.js exists but vendor/MANIFEST.json is missing",
+   "status": "PASS",
+   "expected": "refused, no dist-pinned",
+   "actual": "exit 1; BUILD REFUSED: vendor/MANIFEST.json is missing."
+  },
+  {
+   "id": "P13c",
+   "name": "Default build REFUSES a vendor dir whose manifest is marked fixture (a test double can never become a release without --allow-fixture)",
+   "status": "PASS",
+   "expected": "refused, no dist-pinned",
+   "actual": "exit 1; dist-pinned exists=false; BUILD REFUSED: MANIFEST.json marks this vendor dir as a TEST FIXTURE, not a real SDK. Refusing to bu"
+  }
+ ]
+}

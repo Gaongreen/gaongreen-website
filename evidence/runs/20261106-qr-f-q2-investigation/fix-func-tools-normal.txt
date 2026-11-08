@@ -1,0 +1,6 @@
+PASS F-Q0 QR decoder (python3 -I + OpenCV) is available and ran
+PASS F-Q1 QR image decodes to a GaonGreen profile link
+PASS F-Q2 Decoded QR payload carries company, website and numbers entered
+PASS F-Q3 QR rejects renewable electricity 150% (no card generated)
+PASS F-Q4 QR card renders NO clickable link for a javascript: website (unsafe URL dropped at render)
+PASS F-Q5 Hostile shared profile link: no script execution, no unsafe links, text shown inert

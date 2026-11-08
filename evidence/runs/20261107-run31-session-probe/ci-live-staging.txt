@@ -1,0 +1,9 @@
+PASS C1 all checks pass -> exit 0, RESULT=PASS summary printed and written to the step summary, passwords never printed
+PASS C2 a leaking backend -> exit 1, FAIL checks listed in the summary, raw log not printed, passwords not printed
+PASS C3 wrong password secret -> exit 1 with a clear "do not match" reason, neither the wrong nor the right password is printed
+PASS C4 missing secrets -> exit 2 REFUSED, nothing contacted, tells where to create them
+PASS C5 production URL is refused by the inherited guards (exit != 0, never PASS)
+PASS C6 workflow triggers are only push-to-recovery-branch and manual (no pull_request*, schedule, workflow_run); permissions are contents: read
+PASS C7 every action is pinned to a full commit SHA; checkout does not persist credentials; jobs are limited to this repo and branch
+PASS C8 secrets: only the two staging password secrets, used only as env of the live job (environment staging-live-tests); the offline job has no environment and no secrets; no ${{ }} interpolation inside any run: script; no debug/xtrace
+PASS C9 CI script never prints raw output or passwords (no cat of the raw log, no echo of password variables), and discards its temp dir

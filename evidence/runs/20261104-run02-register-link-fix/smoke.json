@@ -1,0 +1,408 @@
+{
+ "run": "2026-11-04T08:59:19.247Z",
+ "commit": "b0b3ab095023efe4098650443003a42ea116f8e9",
+ "note": "stubbed Supabase/QR; external traffic blocked; page-level only",
+ "results": [
+  {
+   "page": "GaonGreen _ K-ISSB Wizard.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | K-ISSB Wizard",
+   "finalUrl": "GaonGreen _ K-ISSB Wizard.html",
+   "buttons": 7,
+   "inputs": 14,
+   "bodyChars": 1275
+  },
+  {
+   "page": "GaonGreen _ Practical ESG for SMEs.html",
+   "pageErrors": [
+    "Unexpected token '<'"
+   ],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "GaonGreen _ Practical ESG for SMEs.html",
+   "buttons": 3,
+   "inputs": 0,
+   "bodyChars": 2876
+  },
+  {
+   "page": "GaonGreen_Company_Settings.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Company Settings",
+   "finalUrl": "GaonGreen_Company_Settings.html.html",
+   "buttons": 5,
+   "inputs": 6,
+   "bodyChars": 955
+  },
+  {
+   "page": "GaonGreen_Company_Settings_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(esm)"
+   ],
+   "title": "GaonGreen | Company Settings",
+   "finalUrl": "GaonGreen_Company_Settings_Cloud_Beta.html",
+   "buttons": 7,
+   "inputs": 6,
+   "bodyChars": 1183
+  },
+  {
+   "page": "GaonGreen_EPR_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "GaonGreen | EPR Packaging Scorecard",
+   "finalUrl": "GaonGreen_EPR_Cloud_Beta.html",
+   "buttons": 13,
+   "inputs": 19,
+   "bodyChars": 3594
+  },
+  {
+   "page": "GaonGreen_EPR_Packaging_Scorecard (1).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | EPR Packaging Scorecard",
+   "finalUrl": "GaonGreen_EPR_Packaging_Scorecard (1).html",
+   "buttons": 10,
+   "inputs": 19,
+   "bodyChars": 3279
+  },
+  {
+   "page": "GaonGreen_EPR_Packaging_Scorecard.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | EPR Packaging Scorecard",
+   "finalUrl": "GaonGreen_EPR_Packaging_Scorecard.html",
+   "buttons": 11,
+   "inputs": 19,
+   "bodyChars": 3332
+  },
+  {
+   "page": "GaonGreen_EPR_Packaging_Scorecard.html (2).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | EPR Packaging Scorecard",
+   "finalUrl": "GaonGreen_EPR_Packaging_Scorecard.html (2).html",
+   "buttons": 10,
+   "inputs": 19,
+   "bodyChars": 3298
+  },
+  {
+   "page": "GaonGreen_EPR_Packaging_Scorecard.html (3).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | EPR Packaging Scorecard",
+   "finalUrl": "GaonGreen_EPR_Packaging_Scorecard.html (3).html",
+   "buttons": 11,
+   "inputs": 19,
+   "bodyChars": 3312
+  },
+  {
+   "page": "GaonGreen_ESG_Dashboard.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | ESG Workspace",
+   "finalUrl": "GaonGreen_ESG_Dashboard.html.html",
+   "buttons": 1,
+   "inputs": 1,
+   "bodyChars": 1635
+  },
+  {
+   "page": "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(esm)"
+   ],
+   "title": "GaonGreen | ESG Workspace",
+   "finalUrl": "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+   "buttons": 1,
+   "inputs": 1,
+   "bodyChars": 1845
+  },
+  {
+   "page": "GaonGreen_Evidence_Locker.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "ESG Evidence Locker | GaonGreen",
+   "finalUrl": "GaonGreen_Evidence_Locker.html",
+   "buttons": 3,
+   "inputs": 11,
+   "bodyChars": 1906
+  },
+  {
+   "page": "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "ESG Evidence Locker | GaonGreen",
+   "finalUrl": "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+   "buttons": 5,
+   "inputs": 18,
+   "bodyChars": 2740
+  },
+  {
+   "page": "GaonGreen_K-RE100_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(esm)"
+   ],
+   "title": "GaonGreen | K-RE100 Cloud Beta",
+   "finalUrl": "GaonGreen_K-RE100_Cloud_Beta.html",
+   "buttons": 11,
+   "inputs": 29,
+   "bodyChars": 3412
+  },
+  {
+   "page": "GaonGreen_K-RE100_Helper.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | K-RE100 Helper",
+   "finalUrl": "GaonGreen_K-RE100_Helper.html",
+   "buttons": 9,
+   "inputs": 29,
+   "bodyChars": 3152
+  },
+  {
+   "page": "GaonGreen_KISSB_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "K-ISSB Reporting Wizard | GaonGreen",
+   "finalUrl": "GaonGreen_KISSB_Cloud_Beta.html",
+   "buttons": 30,
+   "inputs": 50,
+   "bodyChars": 4810
+  },
+  {
+   "page": "GaonGreen_KISSB_Cloud_Beta.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "K-ISSB Reporting Wizard | GaonGreen",
+   "finalUrl": "GaonGreen_KISSB_Cloud_Beta.html.html",
+   "buttons": 30,
+   "inputs": 50,
+   "bodyChars": 4723
+  },
+  {
+   "page": "GaonGreen_Login.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "GaonGreen | Login",
+   "finalUrl": "GaonGreen_Login.html",
+   "buttons": 9,
+   "inputs": 4,
+   "bodyChars": 260
+  },
+  {
+   "page": "GaonGreen_Login.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "GaonGreen | Login",
+   "finalUrl": "GaonGreen_Login.html.html",
+   "buttons": 9,
+   "inputs": 4,
+   "bodyChars": 279
+  },
+  {
+   "page": "GaonGreen_QR_ESG_Card.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "qrcodejs"
+   ],
+   "title": "QR ESG Card | GaonGreen",
+   "finalUrl": "GaonGreen_QR_ESG_Card.html",
+   "buttons": 9,
+   "inputs": 14,
+   "bodyChars": 1205
+  },
+  {
+   "page": "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "qrcodejs",
+    "supabase(esm.sh)"
+   ],
+   "title": "QR ESG Card | GaonGreen",
+   "finalUrl": "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+   "buttons": 11,
+   "inputs": 14,
+   "bodyChars": 1489
+  },
+  {
+   "page": "GaonGreen_Register.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(umd)"
+   ],
+   "title": "GaonGreen | Register",
+   "finalUrl": "GaonGreen_Register.html",
+   "buttons": 8,
+   "inputs": 5,
+   "bodyChars": 277
+  },
+  {
+   "page": "GaonGreen_Supplier_ESG_Scan.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Supplier ESG Scan",
+   "finalUrl": "GaonGreen_Supplier_ESG_Scan.html",
+   "buttons": 11,
+   "inputs": 24,
+   "bodyChars": 4492
+  },
+  {
+   "page": "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [
+    "supabase(esm)"
+   ],
+   "title": "GaonGreen | Supplier ESG Scan Cloud Beta",
+   "finalUrl": "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+   "buttons": 13,
+   "inputs": 24,
+   "bodyChars": 4892
+  },
+  {
+   "page": "K-ISSB Reporting Wizard _ GaonGreen.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "K-ISSB Reporting Wizard | GaonGreen",
+   "finalUrl": "K-ISSB Reporting Wizard _ GaonGreen.html",
+   "buttons": 27,
+   "inputs": 50,
+   "bodyChars": 4296
+  },
+  {
+   "page": "K-ISSB Reporting Wizard _ GaonGreen.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "K-ISSB Reporting Wizard | GaonGreen",
+   "finalUrl": "K-ISSB Reporting Wizard _ GaonGreen.html.html",
+   "buttons": 27,
+   "inputs": 50,
+   "bodyChars": 4296
+  },
+  {
+   "page": "index (1).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "index (1).html",
+   "buttons": 9,
+   "inputs": 14,
+   "bodyChars": 3996
+  },
+  {
+   "page": "index (14).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "index (14).html",
+   "buttons": 3,
+   "inputs": 0,
+   "bodyChars": 3451
+  },
+  {
+   "page": "index (16).html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "index (16).html",
+   "buttons": 3,
+   "inputs": 0,
+   "bodyChars": 3486
+  },
+  {
+   "page": "index.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "index.html",
+   "buttons": 3,
+   "inputs": 0,
+   "bodyChars": 3451
+  },
+  {
+   "page": "index.html.html",
+   "pageErrors": [],
+   "consoleErrors": [],
+   "blockedExternal": [],
+   "stubbed": [],
+   "title": "GaonGreen | Practical ESG for SMEs",
+   "finalUrl": "index.html.html",
+   "buttons": 3,
+   "inputs": 0,
+   "bodyChars": 3486
+  }
+ ]
+}

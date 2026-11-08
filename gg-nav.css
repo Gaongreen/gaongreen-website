@@ -1,0 +1,9 @@
+/* GaonGreen shared navigation strip. Static, no external resources. Hidden when printing so reports stay clean. */
+.gg-nav{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;padding:8px 14px;background:#123c2f;color:#fff;font:600 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Noto Sans Arabic",sans-serif;border-bottom:3px solid #2f7654}
+.gg-nav a{color:#fff;text-decoration:none;padding:6px 10px;border-radius:999px;border:1px solid transparent;white-space:nowrap}
+.gg-nav a:hover{background:rgba(255,255,255,.14)}
+.gg-nav a:focus-visible{outline:3px solid #ffd966;outline-offset:2px}
+.gg-nav a[aria-current="page"]{background:#dff2e7;color:#123c2f;border-color:#b8d8c3}
+.gg-nav .gg-nav-out{margin-inline-start:auto;border-color:rgba(255,255,255,.45)}
+@media (max-width:640px){.gg-nav{padding:6px 8px;gap:2px 4px}.gg-nav a{padding:5px 8px;font-size:12.5px}.gg-nav .gg-nav-out{margin-inline-start:0}}
+@media print{.gg-nav{display:none!important}}

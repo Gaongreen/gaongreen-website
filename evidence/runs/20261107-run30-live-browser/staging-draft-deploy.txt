@@ -1,0 +1,10 @@
+PASS D1 default run is a dry run: checks pass, preserved file counted, the Netlify CLI is NOT called
+PASS D2 --deploy calls the CLI for the existing site id WITHOUT --prod/--alias, deploys a temp copy that contains the preserved page, and reports a draft URL
+PASS D3 the dist folder itself is not modified (preserved file only added to the temp copy)
+PASS D4 refuses (exit 2, CLI never called): fixture build, other staging project, production-targeted build, production ref in a file, secret pattern, missing _headers
+PASS D5 --prod, --alias and --prod-if-unlocked are refused outright
+PASS D6 if the CLI result does not look like a draft URL (could be the live site), the script exits 4 and warns instead of claiming success
+PASS D7 if the live site's published deploy id changes during a draft deploy, the script exits 5 and prints the rollback target
+PASS D8 a failing Netlify CLI gives exit 3 and a clear DEPLOYMENT FAILED message
+PASS D9 if the published deploy id cannot be read, deployment is refused BEFORE any deploy call
+PASS D10 a deploy id that is not 24 hex (like a truncated id) is reported as DEPLOYMENT FAILED instead of a "draft URL"

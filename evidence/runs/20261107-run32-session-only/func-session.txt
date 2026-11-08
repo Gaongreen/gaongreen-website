@@ -1,0 +1,25 @@
+PASS T1 the session is in sessionStorage and not in localStorage; a legacy persistent token in localStorage is deleted on load (one-time migration)
+PASS T12 ggAccountGuard.sessionUser() identifies the user from the sessionStorage session
+PASS T2 a page reload keeps the session and the activity stamp
+PASS T3a a brand-new browser context (browser closed and reopened) has no session
+PASS T3b a restored tab whose last activity is older than 30 minutes is signed out (token removed, redirected to Login with the reason) before any cloud data call
+PASS T3c ...and its session was revoked on the server (old refresh token rejected)
+PASS T3d a session with no activity stamp (unknown age) is treated as expired, not trusted
+PASS T4a no warning before 28 minutes of inactivity; a warning (role=alertdialog) appears at 28 minutes
+PASS T4b "Stay signed in" resets the clock: still signed in 29 minutes later (and the next warning shows again)
+PASS T5a 30 minutes idle: signed out, token removed, redirected to Login with reason=idle and a visible message
+PASS T5b sign-out used the server-side local-scope logout: exactly this one session is revoked on the server (the mock's live-session count drops by one)
+PASS T4d tab refocus (SDK re-emits SIGNED_IN) does not reset the idle clock: warning still shown at 29 minutes and signed out by 31
+PASS T4c continuous activity (a click every 20 minutes, 80 minutes in total) never signs the user out
+PASS T7-Company-Settings Company Settings: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-EPR-Packaging EPR Packaging: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-K-RE100 K-RE100: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-K-ISSB-main-form- K-ISSB (main form): text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-QR-ESG-Card QR ESG Card: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-Supplier-ESG-Scan Supplier ESG Scan: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7-Evidence-Locker Evidence Locker: text typed but not saved by hand survives the idle sign-out (found in this account's local data after signing in again; none outside the account namespace)
+PASS T7f Evidence Locker: a chosen file (cannot be kept) is named in the 28-minute warning and in the message shown after the automatic sign-out
+PASS T8 idle sign-out as A, then B signs in: B sees none of A's data (Company Settings, dashboard); A's unsaved company name is back when A signs in again
+PASS T9 an expired/revoked session that the SDK can no longer refresh (active user, token expired 2+ minutes): the tab flushes local edits, removes the dead token and goes to Login with an "ended" message; the edit is still there after signing in again
+PASS T10 duplicated tab: both tabs work; when one idles out and revokes the shared session, the other tab ends cleanly at its next refresh (flush + Login with a reason), never shows another account's data
+PASS T11 cloud save and cloud load still work with the session-only client (POST to company_profiles; the saved value comes back)

@@ -1,0 +1,11 @@
+ls: cannot access '/tmp/claude-0': No such file or directory
+== func-tools
+exit 0  PASS=15 FAIL=0
+== func-auth-settings
+exit 0  PASS=17 FAIL=0
+== pinned-build
+exit 0  PASS=14 FAIL=0
+== func-roundtrips
+exit 0  PASS=20 FAIL=0
+== func-kissb-reports
+exit 0  PASS=14 FAIL=0
