@@ -11,6 +11,7 @@ const clone=v=>v===undefined?v:JSON.parse(JSON.stringify(v));
 const uuid=()=>(self.crypto&&crypto.randomUUID)?crypto.randomUUID():'00000000-0000-4000-8000-'+String(Date.now()).padStart(12,'0').slice(-12);
 const err=(message,code)=>({message,code:code||'DEMO',details:null,hint:null});
 let signedOut=ss()&&ss().getItem(NS+'signedOut')==='1';
+const mirror=()=>{try{const k='sb-demo-auth-token';if(signedOut)ss()&&ss().removeItem(k);else {ss()&&ss().setItem(k,JSON.stringify({demo:true}));if(ss()&&!ss().getItem('gg-last-activity'))ss().setItem('gg-last-activity',String(Date.now()))}}catch(e){}};mirror(); // like the real SDK: a session token key exists in sessionStorage only while signed in
 const listeners=new Set();
 const session=()=>signedOut?null:{access_token:'demo-not-a-real-token',refresh_token:'demo-not-a-real-token',token_type:'bearer',expires_in:3600,expires_at:Math.floor(Date.now()/1000)+3600,user:clone(DEMO_USER)};
 const emit=ev=>{const s=session();listeners.forEach(cb=>{try{cb(ev,s)}catch(e){console.error(e)}})};
@@ -84,9 +85,9 @@ function createClient(url,key,opts){
       async getSession(){return{data:{session:session()},error:null}},
       async getUser(){return signedOut?{data:{user:null},error:err('Auth session missing! (demo signed out)','401')}:{data:{user:clone(DEMO_USER)},error:null}},
       onAuthStateChange(cb){listeners.add(cb);setTimeout(()=>{try{cb('INITIAL_SESSION',session())}catch(e){console.error(e)}},0) /* supabase-js always reports INITIAL_SESSION on subscribe (session may be null); it does not emit SIGNED_OUT here */;return{data:{subscription:{unsubscribe(){listeners.delete(cb)}}}}},
-      async signInWithPassword(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required (demo accepts any fictional values)','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
-      async signUp(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
-      async signOut(){signedOut=true;ss()&&ss().setItem(NS+'signedOut','1');emit('SIGNED_OUT');return{error:null}},
+      async signInWithPassword(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required (demo accepts any fictional values)','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');mirror();emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
+      async signUp(c){if(!c||!c.email||!c.password)return{data:{user:null,session:null},error:err('Email and password required','400')};signedOut=false;ss()&&ss().removeItem(NS+'signedOut');mirror();emit('SIGNED_IN');return{data:{user:clone(DEMO_USER),session:session()},error:null}},
+      async signOut(){signedOut=true;ss()&&ss().setItem(NS+'signedOut','1');mirror();emit('SIGNED_OUT');return{error:null}},
       async updateUser(){return signedOut?{data:{user:null},error:err('not signed in','401')}:{data:{user:clone(DEMO_USER)},error:null}},
       async resetPasswordForEmail(){return{data:{},error:null}},
       async refreshSession(){return{data:{session:session(),user:signedOut?null:clone(DEMO_USER)},error:signedOut?err('not signed in','401'):null}}

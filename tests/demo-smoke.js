@@ -13,6 +13,6 @@ const S=require('./lib/serve.js'),fs=require('fs'),path=require('path');
  // storage scan: after a demo sign-in, no token-looking string may sit in localStorage/sessionStorage/IndexedDB names
  const pg=await s.page();await pg.goto(s.base+'GaonGreen_Login.html');await pg.waitForTimeout(500);
  const st=await pg.evaluate(async()=>{const c=await window.supabase.createClient('u','k').auth.signInWithPassword({email:'demo.user@example.invalid',password:'fictional-demo-pass'});
-  const all={...localStorage,...sessionStorage};return{signedIn:!!(c.data&&c.data.session),leaks:Object.entries(all).filter(([k,v])=>/token|jwt|password|fictional-demo-pass|eyJ/i.test(k+' '+v)).map(([k])=>k)}});
+  const all={...localStorage,...sessionStorage};return{signedIn:!!(c.data&&c.data.session),leaks:Object.entries(all).filter(([k,v])=>!(k==='sb-demo-auth-token'&&v==='{"demo":true}')&&/token|jwt|password|fictional-demo-pass|eyJ/i.test(k+' '+v)).map(([k])=>k)}});
  const okS=st.signedIn&&!st.leaks.length;if(!okS)fail++;res.push({page:'(storage scan)',status:okS?'PASS':'FAIL',detail:st});console.log((okS?'PASS ':'FAIL ')+'storage scan after demo sign-in: no token/password-like entries in localStorage/sessionStorage  '+JSON.stringify(st));
  await s.close();fs.writeFileSync(process.argv[2]||'demo-smoke.json',JSON.stringify({run:new Date().toISOString(),results:res},null,1));process.exit(fail?1:0)})();

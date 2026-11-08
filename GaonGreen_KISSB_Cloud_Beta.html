@@ -308,7 +308,9 @@ async function current(){
  const before=generation;
  const {data,error}=await client.auth.getUser();
  if(before!==generation)return null;
- if(error)throw error;
+ const missing=error&&(error.name==='AuthSessionMissingError'||/session missing/i.test(error.message||''));
+ if(error&&!missing)throw error;
+ if(missing&&account)return null; // session vanished under an open page: treat as signed out for cloud actions but never wipe the user's unsaved answers
  selectAccount(data?.user||null);
  return account;
 }

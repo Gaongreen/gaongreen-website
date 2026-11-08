@@ -85,6 +85,7 @@ jobs:
         run: |
           node tools/build-demo.js
           node tests/func-account-isolation.js "$RUNNER_TEMP/account-isolation.json"
+          node tests/func-post-logout.js "$RUNNER_TEMP/post-logout.json"
           node tests/func-l10n.js "$RUNNER_TEMP/l10n.json"
           node tests/live-rls-wrapper.js "$RUNNER_TEMP/live-rls-wrapper.json"
           node tests/live-browser-wrapper.js "$RUNNER_TEMP/live-browser-wrapper.json"

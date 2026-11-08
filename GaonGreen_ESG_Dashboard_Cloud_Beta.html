@@ -72,7 +72,7 @@ try{
  const supabase=ggCreateClient(createClient,'https://uyhmbecltrswiljbyass.supabase.co','sb_publishable_iNcId4rsFBAYbnIudemYVg_FSEFdPa-');
    async function refreshCloud(){
    const {data:{user},error:authError}=await supabase.auth.getUser();
-   if(authError)throw authError;
+   if(authError&&!(authError.name==='AuthSessionMissingError'||/session missing/i.test(authError.message||'')))throw authError; // a missing session is the normal signed-out state
    if(!user){window.gaongreenCloudProfile=null;cloudState={kind:'out'};cloudSignedIn=false;cloudCounts=null;cloudErrors={};render();return;}
    cloudSignedIn=true;
    const {data,error}=await supabase.from('company_profiles').select('company_name,currency').eq('owner_id',user.id).maybeSingle();
