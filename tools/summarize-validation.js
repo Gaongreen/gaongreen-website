@@ -13,12 +13,12 @@ for(const k of ['RESULT','COMMIT','TREE_DIRTY','PRECHECK','OFFLINE','BUILD','GUA
 const man=read(arg('--manifest'));if(man){try{const m=JSON.parse(man);L();L('build manifest (allow-listed): sdk '+scrub(m.sdk&&m.sdk.version)+' fixture='+!!(m.sdk&&m.sdk.fixture)+' sha256 '+String(m.sdk&&m.sdk.sha256||'').replace(/[^0-9a-f]/g,'').slice(0,64)+' target '+scrub(m.target&&m.target.host))}catch(e){L('build manifest: unreadable')}}
 const rls=read(arg('--rls'));if(rls){try{const r=JSON.parse(rls);L();L('live RLS/storage test: '+Number(r.total)+' checks, '+Number(r.failed)+' failed, target '+scrub(r.target));(r.results||[]).forEach(x=>L('  '+(x.status==='PASS'?'PASS':'FAIL')+' '+scrub(x.id).slice(0,40)+' '+scrub(x.name).slice(0,120)+(x.status==='PASS'?'':'  :: '+scrub(x.detail))))}catch(e){L('live RLS result: unreadable')}}
 const dep=read(arg('--deploy'));const exempt=[];
-if(dep){L();dep.split('\n').filter(Boolean).slice(0,12).forEach(x=>{
+if(dep){L();let other=0;dep.split('\n').filter(Boolean).forEach(x=>{
  // exact-format allow-list: Netlify deploy ids are 24 hex chars; the draft URL is <id>--<this site>.netlify.app; anything else is scrubbed
  let m;if((m=x.match(/^DRAFT deploy id: ([0-9a-f]{24})$/))){L('deploy: DRAFT deploy id: '+m[1]);exempt.push(m[1]);return}
  if((m=x.match(/^DRAFT deploy URL: (https:\/\/[0-9a-f]{24}--incredible-biscotti-bcf58a\.netlify\.app)(?: |$)/))){L('deploy: DRAFT deploy URL: '+m[1]);exempt.push(m[1]);return}
  if((m=x.match(/^(verified: live site still serves|live site currently serves deploy) ([0-9a-f]{24})\b/))){L('deploy: '+m[1]+' '+m[2]);exempt.push(m[2]);return}
- L('deploy: '+scrub(x))})}
+ if(other++<12)L('deploy: '+scrub(x))})}
 const out=lines.join('\n')+'\n';let scan=out;exempt.forEach(e=>{scan=scan.split(e).join('')});
 // independent detectors over the final text
 const secrets=(()=>{try{return JSON.parse(process.env.GG_SCAN_SECRETS||'[]')}catch(e){return[]}})().filter(s=>typeof s==='string'&&s.length>=4);
