@@ -53,7 +53,7 @@ function render(d){snapshot=d;const tr=t[lang];$('pCompany').textContent=d.compa
 function encode(d){const json=JSON.stringify({v:1,data:d});const bytes=new TextEncoder().encode(json);let binary='';bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 function decode(s){const raw=atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4));const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));const obj=JSON.parse(new TextDecoder().decode(bytes));if(obj.v!==1||!obj.data||typeof obj.data!=='object')throw Error('bad');return normalize(obj.data)}
 function qr(){const node=$('qr');node.replaceChildren();if(!currentLink){node.textContent=t[lang].qrHint;return}if(typeof QRCode==='undefined'){node.textContent=t[lang].qrLoading;return}try{new QRCode(node,{text:currentLink,width:400,height:400,colorDark:'#0b4937',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L})}catch(e){node.textContent=t[lang].qrFail}}
-function setLang(l){lang=t[l]?l:'en';$('language').value=lang;document.documentElement.lang=lang;document.body.dir=lang==='ar'?'rtl':'ltr';const tr=t[lang];for(const [key,val] of Object.entries(tr)){const el=$(key);if(el)el.textContent=val}if(snapshot)render(snapshot);if(publicMode)$('publicBanner').textContent=tr.publicBanner;qr()}
+function setLang(l){lang=t[l]?l:'en';try{localStorage.setItem('gaongreen-language',lang)}catch(e){}$('language').value=lang;document.documentElement.lang=lang;document.body.dir=lang==='ar'?'rtl':'ltr';const tr=t[lang];for(const [key,val] of Object.entries(tr)){const el=$(key);if(el)el.textContent=val}if(snapshot)render(snapshot);if(publicMode)$('publicBanner').textContent=tr.publicBanner;qr()}
 function download(name,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('language').addEventListener('change',e=>setLang(e.target.value));
 fields.forEach(k=>$(k).addEventListener('input',()=>{if(!publicMode){save();render(readForm())}}));
@@ -68,7 +68,7 @@ $('clear').onclick=()=>{if(!confirm(t[lang].confirm))return;try{localStorage.rem
 $('edit').onclick=()=>{location.href=location.origin+location.pathname};
 let initial=defaults();const hash=location.hash;if(hash.startsWith('#profile=')){try{initial=decode(hash.slice(9));publicMode=true}catch(e){}}
 if(publicMode){$('editor').style.display='none';$('publicBanner').style.display='block';$('edit').style.display='inline-block';currentLink=location.href;render(initial)}else{try{const stored=JSON.parse(localStorage.getItem(STORAGE));if(stored&&typeof stored==='object')initial=normalize(stored)}catch(e){}fillForm(initial);render(initial);$('status').textContent=initial.company?t[lang].restored:''}
-setLang('en');window.addEventListener('load',()=>qr());
+let startLang='en';try{startLang=localStorage.getItem('gaongreen-language')||'en'}catch(e){}setLang(startLang);window.addEventListener('load',()=>qr());
 })();
 </script>
 <script type="module">

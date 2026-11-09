@@ -32,7 +32,7 @@ finish(){  # builds the allow-listed share file, decides the overall result, exi
   echo "========================================="
   if [ $sc -eq 0 ]; then echo "Share ONLY the text above (also saved at $WORK/share.txt). Read it first; it contains no raw logs. Raw files stay in $WORK/private (do not share)."
   else echo "The shareable file was WITHHELD by the leak detector. Do not share anything from $WORK; tell Claude the RESULT line above only."; fi
-  if [ $sc -ne 0 ]; then echo "RESULT: $res; summary withheld by leak detector (treated as NOT clean)"; exit 1; fi
+  if [ $sc -ne 0 ]; then set_state RESULT "NOT CLEAN"; echo "RESULT: NOT CLEAN (the shareable summary was WITHHELD by the leak detector; nothing may be shared; underlying check status: $res)"; exit 1; fi
   echo "RESULT: $res"; [ ${#FAILED[@]} -eq 0 ] && exit 0 || exit 1
 }
 echo "working directory for this run (outside the repo): $WORK"

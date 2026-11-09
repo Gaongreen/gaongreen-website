@@ -25,4 +25,4 @@ ALLOW_STAGING=yes STAGING_URL="${STAGING_URL:-$DEF_URL}" STAGING_KEY="${STAGING_
 RC=${PIPESTATUS[0]}
 unset A_PASSWORD B_PASSWORD
 [ -f "$OUT" ] && { echo "result file: $OUT"; sha256sum "$OUT" | cut -c1-16 | sed 's/^/sha256 (prefix): /'; }
-echo "exit code: $RC (0 = all passed, 1 = an isolation check FAILED, 2 = refused, 3 = result unwritable)"; exit $RC
+echo "exit code: $RC (0 = all passed, 1 = an isolation or cleanup check FAILED, 2 = refused, 3 = result unwritable, 5 = BLOCKED: existing data protected, not a pass, 130 = interrupted)"; exit $RC

@@ -29,6 +29,8 @@ var D={
  sup_cancel:{en:'Cloud load cancelled.',ko:'클라우드 불러오기가 취소되었습니다.',ar:'تم إلغاء التحميل من السحابة.'},
  sup_blocked:{en:'Browser storage is blocked. Cloud backup was NOT applied; enable storage and retry.',ko:'브라우저 저장소가 차단되어 클라우드 백업이 적용되지 않았습니다. 저장소를 허용한 뒤 다시 시도하세요.',ar:'تم حظر تخزين المتصفح ولم يتم تطبيق النسخة السحابية. فعّل التخزين وأعد المحاولة.'},
  sup_restored:{en:'Cloud supplier draft and saved supplier list restored successfully.',ko:'클라우드의 공급업체 초안과 저장된 공급업체 목록을 복원했습니다.',ar:'تمت استعادة مسودة الموردين وقائمة الموردين المحفوظة من السحابة بنجاح.'},
+ sup_unsaved:{en:'This assessment is not in your saved supplier list yet, or has unsaved changes. Add it to the list and save to cloud?',ko:'이 평가는 아직 저장된 공급업체 목록에 없거나 저장되지 않은 변경 사항이 있습니다. 목록에 추가한 뒤 클라우드에 저장할까요?',ar:'هذا التقييم غير موجود بعد في قائمة الموردين المحفوظة، أو فيه تغييرات غير محفوظة. هل تريد إضافته إلى القائمة ثم الحفظ في السحابة؟'},
+ sup_unsaved_cancel:{en:'Cloud save cancelled. Press "Save assessment" first, then save to cloud.',ko:'클라우드 저장이 취소되었습니다. 먼저 "평가 저장"을 누른 뒤 클라우드에 저장하세요.',ar:'تم إلغاء الحفظ في السحابة. اضغط "حفظ التقييم" أولاً، ثم احفظ في السحابة.'},
  qr_cloudTitle:{en:'Cloud backup',ko:'클라우드 백업',ar:'النسخ الاحتياطي السحابي'},
  qr_desc:{en:'Sign in to save or restore your private editable draft. Public QR links remain separate snapshots. Use fictional information while testing.',ko:'로그인하여 비공개 편집 초안을 저장하거나 복원하세요. 공개 QR 링크는 별도의 스냅샷으로 유지됩니다. 테스트에는 가상 정보를 사용하세요.',ar:'سجّل الدخول لحفظ مسودتك الخاصة القابلة للتعديل أو استعادتها. تبقى روابط QR العامة لقطات منفصلة. استخدم معلومات وهمية أثناء الاختبار.'},
  qr_save:{en:'Save draft to cloud',ko:'클라우드에 초안 저장',ar:'حفظ المسودة في السحابة'},

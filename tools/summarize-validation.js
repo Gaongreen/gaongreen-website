@@ -11,20 +11,26 @@ L('GAONGREEN STAGING VALIDATION — shareable summary (allow-listed fields only)
 L('generated: '+new Date().toISOString());
 for(const k of ['RESULT','COMMIT','TREE_DIRTY','PRECHECK','OFFLINE','BUILD','GUARD','RLS','DEPLOY'])if(state[k]!==undefined)L(k.padEnd(11)+scrub(state[k]));
 const man=read(arg('--manifest'));if(man){try{const m=JSON.parse(man);L();L('build manifest (allow-listed): sdk '+scrub(m.sdk&&m.sdk.version)+' fixture='+!!(m.sdk&&m.sdk.fixture)+' sha256 '+String(m.sdk&&m.sdk.sha256||'').replace(/[^0-9a-f]/g,'').slice(0,64)+' target '+scrub(m.target&&m.target.host))}catch(e){L('build manifest: unreadable')}}
-const rls=read(arg('--rls'));if(rls){try{const r=JSON.parse(rls);L();L('live RLS/storage test: '+Number(r.total)+' checks, '+Number(r.failed)+' failed, target '+scrub(r.target));(r.results||[]).forEach(x=>L('  '+(x.status==='PASS'?'PASS':'FAIL')+' '+scrub(x.id).slice(0,40)+' '+scrub(x.name).slice(0,120)+(x.status==='PASS'?'':'  :: '+scrub(x.detail))))}catch(e){L('live RLS result: unreadable')}}
-const dep=read(arg('--deploy'));const exempt=[];
-if(dep){L();dep.split('\n').filter(Boolean).slice(0,12).forEach(x=>{
- // exact-format allow-list: Netlify deploy ids are 24 hex chars; the draft URL is <id>--<this site>.netlify.app; anything else is scrubbed
- let m;if((m=x.match(/^DRAFT deploy id: ([0-9a-f]{24})$/))){L('deploy: DRAFT deploy id: '+m[1]);exempt.push(m[1]);return}
- if((m=x.match(/^DRAFT deploy URL: (https:\/\/[0-9a-f]{24}--incredible-biscotti-bcf58a\.netlify\.app)(?: |$)/))){L('deploy: DRAFT deploy URL: '+m[1]);exempt.push(m[1]);return}
- if((m=x.match(/^(verified: live site still serves|live site currently serves deploy) ([0-9a-f]{24})\b/))){L('deploy: '+m[1]+' '+m[2]);exempt.push(m[2]);return}
- L('deploy: '+scrub(x))})}
-const out=lines.join('\n')+'\n';let scan=out;exempt.forEach(e=>{scan=scan.split(e).join('')});
+const rls=read(arg('--rls'));if(rls){try{const r=JSON.parse(rls);L();L('live RLS/storage test: '+Number(r.total)+' checks, '+Number(r.failed)+' failed, '+Number(r.blocked||0)+' blocked, target '+scrub(r.target));(r.results||[]).forEach(x=>L('  '+(x.status==='PASS'?'PASS':x.status==='BLOCKED'?'BLOCKED':'FAIL')+' '+scrub(x.id).slice(0,40)+' '+scrub(x.name).slice(0,120)+(x.status==='PASS'?'':'  :: '+scrub(x.detail))))}catch(e){L('live RLS result: unreadable')}}
+const dep=read(arg('--deploy'));const allowed=[];
+if(dep){L();let other=0;const seen={};const allow=(kind,text,val)=>{if(seen[kind])return false;seen[kind]=1;L('deploy: '+text);allowed.push(val);return true};
+ dep.split('\n').filter(Boolean).forEach(x=>{
+ // exact-format allow-list: Netlify deploy ids are 24 hex chars; the draft URL is <id>--<this site>.netlify.app; only the captured value is printed, never the rest of the line.
+ // Only the FIRST line of each kind is allow-listed; a repeat is treated like any other line (scrubbed, counted against the 12-line cap).
+ let m;if((m=x.match(/^DRAFT deploy id: ([0-9a-f]{24})$/))&&allow('id','DRAFT deploy id: '+m[1],m[1]))return;
+ if((m=x.match(/^DRAFT deploy URL: (https:\/\/[0-9a-f]{24}--incredible-biscotti-bcf58a\.netlify\.app)(?: |$)/))&&allow('url','DRAFT deploy URL: '+m[1],m[1]))return;
+ if((m=x.match(/^(verified: live site still serves|live site currently serves deploy) ([0-9a-f]{24})\b/))&&allow('live',m[1]+' '+m[2],m[2]))return;
+ if(other++<12)L('deploy: '+scrub(x))})}
+const out=lines.join('\n')+'\n';
 // independent detectors over the final text
 const secrets=(()=>{try{return JSON.parse(process.env.GG_SCAN_SECRETS||'[]')}catch(e){return[]}})().filter(s=>typeof s==='string'&&s.length>=4);
-const hits=[];for(const s of secrets){for(const v of [s,Buffer.from(s).toString('base64'),encodeURIComponent(s),Buffer.from(s).toString('hex')])if(scan.includes(v))hits.push('a supplied password (or its encoding) appears')}
-if(/eyJ[A-Za-z0-9_-]{8,}\./.test(scan))hits.push('JWT-like token');if(/sb_secret_|service_role|Bearer\s+\S/i.test(scan))hits.push('secret/Bearer pattern');
-if(/(?:^|[^0-9a-f])[0-9a-f]{65,}/.test(scan)||/[A-Za-z0-9_\-+/=]{40,}/.test(scan.replace(/[0-9a-f]{64}/g,'')))hits.push('long high-entropy string');
-if(/\/(home|Users|workspaces)\/[^\s]+/.test(scan))hits.push('local path');
+// (1) secret detectors run on the FULL text: nothing is exempted, so a password equal to a deploy id/URL is still caught
+const hits=[];for(const s of secrets){for(const v of [s,Buffer.from(s).toString('base64'),encodeURIComponent(s),Buffer.from(s).toString('hex')])if(out.includes(v))hits.push('a supplied password (or its encoding) appears')}
+if(secrets.some(s=>allowed.some(a=>a.includes(s)||s.includes(a))))hits.push('a supplied password overlaps an allow-listed deploy value');
+if(/eyJ[A-Za-z0-9_-]{8,}\./.test(out))hits.push('JWT-like token');if(/sb_secret_|service_role|Bearer\s+\S/i.test(out))hits.push('secret/Bearer pattern');
+if(/\/(home|Users|workspaces)\/[^\s]+/.test(out))hits.push('local path');
+// (2) only the length heuristic needs the allow-listed values masked (the draft URL label <id>--incredible-biscotti-bcf58a is 55 chars); masking is by exact value
+let ent=out;allowed.forEach(e=>{ent=ent.split(e).join('<allowed>')});
+if(/(?:^|[^0-9a-f])[0-9a-f]{65,}/.test(ent)||/[A-Za-z0-9_\-+/=]{40,}/.test(ent.replace(/[0-9a-f]{64}/g,'')))hits.push('long high-entropy string');
 if(hits.length){fs.writeFileSync(arg('--out')+'.WITHHELD','withheld: '+[...new Set(hits)].join('; ')+'\n');console.error('SHARE FILE WITHHELD: '+[...new Set(hits)].join('; '));process.exit(4)}
 fs.writeFileSync(arg('--out'),out);console.log(out);process.exit(0);
