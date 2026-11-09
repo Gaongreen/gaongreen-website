@@ -16,10 +16,11 @@ bash tools/run-live-rls.sh "$A" "$B" --mime --out-dir "$WORK" >"$WORK/raw.log" 2
 RES="$(ls "$WORK"/rls-staging-result-*.json 2>/dev/null | head -1)"
 if [ $RC -eq 0 ] && [ -n "$RES" ]; then R="PASS"; else
   R="FAIL (exit $RC)"; grep -q "sign-in failed" "$WORK/raw.log" && R="FAIL (sign-in rejected: the two password secrets do not match the staging accounts)"
-  grep -q "REFUSED" "$WORK/raw.log" && ! grep -q "sign-in failed" "$WORK/raw.log" && R="FAIL (refused by a safety guard)"; fi
+  grep -q "REFUSED" "$WORK/raw.log" && ! grep -q "sign-in failed" "$WORK/raw.log" && R="FAIL (refused by a safety guard)"
+  [ $RC -eq 5 ] && R="BLOCKED (exit 5: existing account data protected; the affected tables were not tested, nothing was written to them)"; fi
 { echo "RESULT=$R"; echo "COMMIT=$(printf '%s' "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}" | cut -c1-8)"; echo "RLS=$R"; } >"$WORK/state.txt"
 ARGS=(--state "$WORK/state.txt" --out "$WORK/share.txt"); [ -n "$RES" ] && ARGS+=(--rls "$RES")
 GG_SCAN_SECRETS="$(node -e 'console.log(JSON.stringify([process.env.A_PASSWORD||"",process.env.B_PASSWORD||""]))')" node tools/summarize-validation.js "${ARGS[@]}" >"$WORK/summary.out" 2>"$WORK/summary.err"; SC=$?
 if [ $SC -eq 0 ]; then cat "$WORK/summary.out"; [ -n "${GITHUB_STEP_SUMMARY:-}" ] && { echo '```'; cat "$WORK/summary.out"; echo '```'; } >>"$GITHUB_STEP_SUMMARY"
-else echo "RESULT: $R; summary withheld by the leak detector (raw output discarded)"; [ $RC -eq 0 ] && RC=1; fi
+else echo "RESULT: NOT CLEAN (summary withheld by the leak detector; raw output discarded; underlying check status: $R)"; [ -n "${GITHUB_STEP_SUMMARY:-}" ] && echo "RESULT: NOT CLEAN - summary withheld by the leak detector; this run is NOT a pass" >>"$GITHUB_STEP_SUMMARY"; [ $RC -eq 0 ] && RC=1; fi
 [ $RC -eq 0 ] && exit 0 || exit 1

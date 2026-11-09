@@ -5,7 +5,8 @@
 // F6: Dashboard hides "Open login" while signed in and shows it again when signed out.
 // F3: Evidence Locker keeps company/category/year after a save and prefills company from this account's Company Settings copy.
 // F7: K-ISSB print CSS lets report panels break across pages while table rows stay whole.
-// F9: the shareable validation summary keeps the exact allow-listed draft id/URL lines wherever they appear; leak detectors unchanged.
+// F9: the shareable validation summary keeps the exact allow-listed draft id/URL lines wherever they appear (first of each kind only);
+//     secret detectors scan the FULL text with nothing exempted (P16-P19).
 const S=require('./lib/serve.js'),T=require('./lib/t.js');const t=T.make();
 const APP=['GaonGreen_ESG_Dashboard_Cloud_Beta.html','GaonGreen_Company_Settings_Cloud_Beta.html','GaonGreen_KISSB_Cloud_Beta.html','GaonGreen_K-RE100_Cloud_Beta.html','GaonGreen_EPR_Cloud_Beta.html','GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html','GaonGreen_QR_ESG_Card_Cloud_Beta.html','GaonGreen_Evidence_Locker_Cloud_Beta.html'];
 const switchLang=async(pg,L)=>pg.evaluate(L=>{const sel=[...document.querySelectorAll('select')].find(x=>[...x.options].some(o=>o.value===L));if(sel){sel.value=L;sel.dispatchEvent(new Event('change',{bubbles:true}));return 1}const b=[...document.querySelectorAll('[data-lang]')].find(x=>x.dataset.lang===L);if(b){b.click();return 2}return 0},L);
@@ -105,5 +106,23 @@ const state=pg=>pg.evaluate(()=>({lang:document.documentElement.lang,dir:documen
   const a=runSum(['DRAFT deploy URL: https://'+ID+'--some-other-site.netlify.app','DRAFT deploy id: '+ID+'0']);
   const b=runSum(['note: pw Fict10nal-Pass in log'],['Fict10nal-Pass']);
   return{ok:a.status===0&&!a.share.includes('some-other-site.netlify.app')&&!a.share.includes('DRAFT deploy id: '+ID+'0')&&b.status===4&&b.share==='',expected:'lookalikes scrubbed; leak -> exit 4',actual:JSON.stringify({a:a.status,b:b.status})}});
+
+ await t.check('P16','F9: a password that equals the draft deploy id is caught: the summary is WITHHELD (exit 4), not printed',async()=>{
+  const r=runSum(['DRAFT deploy id: '+ID,'DRAFT deploy URL: https://'+ID+'--incredible-biscotti-bcf58a.netlify.app'],[ID]);
+  return{ok:r.status===4&&r.share==='',expected:'exit 4, nothing written',actual:JSON.stringify({status:r.status,written:r.share!==''})}});
+ const SECRETS={jwt:'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIn0.c2lnbmF0dXJlLWZpY3Rpb25hbA',sbSecret:'sb_secret_FICTIONAL0123456789abcdef',sbPub:'sb_publishable_FICTIONAL0123456789ab',bearer:'Bearer FICTIONALtoken0123456789abcd',gh:'ghp_FICTIONAL0123456789abcdefghijklmnop',nf:'nfp_FICTIONAL0123456789abcdefghijkl'};
+ await t.check('P17','F9: JWTs, Supabase secret/publishable keys, Bearer, GitHub and Netlify tokens never appear in the summary (in plain deploy lines and in allow-list look-alikes)',async()=>{
+  const vals=Object.values(SECRETS);const d=runSum([...vals.map(v=>'cli: '+v),'DRAFT deploy id: '+SECRETS.jwt,'DRAFT deploy URL: https://'+ID+'--incredible-biscotti-bcf58a.netlify.app '+SECRETS.sbSecret,'verified: live site still serves '+LIVE+' '+SECRETS.bearer]);
+  const leaked=vals.filter(v=>d.share.includes(v)||d.share.includes(v.slice(0,20)));
+  return{ok:(d.status===0||d.status===4)&&leaked.length===0&&(d.status===4||d.share.includes('deploy: DRAFT deploy URL: https://'+ID)),expected:'0 leaked',actual:JSON.stringify({status:d.status,leaked:leaked.map(v=>v.slice(0,8))})}});
+ await t.check('P18','F9: nothing after an allow-listed value is printed, and deploy-log lines beyond the 12-line cap are not printed at all',async()=>{
+  const r=runSum(['DRAFT deploy URL: https://'+ID+'--incredible-biscotti-bcf58a.netlify.app TAILWORD-url-zz9q','verified: live site still serves '+LIVE+' TAILWORD-live-zz9q',...Array.from({length:14},(_,i)=>'note line '+i+' CAPWORD'+i)]);
+  const shown=(r.share.match(/CAPWORD\d+/g)||[]);
+  return{ok:r.status===0&&!/TAILWORD/.test(r.share)&&shown.length===12&&!r.share.includes('CAPWORD12')&&!r.share.includes('CAPWORD13'),expected:'no tail words, 12 capped lines',actual:JSON.stringify({status:r.status,tail:/TAILWORD/.test(r.share),shown:shown.length})}});
+ await t.check('P19','F9: only the FIRST allow-listed line of each kind is printed; repeats with other ids are scrubbed',async()=>{
+  const ID2='0123456789abcdef01234567',ID3='fedcba9876543210fedcba98';
+  const r=runSum(['DRAFT deploy id: '+ID,'DRAFT deploy id: '+ID2,'DRAFT deploy URL: https://'+ID+'--incredible-biscotti-bcf58a.netlify.app','DRAFT deploy URL: https://'+ID3+'--incredible-biscotti-bcf58a.netlify.app','verified: live site still serves '+LIVE,'verified: live site still serves '+ID3]);
+  const n=k=>(r.share.match(new RegExp('^deploy: '+k+'[^\\n]*[0-9a-f]{24}','gm'))||[]).length;const scrubbed=(r.share.match(/\[long-token\]/g)||[]).length;
+  return{ok:r.status===0&&n('DRAFT deploy id: ')===1&&n('DRAFT deploy URL: https')===1&&n('verified: ')===1&&scrubbed>=3&&!r.share.includes(ID2)&&!r.share.includes(ID3)&&r.share.includes(ID),expected:'1 printed value of each kind; repeats scrubbed; ID2/ID3 absent',actual:JSON.stringify({status:r.status,id:n('DRAFT deploy id: '),url:n('DRAFT deploy URL: https'),live:n('verified: '),scrubbedRepeats:scrubbed,id2:r.share.includes(ID2),id3:r.share.includes(ID3)})}});
 
  await s.close();require('fs').writeFileSync(process.argv[2]||'func-post-acceptance.json',JSON.stringify({run:new Date().toISOString(),build:'OFFLINE demo stand-in',results:t.res},null,1));process.exit(t.res.every(x=>x.status==='PASS')?0:1)})().catch(e=>{console.error(e);process.exit(1)});

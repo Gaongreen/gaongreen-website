@@ -1,6 +1,10 @@
 // LIVE counterpart of tests/func-session.js: session-only sign-in and the 30-minute idle timeout against the REAL staging Auth/Data (E5) with the real SDK, fictional account A only.
 // Mock mode (GG_LIVE_MODE=mock) validates this script offline (E2). Playwright fake clock is used for idle time; never advanced past 31 minutes (staging tokens last 60).
-// Writes: Auth calls (sign-in, refresh, sign-out) and ONE fictional company_profiles row for A (cloud save test), deleted again at the end. Never a password/token in output.
+// Writes: Auth calls (sign-in, refresh, sign-out) and ONE run-marked fictional company_profiles row for A (cloud save test), deleted again by owner AND marker and verified.
+// S4 is BLOCKED (never written) if A already has a company_profiles row, so existing data is never overwritten. Exit: 0 pass, 1 FAIL/ERROR, 5 BLOCKED. Never a password/token in output.
+// S4 WRITE POLICY: the Settings page saves with the app's own UPSERT, which no pre-flight can make race-free. S4 therefore writes ONLY against the loopback
+// mock, or in staging with a dedicated automation account (rls-auto-*@example.test) AND GG_S4_CLOUD_WRITE=yes. customer-* accounts are NEVER written to.
+// Otherwise S4 is recorded as NOT RUN (never a pass). GG_S4_POLICY_ONLY=yes prints the decision and exits before any network or browser use (offline test hook).
 // Usage: node tests/live-browser-session.js <out.json> <pinned-dir>   env: A_EMAIL A_PASSWORD [MOCK_URL]
 const fs=require('fs'),S=require('./lib/serve.js'),T=require('./lib/t.js');const t=T.make();
 const MODE=process.env.GG_LIVE_MODE||'staging',STAGING_HOST='gdmejzbycgpuabvutkdk.supabase.co',KEY='sb_publishable_RV_G9MyL3cRJpl67w6gXUg_BpvFP6x8',MIN=60000;
@@ -10,8 +14,14 @@ if(!/@example\.(test|com)$/.test(AE)){console.log('REFUSED: only fictional examp
 if(MODE!=='staging'&&MODE!=='mock'){console.log('REFUSED: GG_LIVE_MODE must be staging or mock.');process.exit(2)}
 if(MODE==='mock'&&!/^http:\/\/127\.0\.0\.1:\d+$/.test(process.env.MOCK_URL||'')){console.log('REFUSED: mock mode needs MOCK_URL.');process.exit(2)}
 const API=MODE==='staging'?'https://'+STAGING_HOST:process.env.MOCK_URL;
+const HUMAN_ACCOUNT=/^customer-[a-z0-9-]*@example\.(test|com)$/i.test(AE),AUTOMATION_ACCOUNT=/^rls-auto-[a-z0-9-]+@example\.test$/.test(AE);
+const S4_WRITE=!HUMAN_ACCOUNT&&(MODE==='mock'||(AUTOMATION_ACCOUNT&&process.env.GG_S4_CLOUD_WRITE==='yes'));
+const S4_WHY=HUMAN_ACCOUNT?'customer-* accounts are never written to':MODE==='mock'?'loopback mock':AUTOMATION_ACCOUNT?(process.env.GG_S4_CLOUD_WRITE==='yes'?'automation account + GG_S4_CLOUD_WRITE=yes':'automation account but GG_S4_CLOUD_WRITE is not yes'):'staging requires a dedicated rls-auto-* account';
+if(process.env.GG_S4_POLICY_ONLY==='yes'){console.log('S4-POLICY '+(S4_WRITE?'RUN':'NOT RUN')+' ('+S4_WHY+')');process.exit(0)}
 const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observation',actual:JSON.stringify(actual)});console.log('INFO '+id+' '+name+'  '+JSON.stringify(actual))};
 (async()=>{
+ // the S4 write decision is recorded FIRST, before any sign-in, so it is reported even if the run stops early
+ if(!S4_WRITE){t.res.push({id:'S4',name:'cloud save and cloud load (run-marked fictional row)',status:'NOT RUN',expected:'write allowed by policy',actual:S4_WHY});console.log('NOT RUN S4 cloud save/load: '+S4_WHY)}
  const s=await S.start(dir);const blocked=[],reqs=[];
  const authLog=[];let inflight=0;
  const mk=async(state)=>{const ctx=await s.browser.newContext(state?{storageState:state}:{});await ctx.clock.install();
@@ -42,11 +52,19 @@ const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observ
  // S3 token refresh
  const before=await sess(p1);const rf=await refresh(p1);const after=await sess(p1);const rd2=await cloudRead(p1);
  await t.check('S3','token refresh: succeeds, the refresh token rotates, cloud reads keep working',async()=>({ok:rf.ok&&before.rt!==after.rt&&rd2.ok===true,expected:'rotated',actual:JSON.stringify({rf,rotated:before.rt!==after.rt,read:rd2})}));
- // S4 cloud save + load (own fictional row), then clean up
- await go(p1,'GaonGreen_Company_Settings_Cloud_Beta.html');p1.on('dialog',d=>d.accept());await p1.fill('#company','Fictional Session Co (cloud)');const w0=reqs.length;await p1.click('#cloudSave');await p1.waitForTimeout(2500);
- const wrote=reqs.slice(w0).filter(r=>r.m==='POST'&&/company_profiles/.test(r.p)).length;await p1.fill('#company','changed locally');await p1.click('#cloudLoad');await p1.waitForTimeout(2500);const back=await p1.inputValue('#company');
- await p1.evaluate(async()=>{const c=window.ggClients[0];const u=(await c.auth.getUser()).data.user;await c.from('company_profiles').delete().eq('owner_id',u.id)});
- await t.check('S4','cloud save and cloud load work with the session-only client (the fictional row is deleted afterwards)',async()=>({ok:wrote>=1&&back==='Fictional Session Co (cloud)',expected:'saved+loaded',actual:JSON.stringify({posts:wrote,back})}));
+ // S4 cloud save + load with a RUN-MARKED fictional company. Runs only when the write policy allows it (see header); BLOCKED if A already has a company row.
+ if(S4_WRITE){
+ await go(p1,'GaonGreen_Company_Settings_Cloud_Beta.html');p1.on('dialog',d=>d.accept());await p1.waitForTimeout(800);
+ const S4MARK='gg-rls-test-session-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+ const pre4=await p1.evaluate(async()=>{const c=window.ggClients&&window.ggClients[0];if(!c)return{err:'no client'};const u=(await c.auth.getUser()).data.user;if(!u)return{err:'no user'};const r=await c.from('company_profiles').select('owner_id').eq('owner_id',u.id);return{err:r.error?String(r.error.code||r.error.message).slice(0,40):null,rows:(r.data||[]).length}});
+ if(pre4.err||pre4.rows>0){t.res.push({id:'S4',name:'cloud save and cloud load (run-marked fictional row)',status:'BLOCKED',expected:'A has no company_profiles row before the test',actual:JSON.stringify(pre4)});console.log('BLOCKED S4 cloud save/load skipped to protect existing data  '+JSON.stringify(pre4))}
+ else{let wrote=0,back='',del={err:'cleanup not run'};
+  try{await p1.fill('#company',S4MARK);const w0=reqs.length;await p1.click('#cloudSave');await p1.waitForTimeout(2500);
+   wrote=reqs.slice(w0).filter(r=>r.m==='POST'&&/company_profiles/.test(r.p)).length;await p1.fill('#company','changed locally');await p1.click('#cloudLoad');await p1.waitForTimeout(2500);back=await p1.inputValue('#company')}
+  finally{del=await p1.evaluate(async(mk)=>{const c=window.ggClients[0];const u=(await c.auth.getUser()).data.user;const d=await c.from('company_profiles').delete().eq('owner_id',u.id).eq('company_name',mk).select('owner_id');const v=await c.from('company_profiles').select('owner_id').eq('owner_id',u.id).eq('company_name',mk);return{err:d.error||v.error?String((d.error||v.error).code||(d.error||v.error).message).slice(0,40):null,removed:(d.data||[]).length,remaining:(v.data||[]).length}},S4MARK).catch(e=>({err:String(e&&e.name||'error')}))}
+  await t.check('S4','cloud save and cloud load work with the session-only client (run-marked fictional row)',async()=>({ok:wrote>=1&&back===S4MARK,expected:'saved+loaded',actual:JSON.stringify({posts:wrote,loadedBackMarker:back===S4MARK})}));
+  await t.check('S4c','the run-marked row is deleted by owner AND marker and verified absent',async()=>({ok:!del.err&&del.remaining===0&&del.removed>=1,expected:'removed>=1, remaining 0',actual:JSON.stringify(del)}))}
+ }
  // S5 idle (own context: its fake clock runs ahead of real time, and server token expiry is real-clock based)
  const c5=await mk();const p5=await c5.newPage();await signIn(p5);await go(p5,'GaonGreen_Company_Settings_Cloud_Beta.html');await p5.fill('#company','Unsaved live text');await idle(p5,29*MIN);
  const warn=await p5.evaluate(()=>!!document.getElementById('gg-idle-banner'));await p5.click('#gg-idle-stay');await p5.waitForTimeout(300);const warnGone=await p5.evaluate(()=>!document.getElementById('gg-idle-banner'));
@@ -71,4 +89,4 @@ const info=(id,name,actual)=>{t.res.push({id,name,status:'INFO',expected:'observ
  await t.check('S7b','duplicated tab: after 30 minutes idle both tabs end cleanly (no token left in either)',async()=>({ok:both,expected:'both out',actual:both}));
  await t.check('S8','no unexpected host was contacted (only 127.0.0.1 and the staging project)',async()=>({ok:!blocked.length,expected:'0',actual:JSON.stringify([...new Set(blocked)])}));
  try{await c1.close();await c6s.close();await c7.close()}catch(e){}await s.close();
- fs.writeFileSync(out,JSON.stringify({run:new Date().toISOString(),mode:MODE,build:MODE==='staging'?'REAL SDK + REAL STAGING Auth/Data, fake page clock (E5)':'REAL SDK vs loopback MOCK (E2): validates this script only',results:t.res},null,1));process.exit(t.res.every(x=>x.status!=='FAIL')?0:1)})().catch(e=>{console.error('ERROR',String(e&&e.message||e).replace(/\n.*/s,'').slice(0,240));process.exit(1)});
+ fs.writeFileSync(out,JSON.stringify({run:new Date().toISOString(),mode:MODE,build:MODE==='staging'?'REAL SDK + REAL STAGING Auth/Data, fake page clock (E5)':'REAL SDK vs loopback MOCK (E2): validates this script only',results:t.res},null,1));process.exit(t.res.some(x=>x.status==='FAIL'||x.status==='ERROR')?1:t.res.some(x=>x.status==='BLOCKED')?5:0)})().catch(e=>{console.error('ERROR',String(e&&e.message||e).replace(/\n.*/s,'').slice(0,240));process.exit(1)});
