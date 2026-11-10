@@ -221,7 +221,7 @@ function renderQuality(){
  dest.append(make('p',t.revenue,'gg-quality-muted'),make('p',t.note,'gg-quality-note'));
 }
 
-function draw(){const t=language();q('ggAssistantTitle').textContent=t.title;q('ggAssistantTag').textContent=t.tag;q('ggAssistantIntro').textContent=t.intro;q('ggAssistantFoot').textContent=t.foot;const opts=q('ggAssistantOptions');opts.replaceChildren();t.buttons.forEach((label,i)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(i===selected));b.onclick=()=>{selected=i;draw()};opts.append(b)});q('ggAssistantAnswer').textContent=selected<0?t.start:selected===2?'':t.topics[selected];if(selected===2)renderQuality()}
+function draw(){const t=language();panel.setAttribute('aria-label',{ko:'ESG 단계별 도우미',ar:'مساعد ESG الإرشادي'}[q('language')?.value]||'ESG guided assistant');q('ggAssistantTitle').textContent=t.title;q('ggAssistantTag').textContent=t.tag;q('ggAssistantIntro').textContent=t.intro;q('ggAssistantFoot').textContent=t.foot;const opts=q('ggAssistantOptions');opts.replaceChildren();t.buttons.forEach((label,i)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(i===selected));b.onclick=()=>{selected=i;draw()};opts.append(b)});q('ggAssistantAnswer').textContent=selected<0?t.start:selected===2?'':t.topics[selected];if(selected===2)renderQuality()}
 q('language').addEventListener('change',draw);draw();
 })();
 </script><script id="gg-evidence-feature">
