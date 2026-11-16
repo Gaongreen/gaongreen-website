@@ -1,0 +1,14 @@
+PASS K-E1 Evidence checklist has 13 items, all start "Not reviewed", progress 0 / 13
+PASS K-E2 Only "Available" counts toward progress (2 available, 1 missing, 1 needs review, 1 N/A -> 2 / 13)
+PASS K-E3 Evidence export is typed JSON with 13 entries, statuses [1,1,2,3,4,...] and the reference kept
+PASS K-E4 Evidence clear then import restores progress, statuses and reference (round trip)
+PASS K-E5 Evidence import of a wrong-type file is refused and leaves progress unchanged
+PASS K-E6 Evidence import of malformed JSON does not crash or change progress
+PASS K-R1 CSV: UTF-8 BOM, CRLF, header Indicator,Value,Unit,Note, quoted cells
+PASS K-R2 CSV carries the verified indicator values (420, 0.08, 4.2, 4,100, 0.82, 25) and Missing for blanks
+PASS K-R3 CSV: no cell begins with = + - @ (formula-injection guard on this indicator export)
+PASS K-R4 CSV file name is GaonGreen_ESG_Indicators.csv
+PASS K-B1 Backup JSON carries version, language and the entered fields
+PASS K-B2 Backup: clear then import restores company, electricity and Scope 2 (round trip)
+PASS K-B3 Backup: a file with an unsupported shape does not wipe the form
+PASS K-R5 Both report buttons are visible after building the dashboard and each calls the browser print dialog (print stubbed; PDF file not produced by this test)

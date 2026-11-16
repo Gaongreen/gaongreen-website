@@ -1,0 +1,69 @@
+{
+ "run": "2026-11-07T18:31:14.815Z",
+ "build": "OFFLINE: loopback mock + static workflow checks",
+ "results": [
+  {
+   "id": "C1",
+   "name": "all checks pass -> exit 0, RESULT=PASS summary printed and written to the step summary, passwords never printed",
+   "status": "PASS",
+   "expected": "exit 0",
+   "actual": "exit 0 cript, [long-token], [long-token]) are REJECTED\n  PASS storage.L1 an object of 10 MB + 1 byte is REJECTED server-side\n  PASS auth.T1 a JWT with a tampered subject (A's signature, B's id) is rejected\n\n"
+  },
+  {
+   "id": "C2",
+   "name": "a leaking backend -> exit 1, FAIL checks listed in the summary, raw log not printed, passwords not printed",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1 GAONGREEN STAGING VALIDATION — shareable summary (allow-listed fields only)\ngenerated: 2026-11-07T18:31:14.460Z\nRESULT     FAIL (exit 1)\nCOMMIT     db7db326\nRLS        FAIL (exit 1)\n\nlive RLS/storage "
+  },
+  {
+   "id": "C3",
+   "name": "wrong password secret -> exit 1 with a clear \"do not match\" reason, neither the wrong nor the right password is printed",
+   "status": "PASS",
+   "expected": "exit 1 + reason",
+   "actual": "exit 1 GAONGREEN STAGING VALIDATION — shareable summary (allow-listed fields only)\ngenerated: 2026-11-07T18:31:14.630Z\nRESULT     FAIL (sign-in rejected: the two password secrets do not match the staging accounts)\nCOMMIT     db7db326\nRLS        FA"
+  },
+  {
+   "id": "C4",
+   "name": "missing secrets -> exit 2 REFUSED, nothing contacted, tells where to create them",
+   "status": "PASS",
+   "expected": "exit 2",
+   "actual": "exit 2 REFUSED: the staging passwords are not available to this run.\nCreate the environment secrets STAGING_CUSTOMER_A_PASSWORD and STAGING_CUSTOMER_B_PASSWORD (see do"
+  },
+  {
+   "id": "C5",
+   "name": "production URL is refused by the inherited guards (exit != 0, never PASS)",
+   "status": "PASS",
+   "expected": "refused",
+   "actual": "exit 1 GAONGREEN STAGING VALIDATION — shareable summary (allow-listed fields only)\ngenerated: 2026-11-07T18:31:14.759Z\nRESULT     FAIL (refused by a safety guard)\nCOMMIT     db7db326\nRLS        FAIL (refused"
+  },
+  {
+   "id": "C6",
+   "name": "workflow triggers are only push-to-recovery-branch and manual (no pull_request*, schedule, workflow_run); permissions are contents: read",
+   "status": "PASS",
+   "expected": "push+dispatch only",
+   "actual": "{\"on\":[\"push\",\"workflow_dispatch\"],\"perm\":{\"contents\":\"read\"}}"
+  },
+  {
+   "id": "C7",
+   "name": "every action is pinned to a full commit SHA; checkout does not persist credentials; jobs are limited to this repo and branch",
+   "status": "PASS",
+   "expected": "pinned",
+   "actual": "[\"actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\",\"actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\",\"actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683\"]"
+  },
+  {
+   "id": "C8",
+   "name": "secrets: only the two staging password secrets, used only as env of the live job (environment staging-live-tests); the offline job has no environment and no secrets; no ${{ }} interpolation inside any run: script; no debug/xtrace",
+   "status": "PASS",
+   "expected": "locked down",
+   "actual": "{\"env\":\"staging-live-tests\",\"secretUses\":[\"STAGING_CUSTOMER_A_PASSWORD\",\"STAGING_CUSTOMER_B_PASSWORD\",\"STAGING_CUSTOMER_A_PASSWORD\",\"STAGING_CUSTOMER_B_PASSWORD\",\"STAGING_CUSTOMER_A_PASSWORD\"],\"runs\":\"bash tools/ci-live-staging.sh\\n|\\n          npm install --no-save --no-audit --no-fund --prefix \\\"$RUNNER_TEMP/pw\\\" playwrig\"}"
+  },
+  {
+   "id": "C9",
+   "name": "CI script never prints raw output or passwords (no cat of the raw log, no echo of password variables), and discards its temp dir",
+   "status": "PASS",
+   "expected": "safe",
+   "actual": "static"
+  }
+ ]
+}

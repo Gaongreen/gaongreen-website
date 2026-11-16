@@ -1,0 +1,48 @@
+{
+ "run": "2026-11-07T16:51:34.956Z",
+ "build": "OFFLINE demo stand-in",
+ "results": [
+  {
+   "id": "L1",
+   "name": "gg-l10n.js: every shared string has distinct Korean (Hangul) and Arabic (Arabic script) text",
+   "status": "PASS",
+   "expected": ">=40 keys, 0 bad",
+   "actual": "{\"keys\":44,\"bad\":[]}"
+  },
+  {
+   "id": "L2",
+   "name": "On all 8 app pages, every data-l10n / data-l10n-ph element shows Korean or Arabic after switching, and returns to the original English when switched back",
+   "status": "PASS",
+   "expected": "0 problems, >=20 tagged items",
+   "actual": "{\"tagged\":22,\"bad\":[]}"
+  },
+  {
+   "id": "L5",
+   "name": "aria-label (screen-reader) text follows the language on every tagged page, incl. Login, Register and the K-ISSB wizard, and returns to English",
+   "status": "PASS",
+   "expected": "0 problems, >=10 aria labels",
+   "actual": "{\"n\":11,\"bad\":[]}"
+  },
+  {
+   "id": "L6",
+   "name": "Dashboard: all 6 tool-card names are translated in Korean and Arabic and restored in English",
+   "status": "PASS",
+   "expected": "6 names x2 languages",
+   "actual": "{\"n\":6,\"bad\":[]}"
+  },
+  {
+   "id": "L3",
+   "name": "Company Settings: title, subtitle and sign-in status follow the language (ko/ar), Arabic is RTL, English restored",
+   "status": "PASS",
+   "expected": "translated title/subtitle/status; ar rtl; en restored",
+   "actual": "{\"ko\":{\"h\":\"회사 설정\",\"sub\":\"재무 보고에 사용할 기본 통화를 설정하세요.\",\"acc\":\"로그인: demo.user@example.invalid\",\"dir\":\"ltr\"},\"ar\":\"rtl\",\"back\":\"Company settings\"}"
+  },
+  {
+   "id": "L4",
+   "name": "QR page: cloud messages are localized at run time (signed-out save in Korean and Arabic)",
+   "status": "PASS",
+   "expected": "status in target script",
+   "actual": "[]"
+  }
+ ]
+}

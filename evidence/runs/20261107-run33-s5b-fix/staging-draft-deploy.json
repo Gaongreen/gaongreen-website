@@ -1,0 +1,76 @@
+{
+ "run": "2026-11-07T18:30:19.915Z",
+ "build": "OFFLINE with a stub Netlify CLI",
+ "results": [
+  {
+   "id": "D1",
+   "name": "default run is a dry run: checks pass, preserved file counted, the Netlify CLI is NOT called",
+   "status": "PASS",
+   "expected": "exit 0, no CLI call",
+   "actual": "exit 0 "
+  },
+  {
+   "id": "D2",
+   "name": "--deploy calls the CLI for the existing site id WITHOUT --prod/--alias, deploys a temp copy that contains the preserved page, and reports a draft URL",
+   "status": "PASS",
+   "expected": "draft deploy, no --prod",
+   "actual": "exit 0 err= out=dible-biscotti-bcf58a.netlify.app (team-login protected; the live site is unchanged)\nif the URL shows 'Site not found', compare the id above with Netlify > Deploys (ids are exactly 24 hex characters)\n"
+  },
+  {
+   "id": "D3",
+   "name": "the dist folder itself is not modified (preserved file only added to the temp copy)",
+   "status": "PASS",
+   "expected": "absent in dist",
+   "actual": "false"
+  },
+  {
+   "id": "D4",
+   "name": "refuses (exit 2, CLI never called): fixture build, other staging project, production-targeted build, production ref in a file, secret pattern, missing _headers",
+   "status": "PASS",
+   "expected": "6/6 refused, no call",
+   "actual": "[]"
+  },
+  {
+   "id": "D5",
+   "name": "--prod, --alias and --prod-if-unlocked are refused outright",
+   "status": "PASS",
+   "expected": "[2,2,2]",
+   "actual": "[2,2,2]"
+  },
+  {
+   "id": "D6",
+   "name": "if the CLI result does not look like a draft URL (could be the live site), the script exits 4 and warns instead of claiming success",
+   "status": "PASS",
+   "expected": "exit 4 + failure message",
+   "actual": "exit 4 DEPLOYMENT FAILED: the CLI did not return a valid 24-hex deploy id (got 'd'). Check the Netlify dash"
+  },
+  {
+   "id": "D7",
+   "name": "if the live site's published deploy id changes during a draft deploy, the script exits 5 and prints the rollback target",
+   "status": "PASS",
+   "expected": "exit 5 + rollback id",
+   "actual": "exit 5 DEPLOYMENT FAILED SAFETY CHECK: the live site's published deploy changed (6adf6e4d0e82082a49c6f086 -> '6adf6e4d0e82082a49c6f099'). Roll back: Netlify > Deploys "
+  },
+  {
+   "id": "D8",
+   "name": "a failing Netlify CLI gives exit 3 and a clear DEPLOYMENT FAILED message",
+   "status": "PASS",
+   "expected": "exit 3",
+   "actual": "exit 3 DEPLOYMENT FAILED: Netlify CLI exit 7; the live site was not intentionally changed (checking...)\n"
+  },
+  {
+   "id": "D9",
+   "name": "if the published deploy id cannot be read, deployment is refused BEFORE any deploy call",
+   "status": "PASS",
+   "expected": "exit 2, no deploy call",
+   "actual": "exit 2 REFUSED: cannot read the site's currently published deploy id (CLI not logged in or wrong site?); re"
+  },
+  {
+   "id": "D10",
+   "name": "a deploy id that is not 24 hex (like a truncated id) is reported as DEPLOYMENT FAILED instead of a \"draft URL\"",
+   "status": "PASS",
+   "expected": "exit 4",
+   "actual": "exit 4 DEPLOYMENT FAILED: the CLI did not return a valid 24-hex deploy id (got '6aee33e29e5443360a12475'). Check the Netlify da"
+  }
+ ]
+}

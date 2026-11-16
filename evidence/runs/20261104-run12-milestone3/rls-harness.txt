@@ -1,0 +1,7 @@
+PASS H1 Correctly isolated mock: every check passes (exit 0), with >= 60 checks executed
+PASS H2 Mock where SELECT ignores ownership: suite exits 1 and flags the read checks (T3/T4 or T1)
+PASS H3 Mock where UPDATE/DELETE ignore ownership: suite exits 1 and flags T5 and T6
+PASS H4 Mock where INSERT accepts foreign owner: suite exits 1 and flags T7/T8
+PASS H5 Mock where storage ignores ownership: suite exits 1 and flags storage T1, T3, T4 and T5
+PASS H6 Mock that does not verify JWT signatures: suite exits 1 and flags auth.T1
+PASS H7 Guards: suite REFUSES (exit 2) for 8 unsafe configurations (no flag, production host x2, secret key, service_role JWT, real email, same account, plain http)

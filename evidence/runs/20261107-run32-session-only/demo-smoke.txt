@@ -1,0 +1,13 @@
+PASS GaonGreen_Company_Settings_Cloud_Beta.html      ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_EPR_Cloud_Beta.html                   ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_ESG_Dashboard_Cloud_Beta.html         ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_Evidence_Locker_Cloud_Beta.html       ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_K-RE100_Cloud_Beta.html               ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_KISSB_Cloud_Beta.html                 ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_Login.html                            ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_QR_ESG_Card_Cloud_Beta.html           ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_Register.html                         ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html     ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS K-ISSB Reporting Wizard _ GaonGreen.html        ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS index.html                                      ext=0 jsErr=0 csp=0 brokenLinks=0
+PASS storage scan after demo sign-in: no token/password-like entries in localStorage/sessionStorage  {"signedIn":true,"leaks":[]}

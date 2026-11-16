@@ -1,0 +1,121 @@
+{
+ "run": "2026-11-06T19:06:34.697Z",
+ "results": [
+  {
+   "page": "GaonGreen_Company_Settings_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_EPR_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_ESG_Dashboard_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_Evidence_Locker_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_K-RE100_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_KISSB_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_Login.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_QR_ESG_Card_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_Register.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "K-ISSB Reporting Wizard _ GaonGreen.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "index.html",
+   "external": [],
+   "jsErrors": [],
+   "cspViolations": [],
+   "banner": 1,
+   "brokenLinks": [],
+   "status": "PASS"
+  },
+  {
+   "page": "(storage scan)",
+   "status": "PASS",
+   "detail": {
+    "signedIn": true,
+    "leaks": []
+   }
+  }
+ ]
+}

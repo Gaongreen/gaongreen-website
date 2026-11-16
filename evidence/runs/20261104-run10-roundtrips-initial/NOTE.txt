@@ -1,0 +1,1 @@
+First run of tests/func-roundtrips.js against UNMODIFIED pages: 15 PASS, 5 FAIL (20 checks). R-X1..R-X4 = real defect (CSV formula injection: user text beginning with = + - @ written to CSV unguarded). R-K5 = unrounded 41.666666666666664 in K-RE100 CSV. Fixes follow in later commits; this result is preserved unedited.

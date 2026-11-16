@@ -1,0 +1,1 @@
+First run of tests/func-kissb-reports.js: 13 PASS, K-R5 FAIL. Cause: after importing a backup the dashboard was not rebuilt, so the report button was hidden and the click was silently swallowed by my test (test defect). Corrected in run09 (rebuild dashboard, assert visibility, do not swallow click errors).

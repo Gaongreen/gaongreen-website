@@ -1,0 +1,21 @@
+PASS P1 Build succeeds for all 12 pages from a manifest-verified fixture
+PASS P2 No page references external script/import code, no CDN host, no floating @2 SDK
+PASS P3 Every page that uses the SDK loads it with an SRI attribute equal to the sha384 of the vendored file
+PASS P4 CSP: script-src has no unsafe-inline/unsafe-eval, only self + sha256 hashes; connect-src is self + the one Supabase host
+PASS P5 All 12 pages load under their own hash-based CSP: 0 CSP violations, 0 JS errors, 0 external requests
+PASS P5b Every page whose code uses window.supabase (including the dynamic-import page) has the library loaded: createClient is a function
+PASS P6 Scripts really execute under the CSP: K-RE100 sum 500 and EPR total 50 kg computed
+PASS P7 CSP is actually enforced: an injected inline <script> and an inline onerror handler do NOT run and are reported
+PASS P8 connect-src blocks a fetch to a non-Supabase host
+PASS P14 Nav strip in the pinned build: gg-nav.js/css shipped and hashed in RELEASE_MANIFEST; 10 links render (display flex) on 4 sampled pages with 0 CSP violations
+PASS P15 Staging retarget: build succeeds; no page contains the production host or the old key; every page targets the staging host; CSP connect-src allows only it
+PASS P16 Staging retarget REFUSES: production ref (flag and env), secret key, service_role JWT, non-publishable key, http/wrong-domain/short-ref URL, and a lone flag (10 cases); no output written
+PASS P17 _headers: baseline hardening headers on /*; every one of the 12 pages has a rule whose CSP equals the page meta CSP plus frame-ancestors 'none'; no unsafe-eval; no unsafe-inline in script-src
+PASS P9 Tampered vendor file (1 appended byte) makes the build REFUSE (non-zero exit, no output dir)
+PASS P10 Missing vendor SDK file makes the build REFUSE with instructions
+PASS P11 vendor-copy refuses a range pin (^2.118.0), an installed/pinned version mismatch, and a non-sha512 lockfile entry
+PASS P12 vendor-copy succeeds on a consistent tree and records version, sha256, sha384 and the lockfile tarball integrity
+PASS P13 Honesty check: with no vendor/ in the working directory, the default build REFUSES (no pseudo-release can be produced by accident)
+PASS P13b Default build REFUSES when vendor/supabase.umd.js exists but vendor/MANIFEST.json is missing
+PASS P13c Default build REFUSES a vendor dir whose manifest is marked fixture (a test double can never become a release without --allow-fixture)
+INFO repo vendor/ state (not asserted by P13): absent

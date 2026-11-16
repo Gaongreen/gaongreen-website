@@ -1,0 +1,7 @@
+PASS H7 Guards: suite REFUSES (exit 2) for 8 unsafe configurations (no flag, production host x2, secret key, service_role JWT, real email, same account, plain http)
+PASS H7b Guard refusal does not depend on the caller environment: production host is refused even when ALLOW_STAGING=yes and extra env is present
+PASS D1 Diagnostics: a spawn failure (missing binary) is reported as spawnError, not as an empty result
+PASS D2 Diagnostics: death by signal is reported as signal (not as a plain exit code)
+PASS D3 Diagnostics: a hung process is killed and reported as timedOut
+PASS D4 Diagnostics: stdout/stderr redact passwords, keys and JWTs
+PASS D5 Diagnostics: an unwritable result path gives exit 3 + RESULT-FILE-ERROR (never confused with an isolation failure, exit 1)

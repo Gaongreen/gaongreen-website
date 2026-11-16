@@ -1,0 +1,34 @@
+{
+ "run": "2026-11-07T18:26:38.361Z",
+ "build": "OFFLINE loopback mock only",
+ "results": [
+  {
+   "id": "W1",
+   "name": "against a correctly isolated mock that enforces the 10 MB limit: exit 0, a result file is written, summary printed, and neither passwords nor \"Bearer\" tokens appear in output or result",
+   "status": "PASS",
+   "expected": "exit 0, 1 file, no secrets",
+   "actual": "exit 0 files=1 password-policy preflight (intended rule, NOT yet enabled): A=WOULD-FAIL: length<12 no-uppercase no-digit  B=WOULD-FAIL:"
+  },
+  {
+   "id": "W2",
+   "name": "password-policy preflight reports WHICH rule fails without echoing the password (weak and strong examples)",
+   "status": "PASS",
+   "expected": "A fails, B ok, no passwords shown",
+   "actual": "password-policy preflight (intended rule, NOT yet enabled): A=WOULD-FAIL: length<12  B=ok"
+  },
+  {
+   "id": "W3",
+   "name": "refuses (exit 2): non-reserved email domain, production URL, secret key, missing arguments",
+   "status": "PASS",
+   "expected": "4/4 exit 2",
+   "actual": "[]"
+  },
+  {
+   "id": "W4",
+   "name": "a leaky backend makes the wrapper exit 1 (isolation failure is propagated, not swallowed)",
+   "status": "PASS",
+   "expected": "exit 1",
+   "actual": "exit 1"
+  }
+ ]
+}

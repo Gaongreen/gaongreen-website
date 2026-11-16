@@ -1,0 +1,10 @@
+PASS X1-save Expired session: cloud SAVE on all 6 tools + Settings shows an error/sign-in message, writes nothing and keeps the user's local data
+PASS X1-load Expired session: cloud LOAD on all 6 tools + Settings shows an error/sign-in message, writes nothing and keeps the user's local data
+PASS F1-save Backend outage: cloud SAVE on all 6 tools + Settings shows an error, writes nothing and keeps local data
+PASS F1-load Backend outage: cloud LOAD on all 6 tools + Settings shows an error, writes nothing and keeps local data
+PASS Q-C QR: cloud save, clear, cloud load restores company, year and energy
+PASS L-R1 Evidence cloud: a file over 10 MB is rejected with a message; no table row and no stored object
+PASS L-R2 Evidence cloud: a disallowed extension (.exe) is rejected with a message; nothing stored
+PASS L-R3 Evidence local library: >10 MB and .exe are rejected (library stays empty); a valid file afterwards IS accepted (positive control)
+PASS L-R4 Evidence cloud: when the backend is down, upload shows an error and no row/object appears
+PASS P-1 K-ISSB: print layout renders to a PDF containing the company, the six indicator values and the Missing marker, and no navigation strip

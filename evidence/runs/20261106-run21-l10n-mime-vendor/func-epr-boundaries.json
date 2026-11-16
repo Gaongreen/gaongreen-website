@@ -1,0 +1,160 @@
+{
+ "run": "2026-11-06T17:16:21.458Z",
+ "build": "demo (page logic)",
+ "results": [
+  {
+   "id": "B0",
+   "name": "Validation text differs between a valid and an invalid state (guards the boundary tests below)",
+   "status": "PASS",
+   "expected": "two distinct messages",
+   "actual": "{\"READY\":\"Inventory entered. Verify classifications and supporting documents before relying on results.\",\"INVALID\":\"Check for negative values, invalid quantities, or recycled content outside 0–100%.\"}"
+  },
+  {
+   "id": "B1",
+   "name": "recycled 0% is valid (recycled mass 0)",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=50 total=50 recycledKg=0"
+  },
+  {
+   "id": "B2",
+   "name": "recycled exactly 100% is valid (recycled mass 50 kg)",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=50 total=50 recycledKg=50"
+  },
+  {
+   "id": "B3",
+   "name": "recycled 100.01% is invalid, row shows em dash, row mass not counted",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid rowResult=— total=0 recycledKg=0"
+  },
+  {
+   "id": "B4",
+   "name": "recycled -0.01% is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid rowResult=— total=0 recycledKg=0"
+  },
+  {
+   "id": "B5",
+   "name": "quantity 0 is valid (mass 0)",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=0 total=0 recycledKg=0"
+  },
+  {
+   "id": "B6",
+   "name": "quantity 1.5 (not a whole number) is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid rowResult=— total=0 recycledKg=0"
+  },
+  {
+   "id": "B7",
+   "name": "quantity -1 is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid rowResult=— total=0 recycledKg=0"
+  },
+  {
+   "id": "B8",
+   "name": "weight 0 is valid",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=0 total=0 recycledKg=0"
+  },
+  {
+   "id": "B9",
+   "name": "weight -0.001 is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid rowResult=— total=0 recycledKg=0"
+  },
+  {
+   "id": "B10",
+   "name": "weight 0.001 g x 1 unit is valid; mass 0.000001 kg displays as 0 at 3 decimals",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=0 total=0 recycledKg=0"
+  },
+  {
+   "id": "B11",
+   "name": "very large inputs (1e9 g x 1e9 units) stay finite and display a number, not an em dash",
+   "status": "PASS",
+   "expected": "valid",
+   "actual": "valid rowResult=1,000,000,000,000,000 total=1,000,000,000,000,000 recycledKg=0"
+  },
+  {
+   "id": "B12",
+   "name": "reduction 100% is valid: scenario 0 kg, saving 50 kg, change -100%",
+   "status": "PASS",
+   "expected": "valid 0|50|-100%",
+   "actual": "valid 0|50|-100%"
+  },
+  {
+   "id": "B13",
+   "name": "reduction 100.01% is invalid: scenario shows em dash",
+   "status": "PASS",
+   "expected": "invalid —|—|—",
+   "actual": "invalid —|—|—"
+  },
+  {
+   "id": "B14",
+   "name": "reduction -0.01% is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid —|—|—"
+  },
+  {
+   "id": "B15",
+   "name": "quantity change -100% is valid: scenario 0 kg",
+   "status": "PASS",
+   "expected": "valid 0|50|-100%",
+   "actual": "valid 0|50|-100%"
+  },
+  {
+   "id": "B16",
+   "name": "quantity change -100.01% is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid —|—|—"
+  },
+  {
+   "id": "B17",
+   "name": "quantity change +1000% is valid: 50*0.9*11 = 495 kg, saving -445 kg, +890%",
+   "status": "PASS",
+   "expected": "valid 495|-445|890%",
+   "actual": "valid 495|-445|890%"
+  },
+  {
+   "id": "B18",
+   "name": "quantity change +1000.01% is invalid",
+   "status": "PASS",
+   "expected": "invalid",
+   "actual": "invalid —|—|—"
+  },
+  {
+   "id": "B19",
+   "name": "reduction 100% with quantity +1000% is valid and gives 0 kg",
+   "status": "PASS",
+   "expected": "valid 0|50|-100%",
+   "actual": "valid 0|50|-100%"
+  },
+  {
+   "id": "B20",
+   "name": "One invalid row does not hide the valid row: total stays 50 kg and the page flags invalid",
+   "status": "PASS",
+   "expected": "50 + invalid",
+   "actual": "50 invalid"
+  },
+  {
+   "id": "B21",
+   "name": "No uncaught JavaScript error occurred during any boundary case",
+   "status": "PASS",
+   "expected": 0,
+   "actual": ""
+  }
+ ]
+}

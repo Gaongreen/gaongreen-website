@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-07T11:09:25.569Z",
+ "build": "REAL SDK 2.118.0 vs loopback MOCK (E2)",
+ "results": [
+  {
+   "id": "R1",
+   "name": "vendored bundle sha256 equals MANIFEST and is not the fixture",
+   "status": "PASS",
+   "expected": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3",
+   "actual": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3"
+  },
+  {
+   "id": "R2",
+   "name": "real bundle exposes createClient",
+   "status": "PASS",
+   "expected": "function",
+   "actual": "function"
+  },
+  {
+   "id": "R3",
+   "name": "signInWithPassword works with the real SDK (mock)",
+   "status": "PASS",
+   "expected": "session",
+   "actual": "\"\""
+  },
+  {
+   "id": "R4",
+   "name": "real SDK upsert + select round-trips an owned row",
+   "status": "PASS",
+   "expected": "1 row",
+   "actual": "[{\"owner_id\":\"11111111-1111-4111-8111-111111111111\",\"name\":\"Fictional Co\"}]"
+  },
+  {
+   "id": "R5",
+   "name": "real SDK storage upload: allowed type OK (upsert:false), disallowed type rejected",
+   "status": "PASS",
+   "expected": "ok + rejected",
+   "actual": "{\"ok\":null,\"bad\":true}"
+  },
+  {
+   "id": "R6",
+   "name": "real SDK cannot write another user's folder",
+   "status": "PASS",
+   "expected": "error",
+   "actual": "{\"name\":\"StorageApiError\",\"message\":\"new row violates row-level security policy\",\"status\":403,\"statu"
+  },
+  {
+   "id": "R7",
+   "name": "signOut works",
+   "status": "PASS",
+   "expected": "no error",
+   "actual": "\"\""
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+Invalid run: the QR shim had not been built before the suite ran (my sequencing error), so QR-related checks failed. Kept unedited for the record; see run05 for the valid run.

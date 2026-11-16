@@ -1,0 +1,12 @@
+PASS F-I1 K-ISSB total Scope 1+2 = 420 tCO2e
+PASS F-I2 K-ISSB emissions per employee = 4.2
+PASS F-I3 K-ISSB GHG intensity per revenue = 0.08 (0.084 rounded)
+PASS F-I4 K-ISSB total energy = 4,100 GJ
+PASS F-I5 K-ISSB energy intensity = 0.82 GJ/KRW m
+PASS F-I6 K-ISSB renewable share = 25%
+PASS F-I7 K-ISSB unfilled water/waste indicators show Missing (not 0)
+PASS F-I8 K-ISSB rejects renewable electricity > total electricity
+PASS F-I9 K-ISSB local "Resume saved" restores the saved company name
+PASS F-I10 K-ISSB cloud save then load restores the company name
+PASS F-I11 K-ISSB Arabic switches the page to right-to-left
+PASS F-I12 K-ISSB Korean renders Hangul in the page title

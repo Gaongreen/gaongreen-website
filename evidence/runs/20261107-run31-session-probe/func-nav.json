@@ -1,0 +1,55 @@
+{
+ "run": "2026-11-07T17:04:55.547Z",
+ "build": "demo (offline stand-in; NOT real Supabase auth)",
+ "results": [
+  {
+   "id": "N1",
+   "name": "All 8 app pages show the nav strip with 9 destinations and a Sign out link, and exactly one marks the current page",
+   "status": "PASS",
+   "expected": "8/8 pages ok",
+   "actual": "[]"
+  },
+  {
+   "id": "N2",
+   "name": "Round trip: index -> each app page (via the index link) -> Home link returns to the hub, for all 8 pages",
+   "status": "PASS",
+   "expected": "no failures",
+   "actual": "[]"
+  },
+  {
+   "id": "N3",
+   "name": "Tool-to-tool: every app page reaches every other app page in one click via the strip (8x7 links resolve to a served page)",
+   "status": "PASS",
+   "expected": "no failures",
+   "actual": "[]"
+  },
+  {
+   "id": "N4",
+   "name": "Nav follows the page language: Korean and Arabic labels, RTL for Arabic, English again; hidden under print media",
+   "status": "PASS",
+   "expected": "en/ko/ar labels, rtl, print none, screen flex",
+   "actual": "{\"en\":{\"home\":\"Home\",\"out\":\"Sign out\",\"dir\":\"ltr\"},\"ko\":{\"home\":\"홈\",\"out\":\"로그아웃\",\"dir\":\"ltr\"},\"ar\":{\"home\":\"الرئيسية\",\"out\":\"تسجيل الخروج\",\"dir\":\"rtl\"},\"en2\":{\"home\":\"Home\",\"out\":\"Sign out\",\"dir\":\"ltr\"},\"printed\":\"none\",\"screenDisp\":\"flex\"}"
+  },
+  {
+   "id": "N5",
+   "name": "Using the QR page's own language selector changes the nav to Korean",
+   "status": "PASS",
+   "expected": "홈",
+   "actual": "홈"
+  },
+  {
+   "id": "N6",
+   "name": "Sign out from each of the 8 app pages: lands on Login with the sign-in form + \"signed out\" notice, ?action is removed from the URL",
+   "status": "PASS",
+   "expected": "8/8",
+   "actual": "[]"
+  },
+  {
+   "id": "N7",
+   "name": "After signing out via the nav, cloud save is refused on K-ISSB, K-RE100, EPR, Supplier, QR and Settings (table unchanged)",
+   "status": "PASS",
+   "expected": "no rows written",
+   "actual": "[]"
+  }
+ ]
+}

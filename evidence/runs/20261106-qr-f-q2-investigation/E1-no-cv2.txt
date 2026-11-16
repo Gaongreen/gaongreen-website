@@ -1,0 +1,5 @@
+FAIL F-Q1 QR image decodes to a GaonGreen profile link  expected="link with #profile=" actual=""
+FAIL F-Q2 Decoded QR payload carries company, website and numbers entered  expected="company/website/energy=40" actual="{}"
+PASS F-Q3 QR rejects renewable electricity 150% (no card generated)
+PASS F-Q4 QR card renders NO clickable link for a javascript: website (unsafe URL dropped at render)
+PASS F-Q5 Hostile shared profile link: no script execution, no unsafe links, text shown inert

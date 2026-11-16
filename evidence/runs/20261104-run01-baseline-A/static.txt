@@ -1,0 +1,9 @@
+FAIL S1  Canonical set resolves (every local link target exists)  [1 page(s): GaonGreen_ESG_Dashboard.html]
+FAIL S2  No floating SDK version (supabase-js must be pinned x.y.z)  [10 page(s): GaonGreen_ESG_Dashboard_Cloud_Beta.html | GaonGreen_Company_Settings_Cloud_Beta.html | GaonGreen_KISSB_Cloud_Beta.html ...]
+FAIL S3  Every external script has integrity= (SRI)  [6 page(s): GaonGreen_KISSB_Cloud_Beta.html | GaonGreen_EPR_Cloud_Beta.html | GaonGreen_QR_ESG_Card_Cloud_Beta.html ...]
+FAIL S4  No ES-module import of third-party code from a CDN URL  [4 page(s): GaonGreen_Company_Settings_Cloud_Beta.html | GaonGreen_K-RE100_Cloud_Beta.html | GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html ...]
+FAIL S5  Auth sessions are not persisted (persistSession:false or absent client)  [5 page(s): GaonGreen_KISSB_Cloud_Beta.html | GaonGreen_EPR_Cloud_Beta.html | GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html ...]
+FAIL S6  detectSessionInUrl is not enabled  [4 page(s): GaonGreen_KISSB_Cloud_Beta.html | GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html | GaonGreen_Login.html ...]
+PASS S7  No secret/service-role key material
+FAIL S8  A Content-Security-Policy is declared  [12 page(s): index.html | GaonGreen_ESG_Dashboard_Cloud_Beta.html | GaonGreen_Company_Settings_Cloud_Beta.html ...]
+FAIL S9  Supabase project URL/key are not duplicated inline (single config module)  [10 page(s): GaonGreen_ESG_Dashboard_Cloud_Beta.html | GaonGreen_Company_Settings_Cloud_Beta.html | GaonGreen_KISSB_Cloud_Beta.html ...]

@@ -1,0 +1,62 @@
+{
+ "run": "2026-11-07T12:08:02.441Z",
+ "build": "RLS suite vs LOCAL LOOPBACK MOCK ONLY - not a real Supabase project",
+ "results": [
+  {
+   "id": "H1",
+   "name": "Correctly isolated mock: every check passes (exit 0), with >= 60 checks executed",
+   "status": "PASS",
+   "expected": "valid run, exit 0, 0 failed, >=60 checks",
+   "actual": "status=0 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[]"
+  },
+  {
+   "id": "H2",
+   "name": "Mock where SELECT ignores ownership: suite exits 1 and flags the read checks (T3/T4 or T1)",
+   "status": "PASS",
+   "expected": "valid run, exit 1 with read failures",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[\"company_profiles.T1\",\"company_profiles.T3\",\"company_profiles.T4\",\"kissb_drafts.T1\",\"kissb_drafts.T3\",\"kissb_drafts.T4\",\"kre100_drafts.T1\","
+  },
+  {
+   "id": "H3",
+   "name": "Mock where UPDATE/DELETE ignore ownership: suite exits 1 and flags T5 and T6",
+   "status": "PASS",
+   "expected": "valid run, T5+T6 failed",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[\"company_profiles.T5\",\"company_profiles.T6\",\"kissb_drafts.T5\",\"kissb_drafts.T6\",\"kre100_drafts.T5\",\"kre100_drafts.T6\",\"epr_drafts.T5\",\"epr_"
+  },
+  {
+   "id": "H4",
+   "name": "Mock where INSERT accepts foreign owner: suite exits 1 and flags T7/T8",
+   "status": "PASS",
+   "expected": "valid run, T7/T8 failed",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[\"company_profiles.T7\",\"company_profiles.T8\",\"kissb_drafts.T7\",\"kissb_drafts.T8\",\"kre100_drafts.T7\",\"kre100_drafts.T8\",\"epr_drafts.T7\",\"epr_"
+  },
+  {
+   "id": "H5",
+   "name": "Mock where storage ignores ownership: suite exits 1 and flags storage T1, T3, T4 and T5",
+   "status": "PASS",
+   "expected": "valid run, storage T1,T3,T4,T5 failed",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[\"storage.T1\",\"storage.T2\",\"storage.T3\",\"storage.T4\",\"storage.T5\",\"storage.T7\"]"
+  },
+  {
+   "id": "H6",
+   "name": "Mock that does not verify JWT signatures: suite exits 1 and flags auth.T1",
+   "status": "PASS",
+   "expected": "valid run, auth.T1 failed",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=72 failed=[\"auth.T1\"]"
+  },
+  {
+   "id": "H7",
+   "name": "Optional upload-rule checks against a mock WITHOUT an allow-list/limit: storage.M2 and storage.L1 FAIL (the suite notices the gap), M1 passes",
+   "status": "PASS",
+   "expected": "M2+L1 failed, M1 ok",
+   "actual": "status=1 signal=null spawnError=none timedOut=false resultFile=ok checks=75 failed=[\"storage.M2\",\"storage.L1\"]"
+  },
+  {
+   "id": "H8",
+   "name": "Optional upload-rule checks against a mock WITH the allow-list and 10 MB limit: everything passes (exit 0) including M1, M2, L1",
+   "status": "PASS",
+   "expected": "exit 0, M1/M2/L1 PASS",
+   "actual": "status=0 signal=null spawnError=none timedOut=false resultFile=ok checks=75 failed=[]"
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+{
+ "run": "2026-11-05T06:35:13.356Z",
+ "build": "demo (offline stand-in; NOT real Supabase)",
+ "results": [
+  {
+   "id": "K-E1",
+   "name": "Evidence checklist has 13 items, all start \"Not reviewed\", progress 0 / 13",
+   "status": "PASS",
+   "expected": "13 items, 0 / 13",
+   "actual": "13 items, Available evidence: 0 / 13"
+  },
+  {
+   "id": "K-E2",
+   "name": "Only \"Available\" counts toward progress (2 available, 1 missing, 1 needs review, 1 N/A -> 2 / 13)",
+   "status": "PASS",
+   "expected": "Available evidence: 2 / 13",
+   "actual": "Available evidence: 2 / 13"
+  },
+  {
+   "id": "K-E3",
+   "name": "Evidence export is typed JSON with 13 entries, statuses [1,1,2,3,4,...] and the reference kept",
+   "status": "PASS",
+   "expected": "GaonGreenEvidence/13/1,1,2,3,4/ref",
+   "actual": "{ \"type\": \"GaonGreenEvidence\", \"version\": 1, \"data\": [ { \"status\": 1, \"reference\": \"DOC-001 fictio"
+  },
+  {
+   "id": "K-E4",
+   "name": "Evidence clear then import restores progress, statuses and reference (round trip)",
+   "status": "PASS",
+   "expected": "0/13 then 2/13 + ref + status 3",
+   "actual": "Available evidence: 0 / 13 -> Available evidence: 2 / 13"
+  },
+  {
+   "id": "K-E5",
+   "name": "Evidence import of a wrong-type file is refused and leaves progress unchanged",
+   "status": "PASS",
+   "expected": "Available evidence: 2 / 13",
+   "actual": "Available evidence: 2 / 13"
+  },
+  {
+   "id": "K-E6",
+   "name": "Evidence import of malformed JSON does not crash or change progress",
+   "status": "PASS",
+   "expected": "unchanged, no JS error",
+   "actual": "Available evidence: 2 / 13 errors=0"
+  },
+  {
+   "id": "K-R1",
+   "name": "CSV: UTF-8 BOM, CRLF, header Indicator,Value,Unit,Note, quoted cells",
+   "status": "PASS",
+   "expected": "BOM + header",
+   "actual": "\"﻿\\\"Indicator\\\",\\\"Value\\\",\\\"Unit\\\",\\\"Note\\\"\\r\\n\\\"Tot\""
+  },
+  {
+   "id": "K-R2",
+   "name": "CSV carries the verified indicator values (420, 0.08, 4.2, 4,100, 0.82, 25) and Missing for blanks",
+   "status": "PASS",
+   "expected": "all rows present",
+   "actual": "missing: []"
+  },
+  {
+   "id": "K-R3",
+   "name": "CSV: no cell begins with = + - @ (formula-injection guard on this indicator export)",
+   "status": "PASS",
+   "expected": "no formula-leading cells",
+   "actual": "checked 13 rows"
+  },
+  {
+   "id": "K-R4",
+   "name": "CSV file name is GaonGreen_ESG_Indicators.csv",
+   "status": "PASS",
+   "expected": "GaonGreen_ESG_Indicators.csv",
+   "actual": "GaonGreen_ESG_Indicators.csv"
+  },
+  {
+   "id": "K-B1",
+   "name": "Backup JSON carries version, language and the entered fields",
+   "status": "PASS",
+   "expected": "v1/en/name/elec/s2",
+   "actual": "{ \"version\": 1, \"language\": \"en\", \"data\": { \"name\": \"Example Exporter Co.\", \"industry\": \"0\", \"year\": \""
+  },
+  {
+   "id": "K-B2",
+   "name": "Backup: clear then import restores company, electricity and Scope 2 (round trip)",
+   "status": "PASS",
+   "expected": "Example Exporter Co.|1000000|300",
+   "actual": "Example Exporter Co.|1000000|300"
+  },
+  {
+   "id": "K-B3",
+   "name": "Backup: a file with an unsupported shape does not wipe the form",
+   "status": "PASS",
+   "expected": "unchanged, no JS error",
+   "actual": "Example Exporter Co. errors=0"
+  },
+  {
+   "id": "K-R5",
+   "name": "Both report buttons are visible after building the dashboard and each calls the browser print dialog (print stubbed; PDF file not produced by this test)",
+   "status": "PASS",
+   "expected": "visible,visible, print x1 then x2, no JS error",
+   "actual": "{\"vis1\":true,\"vis2\":true,\"p1\":1,\"p2\":2,\"clickErr\":\"\",\"newErrors\":0}"
+  }
+ ]
+}

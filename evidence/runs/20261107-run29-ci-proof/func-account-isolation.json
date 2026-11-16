@@ -1,0 +1,62 @@
+{
+ "run": "2026-11-07T12:48:09.923Z",
+ "build": "OFFLINE demo build, simulated sb-*-auth-token sessions (E1)",
+ "results": [
+  {
+   "id": "I1",
+   "name": "reported bug: after A -> B on one browser, B sees neither A's company in Company Settings nor on the dashboard; back as A both show \"Fictional A Co\"",
+   "status": "PASS",
+   "expected": "B empty, A restored",
+   "actual": "{\"bInput\":\"\",\"bDash\":\"Not configured\",\"aInput\":\"Fictional A Co\",\"aDash\":\"Fictional A Co\"}"
+  },
+  {
+   "id": "I2",
+   "name": "all 8 product keys: B sees none of A's on any of the 8 app pages; A's and B's data both survive A -> B -> A -> B byte-for-byte with no mixing",
+   "status": "PASS",
+   "expected": "isolated + preserved",
+   "actual": "{\"bad\":[],\"aSame\":true,\"bSame\":true}"
+  },
+  {
+   "id": "I3",
+   "name": "legacy (pre-guard) local data is hidden from a signed-in account and still visible when signed out (nothing deleted)",
+   "status": "PASS",
+   "expected": "B empty, anon Legacy Co",
+   "actual": "{\"asB\":\"\",\"anon\":\"Legacy Co\"}"
+  },
+  {
+   "id": "I4",
+   "name": "after sign-out the previous account's data is not shown; signing in again restores it",
+   "status": "PASS",
+   "expected": "hidden then restored",
+   "actual": "{\"out\":\"\",\"back\":\"Fictional A Co\"}"
+  },
+  {
+   "id": "I5",
+   "name": "stale tab: A's late edit is dropped (not written into B's data), the page asks to reload, A's stored data is intact",
+   "status": "PASS",
+   "expected": "dropped + reload asked",
+   "actual": "{\"dropped\":null,\"asked\":1,\"bNull\":true,\"a3\":\"{\\\"owner\\\":\\\"A\\\",\\\"k\\\":\\\"gaongreen-kissb-draft-v1\\\"}\"}"
+  },
+  {
+   "id": "I7",
+   "name": "IndexedDB (local Evidence Locker documents): B and signed-out see none of A's documents; A and B each keep only their own across switches",
+   "status": "PASS",
+   "expected": "isolated",
+   "actual": "{\"bList\":[],\"anonList\":[],\"aList\":[\"doc-of-A\"],\"bList2\":[\"doc-of-B\"]}"
+  },
+  {
+   "id": "I8",
+   "name": "8 rapid sign-in/out flips with another tab open: A's data intact byte-for-byte, B and signed-out see nothing",
+   "status": "PASS",
+   "expected": "A intact, others empty",
+   "actual": "{\"aSame\":true,\"bEmpty\":true,\"anonEmpty\":true}"
+  },
+  {
+   "id": "I6",
+   "name": "every account-less localStorage key in the pages is registered in the guard; every page using localStorage loads the guard first; Login/Register opt out of auto-reload",
+   "status": "PASS",
+   "expected": "all covered",
+   "actual": "{\"reg\":true,\"unreg\":[],\"noGuard\":[],\"late\":[],\"nr\":true,\"files\":11}"
+  }
+ ]
+}

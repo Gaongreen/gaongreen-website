@@ -1,0 +1,27 @@
+{
+ "run": "2026-11-07T17:03:04.663Z",
+ "build": "OFFLINE decoder-helper diagnostics",
+ "results": [
+  {
+   "id": "Q-D1",
+   "name": "cv2 not importable -> exit 3 and DECODER-UNAVAILABLE on stderr (simulated with python -S, which drops site-packages)",
+   "status": "PASS",
+   "expected": "exit 3 + marker",
+   "actual": "exit 3 DECODER-UNAVAILABLE: cannot import cv2 (ModuleNotFoundError: No module named 'cv2')"
+  },
+  {
+   "id": "Q-D2",
+   "name": "unreadable/missing image -> exit 2 and DECODER-IMAGE-UNREADABLE",
+   "status": "PASS",
+   "expected": "exit 2 + marker",
+   "actual": "exit 2 [ WARN:0@0.014] global loadsave.cpp:278 findDecoder imread_('/tmp/qrdiag-S2s148/nope.png'): can't op"
+  },
+  {
+   "id": "Q-D3",
+   "name": "image with no QR -> exit 1 and DECODER-NO-QR-FOUND (distinct from unavailable)",
+   "status": "PASS",
+   "expected": "exit 1 + marker",
+   "actual": "exit 1 DECODER-NO-QR-FOUND"
+  }
+ ]
+}

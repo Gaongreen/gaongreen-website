@@ -1,0 +1,9 @@
+PASS I1 reported bug: after A -> B on one browser, B sees neither A's company in Company Settings nor on the dashboard; back as A both show "Fictional A Co"
+PASS I2 all 8 product keys: B sees none of A's on any of the 8 app pages; A's and B's data both survive A -> B -> A -> B byte-for-byte with no mixing
+PASS I3 legacy (pre-guard) local data is hidden from a signed-in account and still visible when signed out (nothing deleted)
+PASS I4 after sign-out the previous account's data is not shown; signing in again restores it
+PASS I5 two tabs, two accounts: each sees only its own data (interleaved writes do not mix); a tab whose identity changes after load has the old account's late edit dropped and is asked to reload; A's data stays intact
+PASS I7 IndexedDB (local Evidence Locker documents): B and signed-out see none of A's documents; A and B each keep only their own across switches
+PASS I8 8 rapid sign-in/out flips in one tab with a second tab signed in as B: A's and B's data intact byte-for-byte, signed-out sees nothing
+PASS I6 every account-less localStorage key in the pages is registered in the guard; every page using localStorage loads the guard first; Login/Register opt out of auto-reload
+PASS I9 session-only wiring: every client creation goes through ggCreateClient (storage forced to sessionStorage); pages load gg-auth-config -> gg-idle -> guard before creating a client; idle timeout constants are 30 min / warning 28 min

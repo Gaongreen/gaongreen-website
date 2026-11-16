@@ -1,0 +1,27 @@
+{
+ "run": "2026-11-07T18:25:52.418Z",
+ "build": "OFFLINE demo stand-in",
+ "results": [
+  {
+   "id": "M1",
+   "name": "All 10 allowed extensions x 4 browser-declared types (40 uploads): stored content type is the canonical one for the extension",
+   "status": "PASS",
+   "expected": "40 uploads, 0 mismatches",
+   "actual": "{\"found\":40,\"bad\":[]}"
+  },
+  {
+   "id": "M2",
+   "name": "The page accepts exactly the 10 extensions in the canonical table (no extension without a type, none extra)",
+   "status": "PASS",
+   "expected": "csv,docx,jpeg,jpg,pdf,png,txt,webp,xls,xlsx",
+   "actual": "pdf|png|jpe?g|webp|csv|xlsx?|docx|txt"
+  },
+  {
+   "id": "M3",
+   "name": "Proposed (NOT applied) bucket allow-list SQL contains exactly the canonical types, touches only bucket evidence-locker, and has no other statement",
+   "status": "PASS",
+   "expected": "9 types, 1 UPDATE on evidence-locker",
+   "actual": "{\"types\":9,\"stmts\":1}"
+  }
+ ]
+}

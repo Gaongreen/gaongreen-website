@@ -1,0 +1,5 @@
+First attempt of tests/func-auth-settings.js (stand-in build). Console output preserved as recorded:
+PASS A1, A2, A5, A6, A7
+FAIL A3 (empty submit) and FAIL A4 (7-char password): my expectation was wrong. The inputs carry HTML5 required/minlength=8, so the browser blocks the submit before the page's JS handler runs; no notice is shown. 
+CRASH at A8: Register page starts signed in (stand-in default) so its form was hidden; the test did not sign out first. No JSON was written.
+Corrected in run07.

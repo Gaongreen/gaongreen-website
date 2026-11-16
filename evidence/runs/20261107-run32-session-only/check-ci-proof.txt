@@ -1,0 +1,11 @@
+PASS K1 passing live run for exactly this commit, on the recovery branch, recent -> PROVEN (exit 0)
+PASS K2 a passing run for a DIFFERENT commit does not count (exit 2)
+PASS K3 a failed run does not count
+PASS K4 a passing run older than 24 h does not count
+PASS K5 runs from another branch or a pull_request event do not count
+PASS K6 overall success but the live test step skipped/neutral does not count
+PASS K7 live job not successful does not count
+PASS K7b live-browser job failed -> proof refused (real-session isolation must pass too)
+PASS K8 modified tracked file -> refused (only a committed, pushed state is proven)
+PASS K9 local commit that is not the pushed tip -> refused
+PASS K10 gh unavailable/not logged in -> NOT PROVEN, never a pass

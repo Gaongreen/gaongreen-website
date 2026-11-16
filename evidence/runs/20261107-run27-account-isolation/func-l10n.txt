@@ -1,0 +1,6 @@
+PASS L1 gg-l10n.js: every shared string has distinct Korean (Hangul) and Arabic (Arabic script) text
+PASS L2 On all 8 app pages, every data-l10n / data-l10n-ph element shows Korean or Arabic after switching, and returns to the original English when switched back
+PASS L5 aria-label (screen-reader) text follows the language on every tagged page, incl. Login, Register and the K-ISSB wizard, and returns to English
+PASS L6 Dashboard: all 6 tool-card names are translated in Korean and Arabic and restored in English
+PASS L3 Company Settings: title, subtitle and sign-in status follow the language (ko/ar), Arabic is RTL, English restored
+PASS L4 QR page: cloud messages are localized at run time (signed-out save in Korean and Arabic)

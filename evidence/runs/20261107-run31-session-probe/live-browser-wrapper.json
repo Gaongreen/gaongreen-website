@@ -1,0 +1,48 @@
+{
+ "run": "2026-11-07T17:08:07.491Z",
+ "build": "live-browser-isolation.js validated offline vs loopback mock (E2)",
+ "results": [
+  {
+   "id": "B0",
+   "name": "pinned staging-target build (real SDK) succeeds",
+   "status": "PASS",
+   "expected": 0,
+   "actual": 0
+  },
+  {
+   "id": "B1",
+   "name": "with the guard: all 10 real-session checks pass (L0-L7 incl. the reported A->B scenario and the stale tab)",
+   "status": "PASS",
+   "expected": "10/10 PASS",
+   "actual": "10/10"
+  },
+  {
+   "id": "B2",
+   "name": "no password or token appears in the script output or the result file",
+   "status": "PASS",
+   "expected": "clean",
+   "actual": "checked"
+  },
+  {
+   "id": "B3",
+   "name": "negative control: with the guard disabled the script FAILS and flags the reported bug (L3b) - it cannot pass vacuously",
+   "status": "PASS",
+   "expected": "exit 1, L3b+L4 FAIL",
+   "actual": "{\"exit\":1,\"L3b\":\"FAIL\",\"L4\":\"FAIL\"}"
+  },
+  {
+   "id": "B5",
+   "name": "session probe (offline, mock): runs to completion; sessionStorage isolation, refresh rotation, server revocation and no-cloud-write assertions pass; observations are recorded",
+   "status": "PASS",
+   "expected": "pass",
+   "actual": "{\"exit\":0,\"info\":8}"
+  },
+  {
+   "id": "B4",
+   "name": "refusals: missing passwords, a non-example e-mail, and an unknown mode each exit 2 without contacting anything",
+   "status": "PASS",
+   "expected": "2,2,2",
+   "actual": "2,2,2"
+  }
+ ]
+}

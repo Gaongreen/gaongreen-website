@@ -1,0 +1,17 @@
+PASS O1 all steps pass -> exit 0, RESULT: PASS, draft deploy called once, share summary written, no password on screen
+PASS O2 working files live in the temp dir (outside the repo), mode 700; repo copy has no new files
+PASS O3 share.txt is allow-listed: contains result/steps/check ids, no passwords, no paths, no raw logs
+PASS O4 build failure -> exit 1, FAIL (BUILD), guard/RLS/deploy never run, passwords never requested
+PASS O5 live RLS failure -> exit 1, FAIL (RLS), deploy NEVER attempted, summary says NOT RUN, JWT/email scrubbed from the shareable summary
+PASS O6 RLS "success" without a result file is treated as failure (no deploy)
+PASS O7 deployment failure -> exit 1, "DEPLOYMENT FAILED" reported, RESULT: FAIL (DEPLOY), never PASS
+PASS O8 deploy guard refusal -> exit 1, FAIL (GUARD), RLS and deploy not run
+PASS O9 missing required file -> exit 1 at PRECHECK, nothing is built/run
+PASS O10 missing --keep-file -> exit 1 at PRECHECK
+PASS O11 --no-deploy with everything passing -> exit 0 but RESULT says PASS-NO-DEPLOY (never plain PASS), no deploy call
+PASS O12 if a password reaches the summary text the leak detector WITHHOLDS it (no share.txt), exit 1, password not printed
+PASS O13 test overrides are ignored without GG_TEST_MODE=1 (real tools required; stubs not used)
+PASS O14 sign-in refusal (exit 2) fails the run, never deploys, and explains invalid_credentials without changing anything
+PASS O15 --use-ci-proof: a verified passing CI run replaces the typed-password test (no passwords, RLS stub never called), draft deployed, RESULT: PASS, exact draft id/URL shown in the shareable summary
+PASS O16 --use-ci-proof without a passing CI run for this commit -> exit 1, FAIL (RLS), deploy never attempted
+PASS O17 no arguments (neither emails nor --use-ci-proof) -> usage, exit 2, nothing run

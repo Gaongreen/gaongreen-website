@@ -1,0 +1,20 @@
+PASS R-K1 K-RE100 JSON export: app, version, company, PPA 300, REC 200, evidence reference
+PASS R-K2 K-RE100 JSON clear then import restores values and recalculates (sum 500, projected 75%)
+PASS R-K3 K-RE100 CSV: BOM, Field/Value header, company, 500 MWh entered, gap 700, projected share 75
+PASS R-K4 K-RE100: malformed import leaves current data intact and raises no JS error
+PASS R-K5 K-RE100 CSV shows share 41.666666666666664 unrounded (presentation observation, recorded as PASS only if rounded to <=2 dp)
+PASS R-E1 EPR JSON export carries company, row weight/quantity/recycled and scenario reduction
+PASS R-E2 EPR JSON clear then import restores the row and total 50 kg
+PASS R-E3 EPR CSV: BOM, Total kg 50, Scenario kg 45, component row with annual mass 50
+PASS R-E4 EPR: structurally wrong import does not break the page (total stays 50) and raises no JS error
+PASS R-S1 Supplier JSON export: typed, supplier name, e1=yes, e2=no
+PASS R-S2 Supplier JSON new then import restores answers: score 50% (1 yes, 1 no => 2/4), coverage 2/15
+PASS R-S3 Supplier CSV: header rows, e1 "Yes", e2 "No", supplier name
+PASS R-S4 Supplier: wrong-type import is refused (score stays 50%)
+PASS R-Q1 QR backup, clear, restore round trip returns company, year and energy
+PASS R-L1 Evidence index JSON: metadata only, one document with title, filename and size 5
+PASS R-L2 Evidence index CSV: header + 1 row with company, title, filename, size
+PASS R-X1 CSV injection: K-RE100 CSV does not emit a user-typed "=..." value as a formula-leading cell
+PASS R-X2 CSV injection: EPR CSV neutralises user-typed "=..." in company and component name
+PASS R-X3 CSV injection: Supplier CSV neutralises a user-typed "=..." supplier name
+PASS R-X4 CSV injection: Evidence index CSV neutralises a user-typed "=..." document title

@@ -1,0 +1,4 @@
+PASS W1 against a correctly isolated mock that enforces the 10 MB limit: exit 0, a result file is written, summary printed, and neither passwords nor "Bearer" tokens appear in output or result
+PASS W2 password-policy preflight reports WHICH rule fails without echoing the password (weak and strong examples)
+PASS W3 refuses (exit 2): non-reserved email domain, production URL, secret key, missing arguments
+PASS W4 a leaky backend makes the wrapper exit 1 (isolation failure is propagated, not swallowed)

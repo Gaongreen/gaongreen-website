@@ -1,0 +1,12 @@
+ok  index.html                                       (no external code)
+ok  GaonGreen_Login.html                             umd-sdkx1
+ok  GaonGreen_Register.html                          umd-sdkx1
+ok  GaonGreen_Company_Settings_Cloud_Beta.html       esm-sdk(jsdelivr)x1
+ok  GaonGreen_ESG_Dashboard_Cloud_Beta.html          esm-sdk(jsdelivr)x1
+ok  GaonGreen_KISSB_Cloud_Beta.html                  umd-sdkx1
+ok  GaonGreen_K-RE100_Cloud_Beta.html                esm-sdk(jsdelivr)x1
+ok  GaonGreen_EPR_Cloud_Beta.html                    umd-sdkx1
+ok  GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html      esm-sdk(jsdelivr)x1
+ok  GaonGreen_QR_ESG_Card_Cloud_Beta.html            esm-sdk(esm.sh)x1 qr-libx1
+ok  GaonGreen_Evidence_Locker_Cloud_Beta.html        umd-sdkx1
+ok  K-ISSB Reporting Wizard _ GaonGreen.html         (no external code)
