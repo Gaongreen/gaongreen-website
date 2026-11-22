@@ -13,11 +13,9 @@ const S=require('./lib/serve.js'),T=require('./lib/t.js'),fs=require('fs');
  // Browser-level validation (required / minlength=8) blocks the submit before page JS runs:
  const formState=()=>pg.evaluate(()=>{const f=document.getElementById('form');return{valid:f.checkValidity(),tooShort:document.getElementById('password').validity.tooShort,valueMissing:document.getElementById('email').validity.valueMissing}});
  await t.check('A3','Login: empty form is invalid at browser level (required) and clicking Sign in does not sign in',async()=>{await pg.click('#submit');await pg.waitForTimeout(300);const f=await formState();return{ok:f.valid===false&&f.valueMissing&&await vis(pg,'authForm'),expected:'invalid, still signed out',actual:JSON.stringify(f)}});
- await pg.fill('#email','person@example.invalid');await pg.fill('#password','1234567');await pg.click('#submit');await pg.waitForTimeout(300);
- await t.check('A4','Login: 7-character password is blocked by the browser (minlength=8) and no sign-in happens',async()=>{const f=await formState();return{ok:f.tooShort&&await vis(pg,'authForm'),expected:'tooShort, still signed out',actual:JSON.stringify(f)}});
- // Page-level backup guard (reachable if browser validation is bypassed): dispatch submit directly.
- await pg.evaluate(()=>document.getElementById('form').dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})));await pg.waitForTimeout(300);
- await t.check('A4b','Login: the page JS also rejects a 7-character password if browser validation is bypassed',async()=>{const m=await msg(pg);return{ok:/error/.test(m.cls)&&await vis(pg,'authForm'),expected:'error notice, still signed out',actual:JSON.stringify(m)}});
+ await pg.fill('#email','person@example.invalid');await pg.fill('#password','1234567');await pg.waitForTimeout(100);
+ await t.check('A4','Login: the sign-in form does NOT block a 7-character password in the browser (no minlength on sign-in; existing accounts may predate the 12-character rule, the server decides)',async()=>{const f=await formState();return{ok:!f.tooShort&&await vis(pg,'authForm'),expected:'not tooShort, still on the form',actual:JSON.stringify(f)}});
+ await t.check('A4b','Login: no client-side minimum on the sign-in password; the new-password field (recovery/invite) requires 12 characters',async()=>{const r=await pg.evaluate(()=>({signin:document.getElementById('password').minLength,newpw:document.getElementById('newPassword').minLength}));return{ok:r.signin===-1&&r.newpw===12,expected:'signin=-1, newPassword=12',actual:JSON.stringify(r)}});
  await pg.fill('#password','12345678');await pg.click('#submit');await pg.waitForTimeout(500);
  await t.check('A5','Login: password of exactly 8 characters is accepted (boundary) and signs in',async()=>({ok:await vis(pg,'signedIn'),expected:'signedIn visible',actual:JSON.stringify(await msg(pg))}));
  await pg.click('#logout');await pg.waitForTimeout(300);await pg.fill('#email','person@example.invalid');await pg.click('#forgot');await pg.waitForTimeout(200);
@@ -27,10 +25,10 @@ const S=require('./lib/serve.js'),T=require('./lib/t.js'),fs=require('fs');
  await pg.context().close();
  // ---- Register
  pg=await open('GaonGreen_Register.html');await pg.click('#logout');await pg.waitForTimeout(300);
- await pg.fill('#email','new.person@example.invalid');await pg.fill('#password','12345678');await pg.fill('#confirm','12345679');await pg.click('#submit');await pg.waitForTimeout(300);
+ await pg.fill('#email','new.person@example.invalid');await pg.fill('#password','123456789012');await pg.fill('#confirm','123456789013');await pg.click('#submit');await pg.waitForTimeout(300);
  await t.check('A8','Register: mismatched confirmation is rejected',async()=>{const m=await msg(pg);return{ok:/error/.test(m.cls),expected:'error notice',actual:JSON.stringify(m)}});
- await pg.fill('#confirm','12345678');await pg.click('#submit');await pg.waitForTimeout(500);
- await t.check('A9','Register: matching 8-char password shows success and clears the form',async()=>{const m=await msg(pg);return{ok:/ok/.test(m.cls)&&(await pg.inputValue('#email'))==='',expected:'ok notice + form reset',actual:JSON.stringify(m)+' email='+await pg.inputValue('#email')}});
+ await pg.fill('#confirm','123456789012');await pg.click('#submit');await pg.waitForTimeout(500);
+ await t.check('A9','Register: matching 12-char password shows success and clears the form',async()=>{const m=await msg(pg);return{ok:/ok/.test(m.cls)&&(await pg.inputValue('#email'))==='',expected:'ok notice + form reset',actual:JSON.stringify(m)+' email='+await pg.inputValue('#email')}});
  await pg.context().close();
  // ---- Signed-out behaviour of a tool page: cloud save must be refused and write nothing
  pg=await open('GaonGreen_Login.html');await pg.click('#logout');await pg.waitForTimeout(300);

@@ -1,0 +1,44 @@
+{
+ "built": "2026-11-22T07:58:30.760Z",
+ "target": null,
+ "assets": {
+  "gg-nav.js": "sha256-c0c5afa694f27e7bf520bda650ad393a24b0dd9767c028ccf88ca4024225b317",
+  "gg-nav.css": "sha256-9b630025b88fbea28498c42d15398fe21ef28dd48d5cb27b8a7dd97c163debe3",
+  "gg-l10n.js": "sha256-6f9f8f6754e086168dec95a85c6643f08a640ffce921a6fc12bd39407327a55f",
+  "gg-auth-config.js": "sha256-680e8efb8ec7806db0a588a601b4924b965c9ff2485aaeec096d67016266bc73",
+  "gg-idle.js": "sha256-23dfb22c065b3e37856404ca552fea51b17d950143836a3a0516d4e75d9b531d",
+  "gg-account-guard.js": "sha256-b7b417a848702d8927f89e4c424ac46785ef44e0d2dd0428d5ac6bd039da7191"
+ },
+ "sdk": {
+  "name": "@supabase/supabase-js",
+  "version": "2.118.0",
+  "sha256": "ee3be8de192b97cb1d73d1e95d6b82bb1f6b658c0f97c4ef757fc331996ed3d3",
+  "sri": "sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK",
+  "fixture": false
+ },
+ "qr": {
+  "file": "vendor/qrcode.js",
+  "sri": "sha384-LhwaNUoRT3y6BjN7tFXxHjInN/nb+us768Dc6KBiz83eLdjEHbca2X0/EGCDtrTq",
+  "source": "see header of the file"
+ },
+ "projectHost": "https://uyhmbecltrswiljbyass.supabase.co",
+ "pages": {
+  "index.html": "0a275940d7b5a8d3070d949bb52ef00782a65a1fca27e539692fbdae3c9ce513",
+  "GaonGreen_Login.html": "c1eac8e76bb49c911c01f1fc973612c8d8d7e456b34199d21829133823fe0553",
+  "GaonGreen_Register.html": "34e739feab8c0e9953468844383f64274b0f43d87611f10965b709aaa700c9be",
+  "GaonGreen_Company_Settings_Cloud_Beta.html": "2aba6e8bb49a33294da32781aed956e336abf6ecb56b57c616e0bb47f7aba4ef",
+  "GaonGreen_ESG_Dashboard_Cloud_Beta.html": "e60216c82dab6146c67b38371dcae512476ab9b314f01f1b8c6a2f5ac0715a30",
+  "GaonGreen_KISSB_Cloud_Beta.html": "62b52c979e71b56ac4e4219c08bdda2baeb56a8af6ecbb28d565e5171b8b40b9",
+  "GaonGreen_K-RE100_Cloud_Beta.html": "b60d334c6e6d64ed6eab99598a689558777d11890fcd831761d04eb5317700b0",
+  "GaonGreen_EPR_Cloud_Beta.html": "56ddfad404439191c5cc1978ed2c5218565246738678727711971f37ea116b60",
+  "GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html": "f567e0febc5ca9b99287689c445d6db2999626291ca403b4001e6ab618f6e4d2",
+  "GaonGreen_QR_ESG_Card_Cloud_Beta.html": "354ebbadbea240ba93d90cd3ef8dca41fbc0e3a4b4c2571df1dfe8ea0dd55e51",
+  "GaonGreen_Evidence_Locker_Cloud_Beta.html": "b422fa979d7fcb71fd1b94150ffbdf50572debfb2a37877e5fd6c93004daef56",
+  "K-ISSB Reporting Wizard _ GaonGreen.html": "8ae90f3267dbda66c8ba2e31ef5189a88b8835c162a357b40a62ae70b5f0317e"
+ },
+ "limits": [
+  "meta-tag CSP cannot set frame-ancestors; use a host that sends headers for that",
+  "script-src hashes must be regenerated whenever an inline script changes (this build does that)",
+  "inline style attributes still require style-src unsafe-inline"
+ ]
+}

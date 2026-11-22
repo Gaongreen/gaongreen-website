@@ -1,0 +1,3 @@
+# Public sign-up is disabled (invitation only): send the old register page to sign-in.
+# "!" forces the rule even though the file exists (Netlify "shadowing").
+/GaonGreen_Register.html  /GaonGreen_Login.html  301!
