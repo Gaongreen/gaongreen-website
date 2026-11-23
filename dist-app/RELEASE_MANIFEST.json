@@ -1,5 +1,5 @@
 {
- "built": "2026-11-22T07:58:30.760Z",
+ "built": "2026-11-23T09:12:45.028Z",
  "target": null,
  "assets": {
   "gg-nav.js": "sha256-c0c5afa694f27e7bf520bda650ad393a24b0dd9767c028ccf88ca4024225b317",
@@ -24,8 +24,8 @@
  "projectHost": "https://uyhmbecltrswiljbyass.supabase.co",
  "pages": {
   "index.html": "0a275940d7b5a8d3070d949bb52ef00782a65a1fca27e539692fbdae3c9ce513",
-  "GaonGreen_Login.html": "c1eac8e76bb49c911c01f1fc973612c8d8d7e456b34199d21829133823fe0553",
-  "GaonGreen_Register.html": "34e739feab8c0e9953468844383f64274b0f43d87611f10965b709aaa700c9be",
+  "GaonGreen_Login.html": "1ea576dc59effa9c6c803278b84fa9b9bccff7e3f813ebba41a78e59f929e324",
+  "GaonGreen_Register.html": "2418a4ab70840ce7a03842d6d2ffce2c04a35735a6aaa4d84f0050b2b508de13",
   "GaonGreen_Company_Settings_Cloud_Beta.html": "2aba6e8bb49a33294da32781aed956e336abf6ecb56b57c616e0bb47f7aba4ef",
   "GaonGreen_ESG_Dashboard_Cloud_Beta.html": "e60216c82dab6146c67b38371dcae512476ab9b314f01f1b8c6a2f5ac0715a30",
   "GaonGreen_KISSB_Cloud_Beta.html": "62b52c979e71b56ac4e4219c08bdda2baeb56a8af6ecbb28d565e5171b8b40b9",

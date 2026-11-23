@@ -7,38 +7,137 @@
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=31536000
 
+/
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-J+wlPsX+B2rEt5nJLXaYxMUR5DXFQyh2V1YNIXitSg8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /index.html
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-J+wlPsX+B2rEt5nJLXaYxMUR5DXFQyh2V1YNIXitSg8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
+/index
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-J+wlPsX+B2rEt5nJLXaYxMUR5DXFQyh2V1YNIXitSg8='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /GaonGreen_Login.html
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Y/jOh65bNNPkzLTQ72l8Kzl+eiZ/C/WC9e9qzieqmfk='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-IIvhuJppxqysCDAJXqQdQXel6Yg4L50bgoDIw8k/jIM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_login.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-IIvhuJppxqysCDAJXqQdQXel6Yg4L50bgoDIw8k/jIM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_Login
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-IIvhuJppxqysCDAJXqQdQXel6Yg4L50bgoDIw8k/jIM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_login
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-IIvhuJppxqysCDAJXqQdQXel6Yg4L50bgoDIw8k/jIM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_Register.html
-  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-q83DxS16a3Q2yMQv3VcEm95T9XkE3u3/NVOnI8vdZvA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-3cnSjHh0yeGv7LDbMF0/JTApm43OYAfjkraR3fUs45c='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_register.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-3cnSjHh0yeGv7LDbMF0/JTApm43OYAfjkraR3fUs45c='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_Register
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-3cnSjHh0yeGv7LDbMF0/JTApm43OYAfjkraR3fUs45c='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_register
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-3cnSjHh0yeGv7LDbMF0/JTApm43OYAfjkraR3fUs45c='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_Company_Settings_Cloud_Beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HH6mdS5jeWSmSxCtoibe0TTTuXVfphUu1asbfcNwSlU=' 'sha256-HjLv/Ehq0SdThKD0sXyLqZNqwlZcALXvD33A7DmieLA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_company_settings_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HH6mdS5jeWSmSxCtoibe0TTTuXVfphUu1asbfcNwSlU=' 'sha256-HjLv/Ehq0SdThKD0sXyLqZNqwlZcALXvD33A7DmieLA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_Company_Settings_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HH6mdS5jeWSmSxCtoibe0TTTuXVfphUu1asbfcNwSlU=' 'sha256-HjLv/Ehq0SdThKD0sXyLqZNqwlZcALXvD33A7DmieLA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_company_settings_cloud_beta
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HH6mdS5jeWSmSxCtoibe0TTTuXVfphUu1asbfcNwSlU=' 'sha256-HjLv/Ehq0SdThKD0sXyLqZNqwlZcALXvD33A7DmieLA='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_ESG_Dashboard_Cloud_Beta.html
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Ls5/FIjx+i0dvJD9+vFVUrPSSY4ZCM3X8giyJ5+inUE=' 'sha256-ftWSxZTUQR5kibBSKvz8nHyZKlIfppaMVCvY4p7S/FI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
+/gaongreen_esg_dashboard_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Ls5/FIjx+i0dvJD9+vFVUrPSSY4ZCM3X8giyJ5+inUE=' 'sha256-ftWSxZTUQR5kibBSKvz8nHyZKlIfppaMVCvY4p7S/FI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_ESG_Dashboard_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Ls5/FIjx+i0dvJD9+vFVUrPSSY4ZCM3X8giyJ5+inUE=' 'sha256-ftWSxZTUQR5kibBSKvz8nHyZKlIfppaMVCvY4p7S/FI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_esg_dashboard_cloud_beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-Ls5/FIjx+i0dvJD9+vFVUrPSSY4ZCM3X8giyJ5+inUE=' 'sha256-ftWSxZTUQR5kibBSKvz8nHyZKlIfppaMVCvY4p7S/FI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /GaonGreen_KISSB_Cloud_Beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-6Ux1GmRBvaKEgSJqMvY86ZLZgBMKH+ZyrppsDCCGx7o=' 'sha256-24V8UJPNbxql8WOkedrG/dywcBc9DLFL2Tcq/6h1cIk=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-qhyF1ri8xKlO1n8yEK2/fYy8DwunmvEUK0Ln5pcOr4o=' 'sha256-WFPb27SYwbsRjhv9hL6gHGHAJaDFtbzDjZPyaSYk0DE=' 'sha256-IVCrXileowJljydbo/3HLrVkhx26WReZB1l7PF6tm9E=' 'sha256-uibrRX38LWbEWuunPpCD7s4mrmvKxATCLY5JxrK4ZNI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_kissb_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-6Ux1GmRBvaKEgSJqMvY86ZLZgBMKH+ZyrppsDCCGx7o=' 'sha256-24V8UJPNbxql8WOkedrG/dywcBc9DLFL2Tcq/6h1cIk=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-qhyF1ri8xKlO1n8yEK2/fYy8DwunmvEUK0Ln5pcOr4o=' 'sha256-WFPb27SYwbsRjhv9hL6gHGHAJaDFtbzDjZPyaSYk0DE=' 'sha256-IVCrXileowJljydbo/3HLrVkhx26WReZB1l7PF6tm9E=' 'sha256-uibrRX38LWbEWuunPpCD7s4mrmvKxATCLY5JxrK4ZNI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_KISSB_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-6Ux1GmRBvaKEgSJqMvY86ZLZgBMKH+ZyrppsDCCGx7o=' 'sha256-24V8UJPNbxql8WOkedrG/dywcBc9DLFL2Tcq/6h1cIk=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-qhyF1ri8xKlO1n8yEK2/fYy8DwunmvEUK0Ln5pcOr4o=' 'sha256-WFPb27SYwbsRjhv9hL6gHGHAJaDFtbzDjZPyaSYk0DE=' 'sha256-IVCrXileowJljydbo/3HLrVkhx26WReZB1l7PF6tm9E=' 'sha256-uibrRX38LWbEWuunPpCD7s4mrmvKxATCLY5JxrK4ZNI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_kissb_cloud_beta
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-6Ux1GmRBvaKEgSJqMvY86ZLZgBMKH+ZyrppsDCCGx7o=' 'sha256-24V8UJPNbxql8WOkedrG/dywcBc9DLFL2Tcq/6h1cIk=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-qhyF1ri8xKlO1n8yEK2/fYy8DwunmvEUK0Ln5pcOr4o=' 'sha256-WFPb27SYwbsRjhv9hL6gHGHAJaDFtbzDjZPyaSYk0DE=' 'sha256-IVCrXileowJljydbo/3HLrVkhx26WReZB1l7PF6tm9E=' 'sha256-uibrRX38LWbEWuunPpCD7s4mrmvKxATCLY5JxrK4ZNI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_K-RE100_Cloud_Beta.html
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-bTsoxQrNCEg+fCVodpjoQCYtIkBOBIet/pnjmZdlKH4=' 'sha256-PSXNT9vG6oc5Us0ijdp9VwUN4hHfYbYEgywCBv4bCI4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
+/gaongreen_k-re100_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-bTsoxQrNCEg+fCVodpjoQCYtIkBOBIet/pnjmZdlKH4=' 'sha256-PSXNT9vG6oc5Us0ijdp9VwUN4hHfYbYEgywCBv4bCI4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_K-RE100_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-bTsoxQrNCEg+fCVodpjoQCYtIkBOBIet/pnjmZdlKH4=' 'sha256-PSXNT9vG6oc5Us0ijdp9VwUN4hHfYbYEgywCBv4bCI4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_k-re100_cloud_beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-bTsoxQrNCEg+fCVodpjoQCYtIkBOBIet/pnjmZdlKH4=' 'sha256-PSXNT9vG6oc5Us0ijdp9VwUN4hHfYbYEgywCBv4bCI4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /GaonGreen_EPR_Cloud_Beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-cwaz3SetC2GLU7zKBs1Gm+8SViXrwZIgb+96DjixgFM=' 'sha256-KQgCt8zWS4BIo4ETPczpWbO6qNB8xCmhWRyeYkqL1ok='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_epr_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-cwaz3SetC2GLU7zKBs1Gm+8SViXrwZIgb+96DjixgFM=' 'sha256-KQgCt8zWS4BIo4ETPczpWbO6qNB8xCmhWRyeYkqL1ok='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_EPR_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-cwaz3SetC2GLU7zKBs1Gm+8SViXrwZIgb+96DjixgFM=' 'sha256-KQgCt8zWS4BIo4ETPczpWbO6qNB8xCmhWRyeYkqL1ok='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_epr_cloud_beta
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-cwaz3SetC2GLU7zKBs1Gm+8SViXrwZIgb+96DjixgFM=' 'sha256-KQgCt8zWS4BIo4ETPczpWbO6qNB8xCmhWRyeYkqL1ok='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_Supplier_ESG_Scan_Cloud_Beta.html
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HeXqjEvwBwVs/7LPgpt9NULfDHj38iwAf7SRAOrE4NA=' 'sha256-0yDKJUlO/ae59Sw5euEW/FGT/auaWKDQhZwj5uJtZ9g='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
+/gaongreen_supplier_esg_scan_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HeXqjEvwBwVs/7LPgpt9NULfDHj38iwAf7SRAOrE4NA=' 'sha256-0yDKJUlO/ae59Sw5euEW/FGT/auaWKDQhZwj5uJtZ9g='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_Supplier_ESG_Scan_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HeXqjEvwBwVs/7LPgpt9NULfDHj38iwAf7SRAOrE4NA=' 'sha256-0yDKJUlO/ae59Sw5euEW/FGT/auaWKDQhZwj5uJtZ9g='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_supplier_esg_scan_cloud_beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-HeXqjEvwBwVs/7LPgpt9NULfDHj38iwAf7SRAOrE4NA=' 'sha256-0yDKJUlO/ae59Sw5euEW/FGT/auaWKDQhZwj5uJtZ9g='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /GaonGreen_QR_ESG_Card_Cloud_Beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-eCMZj4rAQRNAxUNBukFkKwieaXUbxPpxyGTIr2hzW5A=' 'sha256-+jyWg62KXxfEImUYYcMU/5yXRUKhNhrj8pYaIC2K3QM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_qr_esg_card_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-eCMZj4rAQRNAxUNBukFkKwieaXUbxPpxyGTIr2hzW5A=' 'sha256-+jyWg62KXxfEImUYYcMU/5yXRUKhNhrj8pYaIC2K3QM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_QR_ESG_Card_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-eCMZj4rAQRNAxUNBukFkKwieaXUbxPpxyGTIr2hzW5A=' 'sha256-+jyWg62KXxfEImUYYcMU/5yXRUKhNhrj8pYaIC2K3QM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_qr_esg_card_cloud_beta
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-eCMZj4rAQRNAxUNBukFkKwieaXUbxPpxyGTIr2hzW5A=' 'sha256-+jyWg62KXxfEImUYYcMU/5yXRUKhNhrj8pYaIC2K3QM='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
 /GaonGreen_Evidence_Locker_Cloud_Beta.html
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-QZZ8PnZmjX4m+gQQIzvBH1sDQTc6VTqMhArckx6g47Q=' 'sha256-okqvGfYEGulApKlZi3CzTq454YwoLLkLAsesnVcPnXI=' 'sha256-k8NStVnkEL0WNkH56Wjfvtk23QSAagnFQo+AX8oWKoI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
 
+/gaongreen_evidence_locker_cloud_beta.html
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-QZZ8PnZmjX4m+gQQIzvBH1sDQTc6VTqMhArckx6g47Q=' 'sha256-okqvGfYEGulApKlZi3CzTq454YwoLLkLAsesnVcPnXI=' 'sha256-k8NStVnkEL0WNkH56Wjfvtk23QSAagnFQo+AX8oWKoI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/GaonGreen_Evidence_Locker_Cloud_Beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-QZZ8PnZmjX4m+gQQIzvBH1sDQTc6VTqMhArckx6g47Q=' 'sha256-okqvGfYEGulApKlZi3CzTq454YwoLLkLAsesnVcPnXI=' 'sha256-k8NStVnkEL0WNkH56Wjfvtk23QSAagnFQo+AX8oWKoI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/gaongreen_evidence_locker_cloud_beta
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-QZZ8PnZmjX4m+gQQIzvBH1sDQTc6VTqMhArckx6g47Q=' 'sha256-okqvGfYEGulApKlZi3CzTq454YwoLLkLAsesnVcPnXI=' 'sha256-k8NStVnkEL0WNkH56Wjfvtk23QSAagnFQo+AX8oWKoI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
 /K-ISSB*
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-FjhKnGvg/FT/DsbBLBoeyW/nFRX3txVZvntfa/cSg+E=' 'sha256-pfXNBGYZ2w4gJGSursamLNQbj7twM/+mo37Sb5w/drY=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-dxoH1+C6onelQcnpOZe9T1cKsE0oGtLxjAUP4x1RCVI=' 'sha256-yvNs2SgW/FKWVYTTtq+SfJq2xrOrr/7ggsRyxb4q3bY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'
+
+/k-issb*
   Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-FjhKnGvg/FT/DsbBLBoeyW/nFRX3txVZvntfa/cSg+E=' 'sha256-pfXNBGYZ2w4gJGSursamLNQbj7twM/+mo37Sb5w/drY=' 'sha256-9gG76wifYH93OkhBPOCXZCGKCnFSq2/Ucb+ytPQ5BrM=' 'sha256-dxoH1+C6onelQcnpOZe9T1cKsE0oGtLxjAUP4x1RCVI=' 'sha256-yvNs2SgW/FKWVYTTtq+SfJq2xrOrr/7ggsRyxb4q3bY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://uyhmbecltrswiljbyass.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'

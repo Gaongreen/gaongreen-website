@@ -1,3 +1,10 @@
+# Netlify redirects for app.gaongreen.com (copied into the build by the release step).
+# "!" forces a rule even where a file exists at that path (Netlify "shadowing").
+# The app starts at sign-in; the public marketing site lives at https://gaongreen.com/.
+/                         /GaonGreen_Login.html  302!
+/index.html               /GaonGreen_Login.html  302!
 # Public sign-up is disabled (invitation only): send the old register page to sign-in.
-# "!" forces the rule even though the file exists (Netlify "shadowing").
 /GaonGreen_Register.html  /GaonGreen_Login.html  301!
+/GaonGreen_Register       /GaonGreen_Login.html  301!
+/gaongreen_register       /GaonGreen_Login.html  301!
+/gaongreen_register.html  /GaonGreen_Login.html  301!
